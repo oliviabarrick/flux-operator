@@ -2,3 +2,10 @@ apiVersion: "flux.codesink.net/v1alpha1"
 kind: "Flux"
 metadata:
   name: "example"
+spec:
+  gitUrl: git@github.com:justinbarrick/manifests
+  gitBranch: master
+  gitPath: manifests
+  gitPollInterval: 0m30s
+  args:
+    connect: "ws://fluxcloud/"
