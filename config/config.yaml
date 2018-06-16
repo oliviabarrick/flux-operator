@@ -1,0 +1,3 @@
+apiVersion: flux.codesink.net/v1alpha1
+kind: Flux
+projectName: flux-operator
