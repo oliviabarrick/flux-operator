@@ -1,0 +1,4 @@
+apiVersion: "flux.codesink.net/v1alpha1"
+kind: "Flux"
+metadata:
+  name: "example"
