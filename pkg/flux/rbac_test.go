@@ -137,7 +137,7 @@ func TestNewClusterRoleBinding(t *testing.T) {
 
 	assert.Equal(t, roleBinding.RoleRef.APIGroup, "rbac.authorization.k8s.io")
 	assert.Equal(t, roleBinding.RoleRef.Kind, "ClusterRole")
-	assert.Equal(t, roleBinding.RoleRef.Name, "flux-example")
+	assert.Equal(t, roleBinding.RoleRef.Name, "flux-default-example")
 }
 
 func TestNewClusterRoleBindingDefaultNil(t *testing.T) {
