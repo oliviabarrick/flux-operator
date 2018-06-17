@@ -34,10 +34,11 @@ func TestMakeFluxArgs(t *testing.T) {
 	expectedArgs := []string{
 		"--git-url=git@github.com:justinbarrick/manifests",
 		"--git-branch=master",
-		"--git-sync-tag=flux-sync-master",
+		"--git-sync-tag=flux-sync-default-example",
 		"--git-path=manifests",
 		"--git-poll-interval=0m30s",
 		"--connect=ws://fluxcloud/",
+		"--k8s-secret-name=flux-git-example-deploy",
 	}
 
 	sort.Strings(args)
@@ -52,9 +53,10 @@ func TestMakeFluxArgsNoArgs(t *testing.T) {
 	expectedArgs := []string{
 		"--git-url=git@github.com:justinbarrick/manifests",
 		"--git-branch=master",
-		"--git-sync-tag=flux-sync-master",
+		"--git-sync-tag=flux-sync-default-example",
 		"--git-path=manifests",
 		"--git-poll-interval=0m30s",
+		"--k8s-secret-name=flux-git-example-deploy",
 	}
 
 	sort.Strings(args)
@@ -74,9 +76,10 @@ func TestMakeFluxArgsArgsOverride(t *testing.T) {
 	expectedArgs := []string{
 		"--git-url=git@github.com:justinbarrick/flux-operator",
 		"--git-branch=master",
-		"--git-sync-tag=flux-sync-master",
+		"--git-sync-tag=flux-sync-default-example",
 		"--git-path=manifests",
 		"--git-poll-interval=0m30s",
+		"--k8s-secret-name=flux-git-example-deploy",
 	}
 
 	sort.Strings(args)
@@ -91,11 +94,11 @@ func TestNewFluxPod(t *testing.T) {
 
 	assert.Equal(t, pod.ObjectMeta.Name, "flux-example")
 	assert.Equal(t, pod.ObjectMeta.Namespace, "default")
-	assert.Equal(t, pod.Spec.ServiceAccountName, "flux")
-	assert.Equal(t, pod.Spec.Volumes[0].VolumeSource.Secret.SecretName, "flux-git-deploy")
+	assert.Equal(t, pod.Spec.ServiceAccountName, "flux-example")
+	assert.Equal(t, pod.Spec.Volumes[0].VolumeSource.Secret.SecretName, "flux-git-example-deploy")
 
 	c := pod.Spec.Containers[0]
-	assert.Equal(t, c.Image, "quay.io/weaveworks/flux:1.2.3")
+	assert.Equal(t, c.Image, "quay.io/weaveworks/flux:1.4.0")
 
 	expectedArgs := MakeFluxArgs(cr)
 	sort.Strings(expectedArgs)
