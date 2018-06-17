@@ -9,5 +9,5 @@ spec:
     listKind: FluxList
     plural: fluxs
     singular: flux
-  scope: Namespaced
+  scope: Cluster
   version: v1alpha1

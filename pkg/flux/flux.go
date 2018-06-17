@@ -48,7 +48,7 @@ func MakeFluxArgs(cr *v1alpha1.Flux) (args []string) {
 	argMap := map[string]string{
 		"git-url": cr.Spec.GitUrl,
 		"git-branch": branch,
-		"git-sync-tag": fmt.Sprintf("flux-sync-%s-%s", cr.Namespace, cr.Name),
+		"git-sync-tag": fmt.Sprintf("flux-sync-%s", cr.Name),
 		"git-path": path,
 		"git-poll-interval": poll,
 		"k8s-secret-name": GitSecretName(cr),
@@ -72,7 +72,7 @@ func NewObjectMeta(cr *v1alpha1.Flux, name string) metav1.ObjectMeta {
 
 	return metav1.ObjectMeta{
 		Name:      name,
-		Namespace: cr.Namespace,
+		Namespace: cr.Spec.Namespace,
 		OwnerReferences: []metav1.OwnerReference{
 			*metav1.NewControllerRef(cr, schema.GroupVersionKind{
 				Group:   v1alpha1.SchemeGroupVersion.Group,
