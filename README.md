@@ -104,7 +104,7 @@ spec:
         verbs: ['*']
 ```
 
-See [https://kubernetes.io/docs/reference/access-authn-authz/rbac/#role-and-clusterrole](Kubernetes role documentation) for more information.
+See [Kubernetes role documentation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#role-and-clusterrole) for more information.
 
 # TODO
 
