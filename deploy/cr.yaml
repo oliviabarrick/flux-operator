@@ -9,3 +9,5 @@ spec:
   gitPollInterval: 0m30s
   args:
     connect: "ws://fluxcloud/"
+  clusterRole:
+    enabled: true

@@ -22,10 +22,15 @@ type Handler struct {
 func (h *Handler) Handle(ctx context.Context, event sdk.Event) error {
 	switch o := event.Object.(type) {
 	case *v1alpha1.Flux:
-		err := sdk.Create(flux.NewFluxPod(o))
-		if err != nil && !errors.IsAlreadyExists(err) {
-			logrus.Errorf("Failed to create flux pod : %v", err)
-			return err
+		objects := flux.FluxRoles(o)
+		objects = append(objects, flux.NewFluxPod(o))
+
+		for _, object := range objects {
+			err := sdk.Create(object)
+			if err != nil && !errors.IsAlreadyExists(err) {
+				logrus.Errorf("Failed to create flux instance: %v", err)
+				return err
+			}
 		}
 	}
 	return nil
