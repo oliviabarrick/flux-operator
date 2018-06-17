@@ -154,3 +154,14 @@ func NewFluxPod(cr *v1alpha1.Flux) *corev1.Pod {
 		},
 	}
 }
+
+func NewFluxSSHKey(cr *v1alpha1.Flux) *corev1.Secret {
+	return &corev1.Secret{
+			TypeMeta: metav1.TypeMeta{
+			Kind:       "Secret",
+			APIVersion: "v1",
+		},
+		ObjectMeta: NewObjectMeta(cr, GitSecretName(cr)),
+		Type: "opaque",
+	}
+}
