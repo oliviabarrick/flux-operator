@@ -26,10 +26,6 @@ func TestNewRole(t *testing.T) {
 			Resources: []string{"*"},
 			Verbs: []string{"*"},
 		},
-		rbacv1.PolicyRule{
-			NonResourceURLs: []string{"*"},
-			Verbs: []string{"*"},
-		},
 	}
 
 	assert.Equal(t, role.Rules, defaultRules)
