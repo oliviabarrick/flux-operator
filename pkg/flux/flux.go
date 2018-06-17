@@ -1,6 +1,7 @@
 package flux
 
 import (
+	"os"
 	"fmt"
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
@@ -9,14 +10,48 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
+func Getenv(name, value string) string {
+	ret := os.Getenv(name)
+	if ret == "" {
+		return value
+	}
+	return ret
+}
+
+func GitSecretName(cr *v1alpha1.Flux) string {
+	secretName := Getenv("GIT_SECRET_NAME", fmt.Sprintf("flux-git-%s-deploy", cr.Name))
+
+	if cr.Spec.GitSecret != "" {
+		secretName = cr.Spec.GitSecret
+  }
+
+	return secretName
+}
+
 // Create flux command arguments from CR
 func MakeFluxArgs(cr *v1alpha1.Flux) (args []string) {
+	branch := cr.Spec.GitBranch
+	if branch == "" {
+		branch = "master"
+	}
+
+	path := cr.Spec.GitPath
+	if path == "" {
+		path = "./"
+	}
+
+	poll := cr.Spec.GitPollInterval
+	if poll == "" {
+		poll = "5m30s"
+	}
+
 	argMap := map[string]string{
 		"git-url": cr.Spec.GitUrl,
-		"git-branch": cr.Spec.GitBranch,
-		"git-sync-tag": "flux-sync-" + cr.Spec.GitBranch,
-		"git-path": cr.Spec.GitPath,
-		"git-poll-interval": cr.Spec.GitPollInterval,
+		"git-branch": branch,
+		"git-sync-tag": fmt.Sprintf("flux-sync-%s-%s", cr.Namespace, cr.Name),
+		"git-path": path,
+		"git-poll-interval": poll,
+		"k8s-secret-name": GitSecretName(cr),
 	}
 
 	for key, value := range cr.Spec.Args {
@@ -50,22 +85,15 @@ func NewObjectMeta(cr *v1alpha1.Flux, name string) metav1.ObjectMeta {
 
 // NewFluxPod creates a new flux pod
 func NewFluxPod(cr *v1alpha1.Flux) *corev1.Pod {
-	serviceAccount := "flux"
-
-	fluxImage := "quay.io/weaveworks/flux"
+	fluxImage := Getenv("FLUX_IMAGE", "quay.io/weaveworks/flux")
 	if cr.Spec.FluxImage != "" {
 		fluxImage = cr.Spec.FluxImage
 	}
 
-	fluxVersion := "1.2.3"
+	fluxVersion := Getenv("FLUX_VERSION", "1.4.0")
 	if cr.Spec.FluxVersion != "" {
 		fluxVersion = cr.Spec.FluxVersion
 	}
-
-	gitSecret := "flux-git-deploy"
-	if cr.Spec.GitSecret != "" {
-		gitSecret = cr.Spec.GitSecret
-  }
 
 	labels := map[string]string{
 		"app": "flux",
@@ -73,6 +101,8 @@ func NewFluxPod(cr *v1alpha1.Flux) *corev1.Pod {
 
 	meta := NewObjectMeta(cr, "")
 	meta.Labels = labels
+
+	serviceAccount := meta.Name
 
 	return &corev1.Pod{
 		TypeMeta: metav1.TypeMeta{
@@ -87,7 +117,7 @@ func NewFluxPod(cr *v1alpha1.Flux) *corev1.Pod {
 					Name: "git-key",
 					VolumeSource: corev1.VolumeSource{
 						Secret: &corev1.SecretVolumeSource{
-							SecretName: gitSecret,
+							SecretName: GitSecretName(cr),
 						},
 					},
 				},
