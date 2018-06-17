@@ -1,21 +1,22 @@
-package flux
+package rbac
 
 import (
 	"testing"
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
+	"github.com/justinbarrick/flux-operator/pkg/utils/test"
 )
 
 func TestNewServiceAccount(t *testing.T) {
-	sa := NewServiceAccount(newFlux())
+	sa := NewServiceAccount(test_utils.NewFlux())
 
 	assert.Equal(t, sa.ObjectMeta.Name, "flux-example")
 	assert.Equal(t, sa.ObjectMeta.Namespace, "default")
 }
 
 func TestNewRole(t *testing.T) {
-	cr := newFlux()
+	cr := test_utils.NewFlux()
 	cr.Spec.Role.Enabled = true
 
 	role := NewRole(cr)
@@ -32,7 +33,7 @@ func TestNewRole(t *testing.T) {
 }
 
 func TestNewCustomRole(t *testing.T) {
-	cr := newFlux()
+	cr := test_utils.NewFlux()
 	cr.Spec.Role.Enabled = true
 	cr.Spec.Role.Rules = []rbacv1.PolicyRule{
 		rbacv1.PolicyRule{
@@ -47,7 +48,7 @@ func TestNewCustomRole(t *testing.T) {
 }
 
 func TestNewRoleDisabledByDefault(t *testing.T) {
-	cr := newFlux()
+	cr := test_utils.NewFlux()
 	role := NewRole(cr)
 
 	assert.Equal(t, cr.Spec.Role.Enabled, false)
@@ -55,7 +56,7 @@ func TestNewRoleDisabledByDefault(t *testing.T) {
 }
 
 func TestNewRoleBinding(t *testing.T) {
-	cr := newFlux()
+	cr := test_utils.NewFlux()
 	cr.Spec.Role.Enabled = true
 
 	roleBinding := NewRoleBinding(cr)
@@ -70,11 +71,11 @@ func TestNewRoleBinding(t *testing.T) {
 }
 
 func TestNewRoleBindingDefaultNil(t *testing.T) {
-	assert.Nil(t, NewRoleBinding(newFlux()))
+	assert.Nil(t, NewRoleBinding(test_utils.NewFlux()))
 }
 
 func TestNewClusterRole(t *testing.T) {
-	cr := newFlux()
+	cr := test_utils.NewFlux()
 	cr.Spec.ClusterRole.Enabled = true
 
 	clusterRole := NewClusterRole(cr)
@@ -95,7 +96,7 @@ func TestNewClusterRole(t *testing.T) {
 }
 
 func TestNewCustomClusterRole(t *testing.T) {
-	cr := newFlux()
+	cr := test_utils.NewFlux()
 	cr.Spec.ClusterRole.Enabled = true
 	cr.Spec.ClusterRole.Rules = []rbacv1.PolicyRule{
 		rbacv1.PolicyRule{
@@ -114,7 +115,7 @@ func TestNewCustomClusterRole(t *testing.T) {
 }
 
 func TestNewClusterRoleDisabledByDefault(t *testing.T) {
-	cr := newFlux()
+	cr := test_utils.NewFlux()
 	clusterRole := NewClusterRole(cr)
 
 	assert.Equal(t, cr.Spec.ClusterRole.Enabled, false)
@@ -122,7 +123,7 @@ func TestNewClusterRoleDisabledByDefault(t *testing.T) {
 }
 
 func TestNewClusterRoleBinding(t *testing.T) {
-	cr := newFlux()
+	cr := test_utils.NewFlux()
 	cr.Spec.ClusterRole.Enabled = true
 
 	roleBinding := NewClusterRoleBinding(cr)
@@ -137,18 +138,18 @@ func TestNewClusterRoleBinding(t *testing.T) {
 }
 
 func TestNewClusterRoleBindingDefaultNil(t *testing.T) {
-	assert.Nil(t, NewClusterRoleBinding(newFlux()))
+	assert.Nil(t, NewClusterRoleBinding(test_utils.NewFlux()))
 }
 
 func TestFluxRolesDefault(t *testing.T) {
-	cr := newFlux()
+	cr := test_utils.NewFlux()
 	objects := FluxRoles(cr)
 	assert.Equal(t, len(objects), 1)
 	_ = objects[0].(*corev1.ServiceAccount)
 }
 
 func TestFluxRolesWithRole(t *testing.T) {
-	cr := newFlux()
+	cr := test_utils.NewFlux()
 	cr.Spec.Role.Enabled = true
 	objects := FluxRoles(cr)
 	assert.Equal(t, len(objects), 3)
@@ -158,7 +159,7 @@ func TestFluxRolesWithRole(t *testing.T) {
 }
 
 func TestFluxRolesWithClusterRole(t *testing.T) {
-	cr := newFlux()
+	cr := test_utils.NewFlux()
 	cr.Spec.ClusterRole.Enabled = true
 	objects := FluxRoles(cr)
 	assert.Equal(t, len(objects), 3)
@@ -168,7 +169,7 @@ func TestFluxRolesWithClusterRole(t *testing.T) {
 }
 
 func TestFluxRolesWithBoth(t *testing.T) {
-	cr := newFlux()
+	cr := test_utils.NewFlux()
 	cr.Spec.Role.Enabled = true
 	cr.Spec.ClusterRole.Enabled = true
 	objects := FluxRoles(cr)

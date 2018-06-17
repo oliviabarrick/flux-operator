@@ -1,25 +1,17 @@
 package flux
 
 import (
-	"os"
 	"fmt"
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
+	"github.com/justinbarrick/flux-operator/pkg/rbac"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	"k8s.io/apimachinery/pkg/runtime/schema"
+	"github.com/justinbarrick/flux-operator/pkg/utils"
 )
 
-func Getenv(name, value string) string {
-	ret := os.Getenv(name)
-	if ret == "" {
-		return value
-	}
-	return ret
-}
-
 func GitSecretName(cr *v1alpha1.Flux) string {
-	secretName := Getenv("GIT_SECRET_NAME", fmt.Sprintf("flux-git-%s-deploy", cr.Name))
+	secretName := utils.Getenv("GIT_SECRET_NAME", fmt.Sprintf("flux-git-%s-deploy", cr.Name))
 
 	if cr.Spec.GitSecret != "" {
 		secretName = cr.Spec.GitSecret
@@ -65,32 +57,14 @@ func MakeFluxArgs(cr *v1alpha1.Flux) (args []string) {
 	return
 }
 
-func NewObjectMeta(cr *v1alpha1.Flux, name string) metav1.ObjectMeta {
-	if name == "" {
-		name = fmt.Sprintf("flux-%s", cr.Name)
-	}
-
-	return metav1.ObjectMeta{
-		Name:      name,
-		Namespace: cr.Spec.Namespace,
-		OwnerReferences: []metav1.OwnerReference{
-			*metav1.NewControllerRef(cr, schema.GroupVersionKind{
-				Group:   v1alpha1.SchemeGroupVersion.Group,
-				Version: v1alpha1.SchemeGroupVersion.Version,
-				Kind:    "Flux",
-			}),
-		},
-	}
-}
-
 // NewFluxPod creates a new flux pod
 func NewFluxPod(cr *v1alpha1.Flux) *corev1.Pod {
-	fluxImage := Getenv("FLUX_IMAGE", "quay.io/weaveworks/flux")
+	fluxImage := utils.Getenv("FLUX_IMAGE", "quay.io/weaveworks/flux")
 	if cr.Spec.FluxImage != "" {
 		fluxImage = cr.Spec.FluxImage
 	}
 
-	fluxVersion := Getenv("FLUX_VERSION", "1.4.0")
+	fluxVersion := utils.Getenv("FLUX_VERSION", "1.4.0")
 	if cr.Spec.FluxVersion != "" {
 		fluxVersion = cr.Spec.FluxVersion
 	}
@@ -99,10 +73,8 @@ func NewFluxPod(cr *v1alpha1.Flux) *corev1.Pod {
 		"app": "flux",
 	}
 
-	meta := NewObjectMeta(cr, "")
+	meta := utils.NewObjectMeta(cr, "")
 	meta.Labels = labels
-
-	serviceAccount := meta.Name
 
 	return &corev1.Pod{
 		TypeMeta: metav1.TypeMeta{
@@ -111,7 +83,7 @@ func NewFluxPod(cr *v1alpha1.Flux) *corev1.Pod {
 		},
 		ObjectMeta: meta,
 		Spec: corev1.PodSpec{
-			ServiceAccountName: serviceAccount,
+			ServiceAccountName: rbac.ServiceAccountName(cr),
 			Volumes: []corev1.Volume{
 				corev1.Volume{
 					Name: "git-key",
@@ -161,7 +133,7 @@ func NewFluxSSHKey(cr *v1alpha1.Flux) *corev1.Secret {
 			Kind:       "Secret",
 			APIVersion: "v1",
 		},
-		ObjectMeta: NewObjectMeta(cr, GitSecretName(cr)),
+		ObjectMeta: utils.NewObjectMeta(cr, GitSecretName(cr)),
 		Type: "opaque",
 	}
 }
