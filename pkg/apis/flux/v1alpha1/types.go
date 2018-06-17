@@ -34,11 +34,18 @@ type FluxSpec struct {
 	Args            map[string]string `json:"args"`
 	Role            FluxRole `json:"role"`
 	ClusterRole     FluxRole `json:"clusterRole"`
+	Tiller          Tiller   `json:"tiller"`
 }
 
 type FluxRole struct {
 	Enabled bool `json:"enabled"`
 	Rules   []rbacv1.PolicyRule `json:"rules,omitempty"`
+}
+
+type Tiller struct {
+	Enabled         bool `json:"enabled"`
+	TillerImage   string `json:"tillerImage,omitempty"`
+	TillerVersion string `json:"tillerVersion,omitempty"`
 }
 
 type FluxStatus struct {

@@ -1,4 +1,4 @@
-package flux
+package rbac
 
 import (
 	"fmt"
@@ -7,7 +7,12 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"github.com/justinbarrick/flux-operator/pkg/utils"
 )
+
+func ServiceAccountName(cr *v1alpha1.Flux) string {
+	return fmt.Sprintf("flux-%s", cr.Name)
+}
 
 func NewServiceAccount(cr *v1alpha1.Flux) *corev1.ServiceAccount {
 	return &corev1.ServiceAccount{
@@ -15,7 +20,7 @@ func NewServiceAccount(cr *v1alpha1.Flux) *corev1.ServiceAccount {
 			Kind:       "ServiceAccount",
 			APIVersion: "v1",
 		},
-		ObjectMeta: NewObjectMeta(cr, ""),
+		ObjectMeta: utils.NewObjectMeta(cr, ServiceAccountName(cr)),
 	}
 }
 
@@ -29,7 +34,7 @@ func NewClusterRole(cr *v1alpha1.Flux) *rbacv1.ClusterRole {
 			Kind:       "ClusterRole",
 			APIVersion: "rbac.authorization.k8s.io/v1",
 		},
-		ObjectMeta: NewObjectMeta(cr, fmt.Sprintf("flux-%s", cr.Name)),
+		ObjectMeta: utils.NewObjectMeta(cr, fmt.Sprintf("flux-%s", cr.Name)),
 	}
 
 	if len(cr.Spec.ClusterRole.Rules) > 0 {
@@ -57,7 +62,7 @@ func NewClusterRoleBinding(cr *v1alpha1.Flux) *rbacv1.ClusterRoleBinding {
 	}
 
 	serviceAccount := fmt.Sprintf("flux-%s", cr.Name)
-	meta := NewObjectMeta(cr, fmt.Sprintf("flux-%s", cr.Name))
+	meta := utils.NewObjectMeta(cr, fmt.Sprintf("flux-%s", cr.Name))
 
 	return &rbacv1.ClusterRoleBinding{
 		TypeMeta: metav1.TypeMeta{
@@ -90,7 +95,7 @@ func NewRole(cr *v1alpha1.Flux) *rbacv1.Role {
 			Kind:       "Role",
 			APIVersion: "rbac.authorization.k8s.io/v1",
 		},
-		ObjectMeta: NewObjectMeta(cr, ""),
+		ObjectMeta: utils.NewObjectMeta(cr, ""),
 	}
 
 	if len(cr.Spec.Role.Rules) > 0 {
@@ -113,7 +118,7 @@ func NewRoleBinding(cr *v1alpha1.Flux) *rbacv1.RoleBinding {
 		return nil
 	}
 
-	meta := NewObjectMeta(cr, "")
+	meta := utils.NewObjectMeta(cr, "")
 
 	return &rbacv1.RoleBinding{
 		TypeMeta: metav1.TypeMeta{
@@ -124,7 +129,7 @@ func NewRoleBinding(cr *v1alpha1.Flux) *rbacv1.RoleBinding {
 		Subjects: []rbacv1.Subject{
 			rbacv1.Subject{
 				Kind: "ServiceAccount",
-				Name: meta.Name,
+				Name: ServiceAccountName(cr),
 				Namespace: cr.Spec.Namespace,
 			},
 		},
