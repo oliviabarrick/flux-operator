@@ -15,8 +15,6 @@ spec:
       containers:
         - name: flux-operator
           image: justinbarrick/flux-operator
-          command:
-          - flux-operator
           imagePullPolicy: Always
           env:
             - name: WATCH_NAMESPACE
