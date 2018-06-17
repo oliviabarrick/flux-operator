@@ -102,10 +102,6 @@ func NewRole(cr *v1alpha1.Flux) *rbacv1.Role {
 				Resources: []string{"*"},
 				Verbs: []string{"*"},
 			},
-			rbacv1.PolicyRule{
-				NonResourceURLs: []string{"*"},
-				Verbs: []string{"*"},
-			},
 		}
 	}
 
