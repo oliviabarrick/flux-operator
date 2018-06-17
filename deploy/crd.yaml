@@ -7,7 +7,7 @@ spec:
   names:
     kind: Flux
     listKind: FluxList
-    plural: fluxs
+    plural: fluxes
     singular: flux
   scope: Cluster
   version: v1alpha1
