@@ -19,8 +19,8 @@ apiVersion: "flux.codesink.net/v1alpha1"
 kind: "Flux"
 metadata:
   name: example
-  namespace: default
 spec:
+  namespace: default
   gitUrl: git@github.com:justinbarrick/manifests
   args:
     connect: "ws://fluxcloud/"
@@ -30,6 +30,7 @@ This will create a flux pod called `flux-example` in the `default` namespace.
 
 Settings:
 
+* `namespace`: the namespace to deploy flux to.
 * `gitUrl`: the URL to git repository to clone (required).
 * `gitBranch`: the git branch to use (default: `master`).
 * `gitPath`: the path with in the git repository to look for YAML in (default: `.`).
