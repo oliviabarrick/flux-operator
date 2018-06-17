@@ -12,9 +12,9 @@ func newFlux() *v1alpha1.Flux {
 	return &v1alpha1.Flux{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "example",
-			Namespace: "default",
 		},
 		Spec: v1alpha1.FluxSpec{
+			Namespace: "default",
 			GitUrl: "git@github.com:justinbarrick/manifests",
 			GitBranch: "master",
 			GitPath: "manifests",
@@ -34,7 +34,7 @@ func TestMakeFluxArgs(t *testing.T) {
 	expectedArgs := []string{
 		"--git-url=git@github.com:justinbarrick/manifests",
 		"--git-branch=master",
-		"--git-sync-tag=flux-sync-default-example",
+		"--git-sync-tag=flux-sync-example",
 		"--git-path=manifests",
 		"--git-poll-interval=0m30s",
 		"--connect=ws://fluxcloud/",
@@ -53,7 +53,7 @@ func TestMakeFluxArgsNoArgs(t *testing.T) {
 	expectedArgs := []string{
 		"--git-url=git@github.com:justinbarrick/manifests",
 		"--git-branch=master",
-		"--git-sync-tag=flux-sync-default-example",
+		"--git-sync-tag=flux-sync-example",
 		"--git-path=manifests",
 		"--git-poll-interval=0m30s",
 		"--k8s-secret-name=flux-git-example-deploy",
@@ -76,7 +76,7 @@ func TestMakeFluxArgsArgsOverride(t *testing.T) {
 	expectedArgs := []string{
 		"--git-url=git@github.com:justinbarrick/flux-operator",
 		"--git-branch=master",
-		"--git-sync-tag=flux-sync-default-example",
+		"--git-sync-tag=flux-sync-example",
 		"--git-path=manifests",
 		"--git-poll-interval=0m30s",
 		"--k8s-secret-name=flux-git-example-deploy",

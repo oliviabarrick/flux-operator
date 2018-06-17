@@ -29,7 +29,7 @@ func NewClusterRole(cr *v1alpha1.Flux) *rbacv1.ClusterRole {
 			Kind:       "ClusterRole",
 			APIVersion: "rbac.authorization.k8s.io/v1",
 		},
-		ObjectMeta: NewObjectMeta(cr, fmt.Sprintf("flux-%s-%s", cr.Namespace, cr.Name)),
+		ObjectMeta: NewObjectMeta(cr, fmt.Sprintf("flux-%s", cr.Name)),
 	}
 
 	if len(cr.Spec.ClusterRole.Rules) > 0 {
@@ -57,7 +57,7 @@ func NewClusterRoleBinding(cr *v1alpha1.Flux) *rbacv1.ClusterRoleBinding {
 	}
 
 	serviceAccount := fmt.Sprintf("flux-%s", cr.Name)
-	meta := NewObjectMeta(cr, fmt.Sprintf("flux-%s-%s", cr.Namespace, cr.Name))
+	meta := NewObjectMeta(cr, fmt.Sprintf("flux-%s", cr.Name))
 
 	return &rbacv1.ClusterRoleBinding{
 		TypeMeta: metav1.TypeMeta{
@@ -69,7 +69,7 @@ func NewClusterRoleBinding(cr *v1alpha1.Flux) *rbacv1.ClusterRoleBinding {
 			rbacv1.Subject{
 				Kind: "ServiceAccount",
 				Name: serviceAccount,
-				Namespace: cr.Namespace,
+				Namespace: cr.Spec.Namespace,
 			},
 		},
 		RoleRef: rbacv1.RoleRef{
@@ -129,7 +129,7 @@ func NewRoleBinding(cr *v1alpha1.Flux) *rbacv1.RoleBinding {
 			rbacv1.Subject{
 				Kind: "ServiceAccount",
 				Name: meta.Name,
-				Namespace: cr.Namespace,
+				Namespace: cr.Spec.Namespace,
 			},
 		},
 		RoleRef: rbacv1.RoleRef{

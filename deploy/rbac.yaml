@@ -4,32 +4,27 @@ metadata:
   name: flux-operator
 rules:
 - apiGroups:
-  - flux.codesink.net
+  - "*"
   resources:
   - "*"
   verbs:
   - "*"
+
+---
+
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: flux-operator
+rules:
 - apiGroups:
-  - ""
+  - "*"
   resources:
-  - pods
-  - services
-  - endpoints
-  - persistentvolumeclaims
-  - events
-  - configmaps
-  - secrets
+  - "*"
   verbs:
   - "*"
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  - daemonsets
-  - replicasets
-  - statefulsets
-  verbs:
-  - "*"
+- nonResourceURLs: ['*']
+  verbs: ['*']
 
 ---
 
@@ -42,5 +37,20 @@ subjects:
   name: default
 roleRef:
   kind: Role
+  name: flux-operator
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: default-account-flux-operator
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: default
+roleRef:
+  kind: ClusterRole
   name: flux-operator
   apiGroup: rbac.authorization.k8s.io

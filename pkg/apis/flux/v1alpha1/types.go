@@ -23,6 +23,7 @@ type Flux struct {
 }
 
 type FluxSpec struct {
+	Namespace       string `json:"namespace"`
 	GitUrl          string `json:"gitUrl,omitempty"`
 	GitBranch       string `json:"gitBranch,omitempty"`
 	GitPath         string `json:"gitPath,omitempty"`
