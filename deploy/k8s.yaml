@@ -1,3 +1,17 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: fluxes.flux.codesink.net
+spec:
+  group: flux.codesink.net
+  names:
+    kind: Flux
+    listKind: FluxList
+    plural: fluxes
+    singular: flux
+  scope: Cluster
+  version: v1alpha1
+---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
@@ -9,9 +23,7 @@ rules:
   - "*"
   verbs:
   - "*"
-
 ---
-
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
@@ -25,9 +37,7 @@ rules:
   - "*"
 - nonResourceURLs: ['*']
   verbs: ['*']
-
 ---
-
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
@@ -39,18 +49,34 @@ roleRef:
   kind: Role
   name: flux-operator
   apiGroup: rbac.authorization.k8s.io
-
 ---
-
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: default-account-flux-operator
 subjects:
 - kind: ServiceAccount
-  name: default
-  namespace: default
-roleRef:
-  kind: ClusterRole
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: flux-operator
-  apiGroup: rbac.authorization.k8s.io
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: flux-operator
+  template:
+    metadata:
+      labels:
+        name: flux-operator
+    spec:
+      containers:
+        - name: flux-operator
+          image: justinbarrick/flux-operator
+          imagePullPolicy: Always
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace

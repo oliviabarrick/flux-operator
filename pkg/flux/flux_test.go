@@ -4,27 +4,11 @@ import (
 	"sort"
 	"testing"
 	"github.com/stretchr/testify/assert"
-	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"github.com/justinbarrick/flux-operator/pkg/utils/test"
 )
 
-func newFlux() *v1alpha1.Flux {
-	return &v1alpha1.Flux{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "example",
-		},
-		Spec: v1alpha1.FluxSpec{
-			Namespace: "default",
-			GitUrl: "git@github.com:justinbarrick/manifests",
-			GitBranch: "master",
-			GitPath: "manifests",
-			GitPollInterval: "0m30s",
-		},
-	}
-}
-
 func TestMakeFluxArgs(t *testing.T) {
-	cr := newFlux()
+	cr := test_utils.NewFlux()
 	cr.Spec.Args = map[string]string{
 		"connect": "ws://fluxcloud/",
 	}
@@ -48,7 +32,7 @@ func TestMakeFluxArgs(t *testing.T) {
 }
 
 func TestMakeFluxArgsNoArgs(t *testing.T) {
-	args := MakeFluxArgs(newFlux())
+	args := MakeFluxArgs(test_utils.NewFlux())
 
 	expectedArgs := []string{
 		"--git-url=git@github.com:justinbarrick/manifests",
@@ -66,7 +50,7 @@ func TestMakeFluxArgsNoArgs(t *testing.T) {
 }
 
 func TestMakeFluxArgsArgsOverride(t *testing.T) {
-	cr := newFlux()
+	cr := test_utils.NewFlux()
 	cr.Spec.Args = map[string]string{
 		"git-url": "git@github.com:justinbarrick/flux-operator",
 	}
@@ -89,7 +73,7 @@ func TestMakeFluxArgsArgsOverride(t *testing.T) {
 }
 
 func TestNewFluxPod(t *testing.T) {
-	cr := newFlux()
+	cr := test_utils.NewFlux()
 	pod := NewFluxPod(cr)
 
 	assert.Equal(t, pod.ObjectMeta.Name, "flux-example")
@@ -108,7 +92,7 @@ func TestNewFluxPod(t *testing.T) {
 }
 
 func TestNewFluxPodOverrides(t *testing.T) {
-	cr := newFlux()
+	cr := test_utils.NewFlux()
 	cr.Spec.FluxImage = "myimage"
 	cr.Spec.FluxVersion = "myversion"
 	cr.Spec.GitSecret = "mysecret"
