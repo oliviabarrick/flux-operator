@@ -110,6 +110,34 @@ helm --tiller-namespace default ls
 helm --tiller-namespace default install stable/memcached
 ```
 
+## Migrating Tiller
+
+If you already have a default Tiller installation, you can easily start managing
+it with the flux-operator:
+
+```
+apiVersion: flux.codesink.net/v1alpha1
+kind: Flux
+metadata:
+  name: flux
+spec:
+  namespace: kube-system
+  gitUrl: git@github.com:justinbarrick/manifests
+  clusterRole:
+    enabled: true
+  tiller:
+    enabled: true
+```
+
+Save this as `flux.yaml`, delete the old `tiller-deploy` and apply the new one:
+
+```
+kubectl delete deployment -n kube-system tiller-deploy
+kubectl apply -f ./flux.yaml
+```
+
+You should now be able to run `helm ls` and see all of your old deployments.
+
 # RBAC
 
 By default, no RBAC settings are created, but a service account is created and assigned
