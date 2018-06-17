@@ -3,6 +3,7 @@ kind: "Flux"
 metadata:
   name: "example"
 spec:
+  namespace: default
   gitUrl: git@github.com:justinbarrick/manifests
   gitBranch: master
   gitPath: manifests
