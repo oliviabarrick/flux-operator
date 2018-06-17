@@ -37,7 +37,7 @@ Settings:
 * `gitSecret`: the Kubernetes secret to use for cloning, if it does not exist it will
                be generated (default: `flux-$name-git-deploy`).
 * `fluxImage`: the image to use for flux (default: `quay.io/weaveworks/flux`).
-* `fluxVersion: the version to use for flux (default: `1.4.0`).
+* `fluxVersion`: the version to use for flux (default: `1.4.0`).
 * `clusterRole.enabled`: if enabled, a cluster role will be assigned to the service
                          account (default: `false`).
 * `clusterRole.rules`: the list of rbac rules to use (default: full access to all resources).
