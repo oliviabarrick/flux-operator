@@ -27,6 +27,8 @@ metadata:
 spec:
   namespace: default
   gitUrl: git@github.com:justinbarrick/manifests
+  role:
+    enabled: true
   args:
     connect: "ws://fluxcloud/"
 ```
@@ -124,8 +126,8 @@ resources in the namespace.
 You can also set custom RBAC rules by setting `role.rules` or `clusterRole.rules`:
 
 ```
-apiVersion: "flux.codesink.net/v1alpha1"
-kind: "Flux"
+apiVersion: flux.codesink.net/v1alpha1
+kind: Flux
 metadata:
   name: example
   namespace: default
