@@ -1,5 +1,11 @@
 Operator for creating and managing instances of [Weaveworks flux](https://github.com/weaveworks/flux)
 
+Use-cases:
+
+* Doing GitOps without a monorepo. You can easily split your manifests into repos per team, project or namespace.
+* Simplify the deployment of your Flux (and, in the future, Tiller and helm-operator) instances.
+* Easily manage Flux RBAC policies to prevent any single Flux instance from having access to the entire cluster.
+
 # Installation
 
 To deploy to your cluster:
@@ -56,7 +62,7 @@ operator itself:
 
 # Git SSH key
 
-If you already have an SSH key to use with flux, then create it:
+If you already have an SSH key to use with flux, then add it as a secret to Kubernetes:
 
 ```
 kubectl create secret generic mysecret --from-file=identity=/home/user/.ssh/id_rsa
