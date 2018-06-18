@@ -51,6 +51,8 @@ type FluxSpec struct {
 	ClusterRole     FluxRole `json:"clusterRole,omitempty"`
 	// The tiller settings.
 	Tiller          Tiller   `json:"tiller,omitempty"`
+	// The Helm Operator settings.
+	HelmOperator    HelmOperator `json:"helmOperator,omitempty"`
 }
 
 // Represents a Role or ClusterRole for the Flux service account user.
@@ -73,6 +75,24 @@ type Tiller struct {
 	TillerImage   string `json:"tillerImage,omitempty"`
 	// The image version to use with tiller (default: `v2.9.1` or `$TILLER_VERSION`).
 	TillerVersion string `json:"tillerVersion,omitempty"`
+}
+
+// Settings for operating Helm Operator alongside Flux.
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +k8s:openapi-gen=true
+type HelmOperator struct {
+	// Whether or not to deploy a helm-operator instance in the same namespace (default: false).
+	Enabled               bool `json:"enabled,omitempty"`
+	// The image to use with helm-operator (default: `quay.io/weaveworks/helm-operator` or `$HELM_OPERATOR_IMAGE`).
+	HelmOperatorImage   string `json:"helmOperatorImage,omitempty"`
+	// The image version to use with helm-operator (default: `master-1dfdc61` or `$HELM_OPERATOR_VERSION`).
+	HelmOperatorVersion string `json:"helmOperatorVersion,omitempty"`
+	// The chart path to use with Helm Operator (default: `.`).
+	ChartPath           string `json:"chartPath,omitempty"`
+	// The frequency with which to sync Git and the charts (default: the flux `GitPollInterval` or, if not set, `3m0s`).
+	GitPollInterval     string `json:"gitPollInterval,omitempty"`
+	// The URL of the git repository to use if it is different than the primary flux `GitUrl`.
+	GitUrl              string `json:"gitUrl,omitempty"`
 }
 
 type FluxStatus struct {
