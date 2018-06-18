@@ -114,12 +114,20 @@ func TestNewCustomClusterRole(t *testing.T) {
 	assert.Equal(t, clusterRole.Rules, cr.Spec.ClusterRole.Rules)
 }
 
-func TestNewClusterRoleDisabledByDefault(t *testing.T) {
+func TestNewClusterRoleDefaultListAllNamespaces(t *testing.T) {
 	cr := test_utils.NewFlux()
+
 	clusterRole := NewClusterRole(cr)
 
-	assert.Equal(t, cr.Spec.ClusterRole.Enabled, false)
-	assert.Nil(t, clusterRole)
+	defaultRules := []rbacv1.PolicyRule{
+		rbacv1.PolicyRule{
+			APIGroups: []string{""},
+			Resources: []string{"namespaces"},
+			Verbs: []string{"get", "watch", "list"},
+		},
+	}
+
+	assert.Equal(t, clusterRole.Rules, defaultRules)
 }
 
 func TestNewClusterRoleBinding(t *testing.T) {
@@ -137,25 +145,25 @@ func TestNewClusterRoleBinding(t *testing.T) {
 	assert.Equal(t, roleBinding.RoleRef.Name, "flux-example")
 }
 
-func TestNewClusterRoleBindingDefaultNil(t *testing.T) {
-	assert.Nil(t, NewClusterRoleBinding(test_utils.NewFlux()))
-}
-
 func TestFluxRolesDefault(t *testing.T) {
 	cr := test_utils.NewFlux()
 	objects := FluxRoles(cr)
-	assert.Equal(t, len(objects), 1)
+	assert.Equal(t, len(objects), 3)
 	_ = objects[0].(*corev1.ServiceAccount)
+	_ = objects[1].(*rbacv1.ClusterRole)
+	_ = objects[2].(*rbacv1.ClusterRoleBinding)
 }
 
 func TestFluxRolesWithRole(t *testing.T) {
 	cr := test_utils.NewFlux()
 	cr.Spec.Role.Enabled = true
 	objects := FluxRoles(cr)
-	assert.Equal(t, len(objects), 3)
+	assert.Equal(t, len(objects), 5)
 	_ = objects[0].(*corev1.ServiceAccount)
 	_ = objects[1].(*rbacv1.Role)
 	_ = objects[2].(*rbacv1.RoleBinding)
+	_ = objects[3].(*rbacv1.ClusterRole)
+	_ = objects[4].(*rbacv1.ClusterRoleBinding)
 }
 
 func TestFluxRolesWithClusterRole(t *testing.T) {
