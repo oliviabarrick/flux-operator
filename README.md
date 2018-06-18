@@ -13,6 +13,7 @@ To deploy to your cluster:
 
 ```
 kubectl apply -f deploy/flux-crd.yaml
+kubectl apply -f deploy/fluxhelmrelease-crd.yaml
 kubectl apply -f deploy/k8s.yaml
 ```
 
@@ -27,7 +28,7 @@ metadata:
   name: example
 spec:
   namespace: default
-  gitUrl: git@github.com:justinbarrick/manifests
+  gitUrl: ssh://git@github.com/justinbarrick/manifests
   role:
     enabled: true
   args:
@@ -57,6 +58,12 @@ Settings:
 * `tiller.tillerImage`: the image to use with tiller (default: `gcr.io/kubernetes-helm/tiller` or `$TILLER_IMAGE`)
 * `tiller.tillerVersion`: the image version to use with tiller (default: `v2.9.1` or `$TILLER_VERSION`)
 * `args`: a map of args to pass to flux without `--` prepended.
+* `helmOperator.enabled`: whether or not to deploy a helm-operator instance in the same namespace (default: false).
+* `helmOperator.helmOperatorImage`: the image to use with helm-operator (default: `quay.io/weaveworks/helm-operator` or `$HELM_OPERATOR_IMAGE`).
+* `helmOperator.helmOperatorVersion`: the image version to use with helm-operator (default: `master-1dfdc61` or `$HELM_OPERATOR_VERSION`).
+* `helmOperator.chartPath`: the chart path to use with Helm Operator (default: `.`).
+* `helmOperator.gitPollInterval`: the frequency with which to sync Git and the charts (default: the flux `gitPollInterval` or, if not set, `3m0s`).
+* `helmOperator.gitUrl`: the URL of the git repository to use if it is different than the primary flux `gitUrl`.
 
 You can also override some of the defaults by setting environment variables on the
 operator itself:
@@ -97,7 +104,7 @@ metadata:
   name: example
 spec:
   namespace: default
-  gitUrl: git@github.com:justinbarrick/manifests
+  gitUrl: ssh://git@github.com/justinbarrick/manifests
   role:
     enabled: true
   tiller:
@@ -123,7 +130,7 @@ metadata:
   name: flux
 spec:
   namespace: kube-system
-  gitUrl: git@github.com:justinbarrick/manifests
+  gitUrl: ssh://git@github.com/justinbarrick/manifests
   clusterRole:
     enabled: true
   tiller:
@@ -138,6 +145,32 @@ kubectl apply -f ./flux.yaml
 ```
 
 You should now be able to run `helm ls` and see all of your old deployments.
+
+# Helm Operator
+
+Along with Tiller, it is possible to deploy the Helm Operator. The Helm operator currently
+requires access to all namespaces, so a `clusterRole` must be set. This means you should currently
+only enable the Helm Operator on one flux.
+
+If Tiller does not already exist in the namespace, also set `tiller.enabled: true`.
+
+```
+apiVersion: flux.codesink.net/v1alpha1
+kind: Flux
+metadata:
+  name: example
+  namespace: default
+spec:
+  gitUrl: ssh://git@github.com/justinbarrick/manifests
+  clusterRole:
+    enabled: true
+  tiller:
+    enabled: true
+  helmOperator:
+    enabled: true
+```
+
+You should then be able to create a FluxHelmRelease. See the [helm-operator example](https://github.com/weaveworks/flux-helm-test) for more information.
 
 # RBAC
 
@@ -161,7 +194,7 @@ metadata:
   name: example
   namespace: default
 spec:
-  gitUrl: git@github.com:justinbarrick/manifests
+  gitUrl: ssh://git@github.com/justinbarrick/manifests
   clusterRole:
     enabled: true
     rules:

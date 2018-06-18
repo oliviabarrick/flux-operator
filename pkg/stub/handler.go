@@ -7,6 +7,7 @@ import (
 	"github.com/justinbarrick/flux-operator/pkg/flux"
 	"github.com/justinbarrick/flux-operator/pkg/rbac"
 	"github.com/justinbarrick/flux-operator/pkg/tiller"
+	"github.com/justinbarrick/flux-operator/pkg/helm-operator"
 
 	"github.com/operator-framework/operator-sdk/pkg/sdk"
 	"github.com/sirupsen/logrus"
@@ -50,6 +51,11 @@ func CreateFlux (cr *v1alpha1.Flux) error {
 	}
 
 	objects = append(objects, tillerObjects...)
+
+	helmOperator := helm_operator.NewHelmOperatorPod(cr)
+	if helmOperator != nil {
+		objects = append(objects, helmOperator)
+	}
 
 	for _, object := range objects {
 		err := sdk.Create(object)
