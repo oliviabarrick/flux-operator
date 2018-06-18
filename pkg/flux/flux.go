@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
 	"github.com/justinbarrick/flux-operator/pkg/rbac"
+	"github.com/justinbarrick/flux-operator/pkg/memcached"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -44,6 +45,7 @@ func MakeFluxArgs(cr *v1alpha1.Flux) (args []string) {
 		"git-path": path,
 		"git-poll-interval": poll,
 		"k8s-secret-name": GitSecretName(cr),
+		"memcached-hostname": memcached.MemcachedName(cr),
 	}
 
 	for key, value := range cr.Spec.Args {

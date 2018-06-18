@@ -68,9 +68,15 @@ Settings:
 You can also override some of the defaults by setting environment variables on the
 operator itself:
 
+* `GIT_SECRET_NAME`: the git secret name to use.
 * `FLUX_IMAGE`: the default image to use for flux.
 * `FLUX_VERSION`: the default version to use for flux.
-* `GIT_SECRET_NAME`: the git secret name to use.
+* `HELM_OPERATOR_IMAGE`: the default image to use for helm-operator.
+* `HELM_OPERATOR_VERSION`: the default version to use for helm-operator.
+* `MEMCACHED_IMAGE`: the default memcached image.
+* `MEMCACHED_VERSION`: the default memcached version.
+* `TILLER_IMAGE`: the default tiller image.
+* `TILLER_VERSION`: the default tiller version.
 
 # Git SSH key
 

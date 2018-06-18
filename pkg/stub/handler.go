@@ -5,9 +5,10 @@ import (
 
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
 	"github.com/justinbarrick/flux-operator/pkg/flux"
+	"github.com/justinbarrick/flux-operator/pkg/helm-operator"
+	"github.com/justinbarrick/flux-operator/pkg/memcached"
 	"github.com/justinbarrick/flux-operator/pkg/rbac"
 	"github.com/justinbarrick/flux-operator/pkg/tiller"
-	"github.com/justinbarrick/flux-operator/pkg/helm-operator"
 
 	"github.com/operator-framework/operator-sdk/pkg/sdk"
 	"github.com/sirupsen/logrus"
@@ -38,6 +39,7 @@ func (h *Handler) Handle(ctx context.Context, event sdk.Event) (err error) {
 func CreateFlux (cr *v1alpha1.Flux) error {
 	objects := rbac.FluxRoles(cr)
 	objects = append(objects, flux.NewFluxPod(cr))
+	objects = append(objects, memcached.NewMemcached(cr)...)
 
 	err := sdk.Get(flux.NewFluxSSHKey(cr))
 	if err != nil {
