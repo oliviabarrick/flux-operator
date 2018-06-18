@@ -20,7 +20,6 @@ func TestMakeHelmOperatorArgs(t *testing.T) {
 		"--tiller-namespace=default",
 	}
 
-	sort.Strings(args)
 	sort.Strings(expectedArgs)
 
 	assert.Equal(t, args, expectedArgs)
@@ -42,45 +41,45 @@ func TestMakeHelmOperatorArgsOverrides(t *testing.T) {
 		"--tiller-namespace=default",
 	}
 
-	sort.Strings(args)
 	sort.Strings(expectedArgs)
 
 	assert.Equal(t, args, expectedArgs)
 }
 
-func TestNewHelmOperatorPod(t *testing.T) {
+func TestNewHelmOperatorDeployment(t *testing.T) {
 	cr := test_utils.NewFlux()
 	cr.Spec.HelmOperator.Enabled = true
-	pod := NewHelmOperatorPod(cr)
+	dep := NewHelmOperatorDeployment(cr)
+	pod := dep.Spec.Template.Spec
 
-	assert.Equal(t, pod.ObjectMeta.Name, "flux-example-helm-operator")
-	assert.Equal(t, pod.ObjectMeta.Namespace, "default")
-	assert.Equal(t, pod.Spec.ServiceAccountName, "flux-example")
-	assert.Equal(t, pod.Spec.Volumes[0].VolumeSource.Secret.SecretName, "flux-git-example-deploy")
+	assert.Equal(t, dep.ObjectMeta.Name, "flux-example-helm-operator")
+	assert.Equal(t, dep.ObjectMeta.Namespace, "default")
+	assert.Equal(t, pod.ServiceAccountName, "flux-example")
+	assert.Equal(t, pod.Volumes[0].VolumeSource.Secret.SecretName, "flux-git-example-deploy")
 
-	c := pod.Spec.Containers[0]
+	c := pod.Containers[0]
 	assert.Equal(t, c.Image, "quay.io/weaveworks/helm-operator:master-1dfdc61")
 
 	expectedArgs := MakeHelmOperatorArgs(cr)
 	sort.Strings(expectedArgs)
-	sort.Strings(c.Args)
 
 	assert.Equal(t, c.Args, expectedArgs)
 }
 
-func TestNewHelmOperatorPodOverrides(t *testing.T) {
+func TestNewHelmOperatorDeploymentOverrides(t *testing.T) {
 	cr := test_utils.NewFlux()
 	cr.Spec.HelmOperator.Enabled = true
 	cr.Spec.HelmOperator.HelmOperatorImage = "myimage"
 	cr.Spec.HelmOperator.HelmOperatorVersion = "myversion"
 	cr.Spec.GitSecret = "mysecret"
 
-	pod := NewHelmOperatorPod(cr)
+	dep := NewHelmOperatorDeployment(cr)
+	pod := dep.Spec.Template.Spec
 
-	assert.Equal(t, pod.Spec.Volumes[0].VolumeSource.Secret.SecretName, "mysecret")
-	assert.Equal(t, pod.Spec.Containers[0].Image, "myimage:myversion")
+	assert.Equal(t, pod.Volumes[0].VolumeSource.Secret.SecretName, "mysecret")
+	assert.Equal(t, pod.Containers[0].Image, "myimage:myversion")
 }
 
-func TestNewHelmOperatorPodDisabledByDefault(t *testing.T) {
-	assert.Nil(t, NewHelmOperatorPod(test_utils.NewFlux()))
+func TestNewHelmOperatorDeploymentDisabledByDefault(t *testing.T) {
+	assert.Nil(t, NewHelmOperatorDeployment(test_utils.NewFlux()))
 }

@@ -27,7 +27,6 @@ func TestMakeFluxArgs(t *testing.T) {
 		"--memcached-hostname=" + memcached.MemcachedName(cr),
 	}
 
-	sort.Strings(args)
 	sort.Strings(expectedArgs)
 
 	assert.Equal(t, args, expectedArgs)
@@ -47,7 +46,6 @@ func TestMakeFluxArgsNoArgs(t *testing.T) {
 		"--memcached-hostname=" + memcached.MemcachedName(cr),
 	}
 
-	sort.Strings(args)
 	sort.Strings(expectedArgs)
 
 	assert.Equal(t, args, expectedArgs)
@@ -71,39 +69,38 @@ func TestMakeFluxArgsArgsOverride(t *testing.T) {
 		"--memcached-hostname=" + memcached.MemcachedName(cr),
 	}
 
-	sort.Strings(args)
 	sort.Strings(expectedArgs)
 
 	assert.Equal(t, args, expectedArgs)
 }
 
-func TestNewFluxPod(t *testing.T) {
+func TestNewFluxDeployment(t *testing.T) {
 	cr := test_utils.NewFlux()
-	pod := NewFluxPod(cr)
+	dep := NewFluxDeployment(cr)
+	pod := dep.Spec.Template.Spec
 
-	assert.Equal(t, pod.ObjectMeta.Name, "flux-example")
-	assert.Equal(t, pod.ObjectMeta.Namespace, "default")
-	assert.Equal(t, pod.Spec.ServiceAccountName, "flux-example")
-	assert.Equal(t, pod.Spec.Volumes[0].VolumeSource.Secret.SecretName, "flux-git-example-deploy")
+	assert.Equal(t, dep.ObjectMeta.Name, "flux-example")
+	assert.Equal(t, dep.ObjectMeta.Namespace, "default")
+	assert.Equal(t, pod.ServiceAccountName, "flux-example")
+	assert.Equal(t, pod.Volumes[0].VolumeSource.Secret.SecretName, "flux-git-example-deploy")
 
-	c := pod.Spec.Containers[0]
+	c := pod.Containers[0]
 	assert.Equal(t, c.Image, "quay.io/weaveworks/flux:1.4.0")
 
 	expectedArgs := MakeFluxArgs(cr)
 	sort.Strings(expectedArgs)
-	sort.Strings(c.Args)
 
 	assert.Equal(t, c.Args, expectedArgs)
 }
 
-func TestNewFluxPodOverrides(t *testing.T) {
+func TestNewFluxDeploymentOverrides(t *testing.T) {
 	cr := test_utils.NewFlux()
 	cr.Spec.FluxImage = "myimage"
 	cr.Spec.FluxVersion = "myversion"
 	cr.Spec.GitSecret = "mysecret"
 
-	pod := NewFluxPod(cr)
-
-	assert.Equal(t, pod.Spec.Volumes[0].VolumeSource.Secret.SecretName, "mysecret")
-	assert.Equal(t, pod.Spec.Containers[0].Image, "myimage:myversion")
+	dep := NewFluxDeployment(cr)
+	pod := dep.Spec.Template.Spec
+	assert.Equal(t, pod.Volumes[0].VolumeSource.Secret.SecretName, "mysecret")
+	assert.Equal(t, pod.Containers[0].Image, "myimage:myversion")
 }
