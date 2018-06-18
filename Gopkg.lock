@@ -97,6 +97,12 @@
   revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/cnf/structhash"
+  packages = ["."]
+  revision = "62a607eb02243845670f25a61cbc2d394c1ede10"
+
+[[projects]]
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
@@ -1025,6 +1031,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "14d1a7763eb3b698b81f4ba0a07410f19f6221c8ef9f9e9f568f18419351154c"
+  inputs-digest = "98158397d9e456a7071efb55068f653abbddc8644d695f51bdb19cc1044c7bf5"
   solver-name = "gps-cdcl"
   solver-version = 1

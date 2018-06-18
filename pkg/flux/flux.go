@@ -2,11 +2,13 @@ package flux
 
 import (
 	"fmt"
+	"sort"
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
 	"github.com/justinbarrick/flux-operator/pkg/rbac"
 	"github.com/justinbarrick/flux-operator/pkg/memcached"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	extensions "k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"github.com/justinbarrick/flux-operator/pkg/utils"
 )
@@ -56,11 +58,13 @@ func MakeFluxArgs(cr *v1alpha1.Flux) (args []string) {
 		args = append(args, fmt.Sprintf("--%s=%s", key, value))
 	}
 
+	sort.Strings(args)
+
 	return
 }
 
-// NewFluxPod creates a new flux pod
-func NewFluxPod(cr *v1alpha1.Flux) *corev1.Pod {
+// NewFluxDeployment creates a new flux pod
+func NewFluxDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 	fluxImage := utils.Getenv("FLUX_IMAGE", "quay.io/weaveworks/flux")
 	if cr.Spec.FluxImage != "" {
 		fluxImage = cr.Spec.FluxImage
@@ -71,56 +75,70 @@ func NewFluxPod(cr *v1alpha1.Flux) *corev1.Pod {
 		fluxVersion = cr.Spec.FluxVersion
 	}
 
+	meta := utils.NewObjectMeta(cr, "")
 	labels := map[string]string{
 		"app": "flux",
+		"flux": cr.Name,
 	}
 
-	meta := utils.NewObjectMeta(cr, "")
 	meta.Labels = labels
 
-	return &corev1.Pod{
+	replicas := int32(1)
+
+	return &extensions.Deployment{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       "Pod",
-			APIVersion: "v1",
+			Kind:       "Deployment",
+			APIVersion: "extensions/v1beta1",
 		},
 		ObjectMeta: meta,
-		Spec: corev1.PodSpec{
-			ServiceAccountName: rbac.ServiceAccountName(cr),
-			Volumes: []corev1.Volume{
-				corev1.Volume{
-					Name: "git-key",
-					VolumeSource: corev1.VolumeSource{
-						Secret: &corev1.SecretVolumeSource{
-							SecretName: GitSecretName(cr),
-						},
-					},
-				},
+		Spec: extensions.DeploymentSpec{
+			Replicas: &replicas,
+			Selector: &metav1.LabelSelector{
+				MatchLabels: labels,
 			},
-			Containers: []corev1.Container{
-				{
-					Name:    "flux",
-					Image:   fmt.Sprintf("%s:%s", fluxImage, fluxVersion),
-					ImagePullPolicy: "IfNotPresent",
-					Ports: []corev1.ContainerPort{
-						corev1.ContainerPort{
-							ContainerPort: 3030,
-						},
-					},
-					VolumeMounts: []corev1.VolumeMount{
-						corev1.VolumeMount{
+			Template: corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: labels,
+				},
+				Spec: corev1.PodSpec{
+					ServiceAccountName: rbac.ServiceAccountName(cr),
+					Volumes: []corev1.Volume{
+						corev1.Volume{
 							Name: "git-key",
-							MountPath: "/etc/fluxd/ssh",
+							VolumeSource: corev1.VolumeSource{
+								Secret: &corev1.SecretVolumeSource{
+									SecretName: GitSecretName(cr),
+								},
+							},
 						},
 					},
-					Args: MakeFluxArgs(cr),
-					Resources: corev1.ResourceRequirements{
-						Limits: corev1.ResourceList{
-							corev1.ResourceMemory: resource.MustParse("512Mi"),
-							corev1.ResourceCPU: resource.MustParse("500m"),
-						},
-						Requests: corev1.ResourceList{
-							corev1.ResourceMemory: resource.MustParse("256Mi"),
-							corev1.ResourceCPU: resource.MustParse("500m"),
+					Containers: []corev1.Container{
+						{
+							Name:    "flux",
+							Image:   fmt.Sprintf("%s:%s", fluxImage, fluxVersion),
+							ImagePullPolicy: "IfNotPresent",
+							Ports: []corev1.ContainerPort{
+								corev1.ContainerPort{
+									ContainerPort: 3030,
+								},
+							},
+							VolumeMounts: []corev1.VolumeMount{
+								corev1.VolumeMount{
+									Name: "git-key",
+									MountPath: "/etc/fluxd/ssh",
+								},
+							},
+							Args: MakeFluxArgs(cr),
+							Resources: corev1.ResourceRequirements{
+								Limits: corev1.ResourceList{
+									corev1.ResourceMemory: resource.MustParse("512Mi"),
+									corev1.ResourceCPU: resource.MustParse("500m"),
+								},
+								Requests: corev1.ResourceList{
+									corev1.ResourceMemory: resource.MustParse("256Mi"),
+									corev1.ResourceCPU: resource.MustParse("500m"),
+								},
+							},
 						},
 					},
 				},
