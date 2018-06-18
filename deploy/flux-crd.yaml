@@ -337,6 +337,33 @@ spec:
             gitUrl:
               description: The URL to the Git repository (required).
               type: string
+            helmOperator:
+              description: Settings for operating Helm Operator alongside Flux.
+              properties:
+                chartPath:
+                  description: 'The chart path to use with Helm Operator (default:
+                    `.`).'
+                  type: string
+                enabled:
+                  description: 'Whether or not to deploy a helm-operator instance
+                    in the same namespace (default: false).'
+                  type: boolean
+                gitPollInterval:
+                  description: 'The frequency with which to sync Git and the charts
+                    (default: the flux `GitPollInterval` or, if not set, `3m0s`).'
+                  type: string
+                gitUrl:
+                  description: The URL of the git repository to use if it is different
+                    than the primary flux `GitUrl`.
+                  type: string
+                helmOperatorImage:
+                  description: 'The image to use with helm-operator (default: `quay.io/weaveworks/helm-operator`
+                    or `$HELM_OPERATOR_IMAGE`).'
+                  type: string
+                helmOperatorVersion:
+                  description: 'The image version to use with helm-operator (default:
+                    `master-1dfdc61` or `$HELM_OPERATOR_VERSION`).'
+                  type: string
             namespace:
               description: Namespace to deploy Flux and Tiller into.
               type: string

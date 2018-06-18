@@ -218,12 +218,70 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 								Ref:         ref("github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.Tiller"),
 							},
 						},
+						"helmOperator": {
+							SchemaProps: spec.SchemaProps{
+								Description: "The Helm Operator settings.",
+								Ref:         ref("github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.HelmOperator"),
+							},
+						},
 					},
 					Required: []string{"namespace", "gitUrl"},
 				},
 			},
 			Dependencies: []string{
-				"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.FluxRole", "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.Tiller"},
+				"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.FluxRole", "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.HelmOperator", "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.Tiller"},
+		},
+		"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.HelmOperator": {
+			Schema: spec.Schema{
+				SchemaProps: spec.SchemaProps{
+					Description: "Settings for operating Helm Operator alongside Flux.",
+					Properties: map[string]spec.Schema{
+						"enabled": {
+							SchemaProps: spec.SchemaProps{
+								Description: "Whether or not to deploy a helm-operator instance in the same namespace (default: false).",
+								Type:        []string{"boolean"},
+								Format:      "",
+							},
+						},
+						"helmOperatorImage": {
+							SchemaProps: spec.SchemaProps{
+								Description: "The image to use with helm-operator (default: `quay.io/weaveworks/helm-operator` or `$HELM_OPERATOR_IMAGE`).",
+								Type:        []string{"string"},
+								Format:      "",
+							},
+						},
+						"helmOperatorVersion": {
+							SchemaProps: spec.SchemaProps{
+								Description: "The image version to use with helm-operator (default: `master-1dfdc61` or `$HELM_OPERATOR_VERSION`).",
+								Type:        []string{"string"},
+								Format:      "",
+							},
+						},
+						"chartPath": {
+							SchemaProps: spec.SchemaProps{
+								Description: "The chart path to use with Helm Operator (default: `.`).",
+								Type:        []string{"string"},
+								Format:      "",
+							},
+						},
+						"gitPollInterval": {
+							SchemaProps: spec.SchemaProps{
+								Description: "The frequency with which to sync Git and the charts (default: the flux `GitPollInterval` or, if not set, `3m0s`).",
+								Type:        []string{"string"},
+								Format:      "",
+							},
+						},
+						"gitUrl": {
+							SchemaProps: spec.SchemaProps{
+								Description: "The URL of the git repository to use if it is different than the primary flux `GitUrl`.",
+								Type:        []string{"string"},
+								Format:      "",
+							},
+						},
+					},
+				},
+			},
+			Dependencies: []string{},
 		},
 		"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.Tiller": {
 			Schema: spec.Schema{
