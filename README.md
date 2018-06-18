@@ -174,8 +174,9 @@ You should then be able to create a FluxHelmRelease. See the [helm-operator exam
 
 # RBAC
 
-By default, no RBAC settings are created, but a service account is created and assigned
-to the flux pod. The service account is called `flux-$fluxname`.
+By default, a service account is created and given "get", "watch", "list", permissions on
+all namespaces and assigned to the flux pod. The service account is called
+`flux-$fluxname`.
 
 You can enable both a role and a cluster role on the service account.
 
