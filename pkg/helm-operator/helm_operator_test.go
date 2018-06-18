@@ -53,7 +53,7 @@ func TestNewHelmOperatorPod(t *testing.T) {
 	cr.Spec.HelmOperator.Enabled = true
 	pod := NewHelmOperatorPod(cr)
 
-	assert.Equal(t, pod.ObjectMeta.Name, "helm-operator-example")
+	assert.Equal(t, pod.ObjectMeta.Name, "flux-example-helm-operator")
 	assert.Equal(t, pod.ObjectMeta.Namespace, "default")
 	assert.Equal(t, pod.Spec.ServiceAccountName, "flux-example")
 	assert.Equal(t, pod.Spec.Volumes[0].VolumeSource.Secret.SecretName, "flux-git-example-deploy")
