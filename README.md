@@ -1,4 +1,4 @@
-Operator for creating and managing instances of [Weaveworks flux](https://github.com/weaveworks/flux) and [tiller](https://github.com/kubernetes/helm).
+Operator for creating and managing instances of [Weaveworks flux](https://github.com/weaveworks/flux), [helm-operator](https://github.com/weaveworks/flux/blob/master/site/helm/helm-integration.md) and [tiller, the cluster component of Helm](https://github.com/kubernetes/helm).
 
 Use-cases:
 
