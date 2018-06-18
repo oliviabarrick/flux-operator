@@ -4,7 +4,7 @@ metadata:
   name: "example"
 spec:
   namespace: default
-  gitUrl: git@github.com:justinbarrick/manifests
+  gitUrl: ssh://git@github.com/justinbarrick/manifests
   gitBranch: master
   gitPath: manifests
   gitPollInterval: 0m30s
