@@ -12,6 +12,7 @@ Use-cases:
 To deploy to your cluster:
 
 ```
+kubectl apply -f deploy/flux-crd.yaml
 kubectl apply -f deploy/k8s.yaml
 ```
 
