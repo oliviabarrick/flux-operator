@@ -73,7 +73,7 @@ func NewHelmOperatorPod(cr *v1alpha1.Flux) *corev1.Pod {
 		"app": "helm-operator",
 	}
 
-	meta := utils.NewObjectMeta(cr, fmt.Sprintf("helm-operator-%s", cr.ObjectMeta.Name))
+	meta := utils.NewObjectMeta(cr, fmt.Sprintf("flux-%s-helm-operator", cr.ObjectMeta.Name))
 	meta.Labels = labels
 
 	return &corev1.Pod{
