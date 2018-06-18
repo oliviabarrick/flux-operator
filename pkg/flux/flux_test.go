@@ -5,6 +5,7 @@ import (
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"github.com/justinbarrick/flux-operator/pkg/utils/test"
+	"github.com/justinbarrick/flux-operator/pkg/memcached"
 )
 
 func TestMakeFluxArgs(t *testing.T) {
@@ -23,6 +24,7 @@ func TestMakeFluxArgs(t *testing.T) {
 		"--git-poll-interval=0m30s",
 		"--connect=ws://fluxcloud/",
 		"--k8s-secret-name=flux-git-example-deploy",
+		"--memcached-hostname=" + memcached.MemcachedName(cr),
 	}
 
 	sort.Strings(args)
@@ -32,7 +34,8 @@ func TestMakeFluxArgs(t *testing.T) {
 }
 
 func TestMakeFluxArgsNoArgs(t *testing.T) {
-	args := MakeFluxArgs(test_utils.NewFlux())
+	cr := test_utils.NewFlux()
+	args := MakeFluxArgs(cr)
 
 	expectedArgs := []string{
 		"--git-url=git@github.com:justinbarrick/manifests",
@@ -41,6 +44,7 @@ func TestMakeFluxArgsNoArgs(t *testing.T) {
 		"--git-path=manifests",
 		"--git-poll-interval=0m30s",
 		"--k8s-secret-name=flux-git-example-deploy",
+		"--memcached-hostname=" + memcached.MemcachedName(cr),
 	}
 
 	sort.Strings(args)
@@ -64,6 +68,7 @@ func TestMakeFluxArgsArgsOverride(t *testing.T) {
 		"--git-path=manifests",
 		"--git-poll-interval=0m30s",
 		"--k8s-secret-name=flux-git-example-deploy",
+		"--memcached-hostname=" + memcached.MemcachedName(cr),
 	}
 
 	sort.Strings(args)
