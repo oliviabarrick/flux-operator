@@ -43,6 +43,12 @@
   revision = "de5bf2ad457846296e2031421a34e2568e304e35"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/ant31/crd-validation"
+  packages = ["pkg"]
+  revision = "4ddfba1968124025521d3ec98a61b2123bdcaf75"
+
+[[projects]]
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -612,7 +618,11 @@
 [[projects]]
   branch = "master"
   name = "k8s.io/apiextensions-apiserver"
-  packages = ["pkg/features"]
+  packages = [
+    "pkg/apis/apiextensions",
+    "pkg/apis/apiextensions/v1beta1",
+    "pkg/features"
+  ]
   revision = "003acb65be70b07acafe3b5eb4f13a6d0fe47154"
 
 [[projects]]
@@ -1015,6 +1025,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8e2d82d02a64a6509154f5cebcb07f8890ef9af12145105bf3bf94d523090209"
+  inputs-digest = "14d1a7763eb3b698b81f4ba0a07410f19f6221c8ef9f9e9f568f18419351154c"
   solver-name = "gps-cdcl"
   solver-version = 1

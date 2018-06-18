@@ -6,7 +6,7 @@ import (
 )
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-
+// +k8s:openapi-gen=true
 type FluxList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata"`
@@ -14,7 +14,7 @@ type FluxList struct {
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-
+// +k8s:openapi-gen=true
 type Flux struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata"`
@@ -22,29 +22,56 @@ type Flux struct {
 	Status            FluxStatus `json:"status,omitempty"`
 }
 
+// Settings for operating Flux
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +k8s:openapi-gen=true
 type FluxSpec struct {
+	// Namespace to deploy Flux and Tiller into.
 	Namespace       string `json:"namespace"`
-	GitUrl          string `json:"gitUrl,omitempty"`
+	// The URL to the Git repository (required).
+	GitUrl          string `json:"gitUrl"`
+	// The git branch to use (default: `master`).
 	GitBranch       string `json:"gitBranch,omitempty"`
+	// The path with in the git repository to look for YAML in (default: `.`)
 	GitPath         string `json:"gitPath,omitempty"`
+	// The frequency with which to fetch the git repository (default: `5m0s`).
 	GitPollInterval string `json:"gitPollInterval,omitempty"`
+	// The Kubernetes secret to use for cloning, if it does not exist it will
+	// be generated (default: `flux-$name-git-deploy` or `$GIT_SECRET_NAME`).
 	GitSecret       string `json:"gitSecret,omitempty"`
+	// The image to use for flux (default: `quay.io/weaveworks/flux` or `$FLUX_IMAGE`).
 	FluxImage       string `json:"fluxImage,omitempty"`
+	// The version to use for flux (default: `1.4.0` or `$FLUX_VERSION`).
 	FluxVersion     string `json:"fluxVersion,omitempty"`
-	Args            map[string]string `json:"args"`
-	Role            FluxRole `json:"role"`
-	ClusterRole     FluxRole `json:"clusterRole"`
-	Tiller          Tiller   `json:"tiller"`
+	// A map of args to pass to flux without `--` prepended.
+	Args            map[string]string `json:"args,omitempty"`
+	// A role to add to the service account (default: none)
+	Role            FluxRole `json:"role,omitempty"`
+	// A cluster role to add to the service account (default: none)
+	ClusterRole     FluxRole `json:"clusterRole,omitempty"`
+	// The tiller settings.
+	Tiller          Tiller   `json:"tiller,omitempty"`
 }
 
+// Represents a Role or ClusterRole for the Flux service account user.
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +k8s:openapi-gen=true
 type FluxRole struct {
-	Enabled bool `json:"enabled"`
+  // If enabled, a role will be assigned to the service account (default: false)
+	Enabled bool `json:"enabled,omitempty"`
+  // the list of rbac rules to use (default: full access).
 	Rules   []rbacv1.PolicyRule `json:"rules,omitempty"`
 }
 
+// Settings for operating Tiller alongside Flux.
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +k8s:openapi-gen=true
 type Tiller struct {
-	Enabled         bool `json:"enabled"`
+	// Whether or not to deploy a tiller instance in the same namespace (default: false).
+	Enabled         bool `json:"enabled,omitempty"`
+	// The image to use with tiller (default: `gcr.io/kubernetes-helm/tiller` or `$TILLER_IMAGE`).
 	TillerImage   string `json:"tillerImage,omitempty"`
+	// The image version to use with tiller (default: `v2.9.1` or `$TILLER_VERSION`).
 	TillerVersion string `json:"tillerVersion,omitempty"`
 }
 
