@@ -46,10 +46,6 @@ func MakeHelmOperatorArgs(cr *v1alpha1.Flux) (args []string) {
 
 	}
 
-	for key, value := range cr.Spec.Args {
-		argMap[key] = value
-	}
-
 	for key, value := range argMap {
 		args = append(args, fmt.Sprintf("--%s=%s", key, value))
 	}
