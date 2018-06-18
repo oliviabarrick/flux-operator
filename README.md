@@ -3,7 +3,7 @@ Operator for creating and managing instances of [Weaveworks flux](https://github
 Use-cases:
 
 * Doing GitOps without a monorepo. You can easily split your manifests into repos per team, project or namespace.
-* Simplify the deployment of your Flux and Tiller (and, in the future, helm-operator) instances.
+* Simplify the deployment of your Flux, Tiller, and helm-operator instances.
 * Easily manage Flux RBAC policies to prevent any single Flux instance from having access to the entire cluster.
 * Use Helm without violating your RBAC policies.
 
@@ -206,9 +206,3 @@ spec:
 ```
 
 See [Kubernetes role documentation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#role-and-clusterrole) for more information.
-
-# TODO
-
-Next steps:
-
-* Add support for the Helm operator.
