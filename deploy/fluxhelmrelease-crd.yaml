@@ -9,4 +9,4 @@ spec:
     listKind: FluxHelmReleaseList
     plural: fluxhelmreleases
   scope: Namespaced
-  version: v1alpha
+  version: v1alpha2

@@ -25,10 +25,6 @@ func NewServiceAccount(cr *v1alpha1.Flux) *corev1.ServiceAccount {
 }
 
 func NewClusterRole(cr *v1alpha1.Flux) *rbacv1.ClusterRole {
-	if cr.Spec.ClusterRole.Enabled == false {
-		return nil
-	}
-
 	clusterRole := &rbacv1.ClusterRole{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "ClusterRole",
@@ -37,7 +33,15 @@ func NewClusterRole(cr *v1alpha1.Flux) *rbacv1.ClusterRole {
 		ObjectMeta: utils.NewObjectMeta(cr, fmt.Sprintf("flux-%s", cr.Name)),
 	}
 
-	if len(cr.Spec.ClusterRole.Rules) > 0 {
+	if cr.Spec.ClusterRole.Enabled == false {
+		clusterRole.Rules = []rbacv1.PolicyRule{
+			rbacv1.PolicyRule{
+				APIGroups: []string{""},
+				Resources: []string{"namespaces"},
+				Verbs: []string{"get", "watch", "list"},
+			},
+		}
+	} else if len(cr.Spec.ClusterRole.Rules) > 0 {
 		clusterRole.Rules = cr.Spec.ClusterRole.Rules
 	} else {
 		clusterRole.Rules = []rbacv1.PolicyRule{
@@ -57,10 +61,6 @@ func NewClusterRole(cr *v1alpha1.Flux) *rbacv1.ClusterRole {
 }
 
 func NewClusterRoleBinding(cr *v1alpha1.Flux) *rbacv1.ClusterRoleBinding {
-	if cr.Spec.ClusterRole.Enabled == false {
-		return nil
-	}
-
 	serviceAccount := fmt.Sprintf("flux-%s", cr.Name)
 	meta := utils.NewObjectMeta(cr, fmt.Sprintf("flux-%s", cr.Name))
 
