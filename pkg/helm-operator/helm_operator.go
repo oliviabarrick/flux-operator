@@ -2,11 +2,13 @@ package helm_operator
 
 import (
 	"fmt"
+	"sort"
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
 	"github.com/justinbarrick/flux-operator/pkg/rbac"
 	"github.com/justinbarrick/flux-operator/pkg/flux"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	extensions "k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"github.com/justinbarrick/flux-operator/pkg/utils"
 )
@@ -50,11 +52,13 @@ func MakeHelmOperatorArgs(cr *v1alpha1.Flux) (args []string) {
 		args = append(args, fmt.Sprintf("--%s=%s", key, value))
 	}
 
+	sort.Strings(args)
+
 	return
 }
 
-// NewHelmOperatorPod creates a new helm-operator pod
-func NewHelmOperatorPod(cr *v1alpha1.Flux) *corev1.Pod {
+// NewHelmOperatorDeployment creates a new helm-operator deployment
+func NewHelmOperatorDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 	if ! cr.Spec.HelmOperator.Enabled {
 		return nil
 	}
@@ -71,49 +75,63 @@ func NewHelmOperatorPod(cr *v1alpha1.Flux) *corev1.Pod {
 
 	labels := map[string]string{
 		"app": "helm-operator",
+		"flux": cr.Name,
 	}
 
 	meta := utils.NewObjectMeta(cr, fmt.Sprintf("flux-%s-helm-operator", cr.ObjectMeta.Name))
 	meta.Labels = labels
 
-	return &corev1.Pod{
+	replicas := int32(1)
+
+	return &extensions.Deployment{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       "Pod",
-			APIVersion: "v1",
+			Kind:       "Deployment",
+			APIVersion: "extensions/v1beta1",
 		},
 		ObjectMeta: meta,
-		Spec: corev1.PodSpec{
-			ServiceAccountName: rbac.ServiceAccountName(cr),
-			Volumes: []corev1.Volume{
-				corev1.Volume{
-					Name: "git-key",
-					VolumeSource: corev1.VolumeSource{
-						Secret: &corev1.SecretVolumeSource{
-							SecretName: flux.GitSecretName(cr),
-						},
-					},
-				},
+		Spec: extensions.DeploymentSpec{
+			Replicas: &replicas,
+			Selector: &metav1.LabelSelector{
+				MatchLabels: labels,
 			},
-			Containers: []corev1.Container{
-				{
-					Name:    "helm-operator",
-					Image:   fmt.Sprintf("%s:%s", operatorImage, operatorVersion),
-					ImagePullPolicy: "IfNotPresent",
-					VolumeMounts: []corev1.VolumeMount{
-						corev1.VolumeMount{
+			Template: corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: labels,
+				},
+				Spec: corev1.PodSpec{
+					ServiceAccountName: rbac.ServiceAccountName(cr),
+					Volumes: []corev1.Volume{
+						corev1.Volume{
 							Name: "git-key",
-							MountPath: "/etc/fluxd/ssh",
+							VolumeSource: corev1.VolumeSource{
+								Secret: &corev1.SecretVolumeSource{
+									SecretName: flux.GitSecretName(cr),
+								},
+							},
 						},
 					},
-					Args: MakeHelmOperatorArgs(cr),
-					Resources: corev1.ResourceRequirements{
-						Limits: corev1.ResourceList{
-							corev1.ResourceMemory: resource.MustParse("512Mi"),
-							corev1.ResourceCPU: resource.MustParse("500m"),
-						},
-						Requests: corev1.ResourceList{
-							corev1.ResourceMemory: resource.MustParse("256Mi"),
-							corev1.ResourceCPU: resource.MustParse("500m"),
+					Containers: []corev1.Container{
+						{
+							Name:    "helm-operator",
+							Image:   fmt.Sprintf("%s:%s", operatorImage, operatorVersion),
+							ImagePullPolicy: "IfNotPresent",
+							VolumeMounts: []corev1.VolumeMount{
+								corev1.VolumeMount{
+									Name: "git-key",
+									MountPath: "/etc/fluxd/ssh",
+								},
+							},
+							Args: MakeHelmOperatorArgs(cr),
+							Resources: corev1.ResourceRequirements{
+								Limits: corev1.ResourceList{
+									corev1.ResourceMemory: resource.MustParse("512Mi"),
+									corev1.ResourceCPU: resource.MustParse("500m"),
+								},
+								Requests: corev1.ResourceList{
+									corev1.ResourceMemory: resource.MustParse("256Mi"),
+									corev1.ResourceCPU: resource.MustParse("500m"),
+								},
+							},
 						},
 					},
 				},
