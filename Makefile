@@ -25,10 +25,13 @@ $(GOBIN)/flux-operator-crd-gen: build
 
 install: $(GOBIN)/flux-operator-crd-gen
 
-deploy/flux-crd.yaml: $(GOBIN)/flux-operator-crd-gen
-	flux-operator-crd-gen --kind=Flux --plural=fluxes --apigroup=flux.codesink.net --scope=Cluster --version=v1alpha1 --spec-name=github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.Flux > deploy/flux-crd.yaml
+deploy/flux-crd-namespaced.yaml: $(GOBIN)/flux-operator-crd-gen
+	flux-operator-crd-gen --kind=Flux --plural=fluxes --apigroup=flux.codesink.net --scope=Namespaced --version=v1alpha1 --spec-name=github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.Flux > deploy/flux-crd-namespaced.yaml
 
-generate-crds: clean deploy/flux-crd.yaml
+deploy/flux-crd-cluster.yaml: $(GOBIN)/flux-operator-crd-gen
+	flux-operator-crd-gen --kind=Flux --plural=fluxes --apigroup=flux.codesink.net --scope=Cluster --version=v1alpha1 --spec-name=github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.Flux > deploy/flux-crd-cluster.yaml
+
+generate-crds: clean deploy/flux-crd-namespaced.yaml deploy/flux-crd-cluster.yaml
 
 .PHONY: openapi-gen build all
 

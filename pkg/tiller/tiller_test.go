@@ -4,6 +4,7 @@ import (
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"github.com/justinbarrick/flux-operator/pkg/utils/test"
+	"github.com/justinbarrick/flux-operator/pkg/utils"
 	"github.com/justinbarrick/flux-operator/pkg/rbac"
 	"k8s.io/helm/cmd/helm/installer"
 	corev1 "k8s.io/api/core/v1"
@@ -18,7 +19,7 @@ func TestTillerName(t *testing.T) {
 func TestTillerOptions(t *testing.T) {
 	cr := test_utils.NewFlux()
 	assert.Equal(t, *TillerOptions(cr), installer.Options{
-		Namespace: cr.Spec.Namespace,
+		Namespace: utils.FluxNamespace(cr),
 		ServiceAccount: rbac.ServiceAccountName(cr),
 		ImageSpec: "gcr.io/kubernetes-helm/tiller:v2.9.1",
 	})
@@ -30,7 +31,7 @@ func TestTillerImageOverride(t *testing.T) {
 	cr.Spec.Tiller.TillerVersion = "version"
 
 	assert.Equal(t, *TillerOptions(cr), installer.Options{
-		Namespace: cr.Spec.Namespace,
+		Namespace: utils.FluxNamespace(cr),
 		ServiceAccount: rbac.ServiceAccountName(cr),
 		ImageSpec: "tiller:version",
 	})
@@ -39,7 +40,7 @@ func TestTillerImageOverride(t *testing.T) {
 func TestNewTillerObjectMeta(t *testing.T) {
 	cr := test_utils.NewFlux()
 	assert.Equal(t, NewTillerObjectMeta(cr).Name, TillerName(cr))
-	assert.Equal(t, NewTillerObjectMeta(cr).Namespace, cr.Spec.Namespace)
+	assert.Equal(t, NewTillerObjectMeta(cr).Namespace, utils.FluxNamespace(cr))
 }
 
 func TestNewTillerDeployment(t *testing.T) {
@@ -49,12 +50,12 @@ func TestNewTillerDeployment(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, deployment.ObjectMeta.Name, TillerName(cr))
 	c := deployment.Spec.Template.Spec.Containers[0]
-	assert.Equal(t, deployment.ObjectMeta.Namespace, cr.Spec.Namespace)
+	assert.Equal(t, deployment.ObjectMeta.Namespace, utils.FluxNamespace(cr))
 	assert.Equal(t, c.Name, "tiller")
 	assert.Equal(t, c.Image, TillerOptions(cr).ImageSpec)
 	assert.Equal(t, string(c.ImagePullPolicy), "IfNotPresent")
 	assert.Equal(t, c.Env[0].Name, "TILLER_NAMESPACE")
-	assert.Equal(t, c.Env[0].Value, cr.Spec.Namespace)
+	assert.Equal(t, c.Env[0].Value, utils.FluxNamespace(cr))
 	assert.Equal(t, c.Ports[0].ContainerPort, int32(44134))
 	assert.Equal(t, c.Ports[0].Name, "tiller")
 	assert.Equal(t, c.Ports[1].ContainerPort, int32(44135))
@@ -68,7 +69,7 @@ func TestNewTillerService(t *testing.T) {
 	service, err := NewTillerService(cr)
 	assert.Nil(t, err)
 	assert.Equal(t, service.ObjectMeta.Name, TillerName(cr))
-	assert.Equal(t, service.ObjectMeta.Namespace, cr.Spec.Namespace)
+	assert.Equal(t, service.ObjectMeta.Namespace, utils.FluxNamespace(cr))
 	assert.Equal(t, service.Spec.Type, corev1.ServiceTypeClusterIP)
 	assert.Equal(t, service.Spec.Ports[0].Port, int32(44134))
 	assert.Equal(t, service.Spec.Ports[0].Name, "tiller")
