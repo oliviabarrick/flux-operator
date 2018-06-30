@@ -37,7 +37,7 @@ func TillerOptions(cr *v1alpha1.Flux) *installer.Options {
 	}
 
 	return &installer.Options{
-		Namespace: cr.Spec.Namespace,
+		Namespace: utils.FluxNamespace(cr),
 		ServiceAccount: rbac.ServiceAccountName(cr),
 		ImageSpec: fmt.Sprintf("%s:%s", tillerImage, tillerVersion),
 	}
@@ -85,7 +85,7 @@ func NewTillerDeployment(cr *v1alpha1.Flux) (*extensions.Deployment, error) {
 func NewTillerService(cr *v1alpha1.Flux) (*corev1.Service, error) {
 	service := &corev1.Service{}
 
-	asStr, err := installer.ServiceManifest(cr.Spec.Namespace)
+	asStr, err := installer.ServiceManifest(utils.FluxNamespace(cr))
 	if err != nil {
 		return nil, err
 	}
