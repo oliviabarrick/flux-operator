@@ -33,7 +33,7 @@ func NewClusterRole(cr *v1alpha1.Flux) *rbacv1.ClusterRole {
 		ObjectMeta: utils.NewObjectMeta(cr, fmt.Sprintf("flux-%s", cr.Name)),
 	}
 
-	if cr.Spec.ClusterRole.Enabled == false {
+	if cr.Spec.ClusterRole.Enabled == false || utils.BoolEnv("DISABLE_CLUSTER_ROLES") {
 		clusterRole.Rules = []rbacv1.PolicyRule{
 			rbacv1.PolicyRule{
 				APIGroups: []string{""},
@@ -86,7 +86,7 @@ func NewClusterRoleBinding(cr *v1alpha1.Flux) *rbacv1.ClusterRoleBinding {
 }
 
 func NewRole(cr *v1alpha1.Flux) *rbacv1.Role {
-	if cr.Spec.Role.Enabled == false {
+	if cr.Spec.Role.Enabled == false || utils.BoolEnv("DISABLE_ROLES") {
 		return nil
 	}
 
@@ -114,7 +114,7 @@ func NewRole(cr *v1alpha1.Flux) *rbacv1.Role {
 }
 
 func NewRoleBinding(cr *v1alpha1.Flux) *rbacv1.RoleBinding {
-	if cr.Spec.Role.Enabled == false {
+	if cr.Spec.Role.Enabled == false || utils.BoolEnv("DISABLE_ROLES") {
 		return nil
 	}
 
