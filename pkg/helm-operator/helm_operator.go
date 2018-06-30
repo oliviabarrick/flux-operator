@@ -44,8 +44,7 @@ func MakeHelmOperatorArgs(cr *v1alpha1.Flux) (args []string) {
 		"git-branch": branch,
 		"git-charts-path": path,
 		"charts-sync-interval": poll,
-		"tiller-namespace": cr.Spec.Namespace,
-
+		"tiller-namespace": utils.FluxNamespace(cr),
 	}
 
 	for key, value := range argMap {
