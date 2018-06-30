@@ -60,3 +60,19 @@ func TestClearObjectHashDoesNothingIfNoHashSet(t *testing.T) {
 	cr := test_utils.NewFlux()
 	ClearObjectHash(cr)
 }
+
+func TestBoolEnv(t *testing.T) {
+	assert.Equal(t, BoolEnv("MY_NON_EXISTANT_VAR"), false)
+	os.Setenv("MY_VAR", "myval")
+	assert.Equal(t, BoolEnv("MY_VAR"), false)
+	os.Setenv("MY_VAR", "true")
+	assert.Equal(t, BoolEnv("MY_VAR"), true)
+	os.Setenv("MY_VAR", "1")
+	assert.Equal(t, BoolEnv("MY_VAR"), true)
+	os.Setenv("MY_VAR", "false")
+	assert.Equal(t, BoolEnv("MY_VAR"), false)
+	os.Setenv("MY_VAR", "0")
+	assert.Equal(t, BoolEnv("MY_VAR"), false)
+	os.Setenv("MY_VAR", "TRUE")
+	assert.Equal(t, BoolEnv("MY_VAR"), true)
+}

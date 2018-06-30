@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
@@ -10,6 +11,13 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"github.com/cnf/structhash"
 )
+
+// Get an environment variable, pass through strconv.ParseBool, return false if there
+// is an error.
+func BoolEnv(name string) bool {
+	val, _ := strconv.ParseBool(os.Getenv(name))
+	return val
+}
 
 // Return the namespace the CR's resources should be created in.
 func FluxNamespace(cr *v1alpha1.Flux) string {
