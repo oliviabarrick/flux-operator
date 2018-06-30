@@ -107,6 +107,10 @@ operator itself:
 * `TILLER_VERSION`: the default tiller version.
 * `FLUX_NAMESPACE`: if set, the namespace to watch instead of watching all namespaces
                     for Flux CRs - only has an effect if the Flux CRD is namespaced.
+* `DISABLE_ROLES`: if set to true, prevent users from assigning Fluxes roles.
+* `DISABLE_CLUSTER_ROLES`: if set to true, prevent users from assigning Fluxes cluster
+                           roles (only the default, list all namespaces permission is
+                           granted).
 
 # Git SSH key
 
@@ -243,3 +247,6 @@ spec:
 ```
 
 See [Kubernetes role documentation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#role-and-clusterrole) for more information.
+
+Using environment variables, it is also possible to disable assigning
+roles (`DISABLE_ROLES=true`) and disabling cluster roles (`DISABLE_CLUSTER_ROLES=true`).

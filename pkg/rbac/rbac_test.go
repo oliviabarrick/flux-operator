@@ -1,6 +1,7 @@
 package rbac
 
 import (
+	"os"
 	"testing"
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
@@ -55,6 +56,18 @@ func TestNewRoleDisabledByDefault(t *testing.T) {
 	assert.Nil(t, role)
 }
 
+func TestNewRoleDisabledByEnvironmentVariable(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr.Spec.Role.Enabled = true
+
+	os.Setenv("DISABLE_ROLES", "true")
+	role := NewRole(cr)
+	os.Setenv("DISABLE_ROLES", "")
+
+	assert.Equal(t, cr.Spec.Role.Enabled, true)
+	assert.Nil(t, role)
+}
+
 func TestNewRoleBinding(t *testing.T) {
 	cr := test_utils.NewFlux()
 	cr.Spec.Role.Enabled = true
@@ -72,6 +85,18 @@ func TestNewRoleBinding(t *testing.T) {
 
 func TestNewRoleBindingDefaultNil(t *testing.T) {
 	assert.Nil(t, NewRoleBinding(test_utils.NewFlux()))
+}
+
+func TestNewRoleBindingDisabledByEnvironmentVariable(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr.Spec.Role.Enabled = true
+
+	os.Setenv("DISABLE_ROLES", "true")
+	roleBinding := NewRoleBinding(cr)
+	os.Setenv("DISABLE_ROLES", "")
+
+	assert.Equal(t, cr.Spec.Role.Enabled, true)
+	assert.Nil(t, roleBinding)
 }
 
 func TestNewClusterRole(t *testing.T) {
@@ -128,6 +153,32 @@ func TestNewClusterRoleDefaultListAllNamespaces(t *testing.T) {
 	}
 
 	assert.Equal(t, clusterRole.Rules, defaultRules)
+}
+
+func TestNewClusterRoleDisabledByEnvironmentVariable(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr.Spec.ClusterRole.Enabled = true
+	// attempt to assign
+	cr.Spec.ClusterRole.Rules = []rbacv1.PolicyRule{
+		rbacv1.PolicyRule{
+			APIGroups: []string{"*"},
+			Resources: []string{"*"},
+			Verbs: []string{"*"},
+		},
+	}
+
+	os.Setenv("DISABLE_CLUSTER_ROLES", "true")
+	clusterRole := NewClusterRole(cr)
+	os.Setenv("DISABLE_CLUSTER_ROLES", "")
+
+	assert.Equal(t, cr.Spec.ClusterRole.Enabled, true)
+	assert.Equal(t, clusterRole.Rules, []rbacv1.PolicyRule{
+		rbacv1.PolicyRule{
+			APIGroups: []string{""},
+			Resources: []string{"namespaces"},
+			Verbs: []string{"get", "watch", "list"},
+		},
+	})
 }
 
 func TestNewClusterRoleBinding(t *testing.T) {
