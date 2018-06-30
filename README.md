@@ -9,10 +9,36 @@ Use-cases:
 
 # Installation
 
-To deploy to your cluster:
+## Create the CRD
+
+The flux-operator allows creating the Flux Custom Resource Definition with either a
+Cluster scope or a Namespaced scope. If the CRD is deployed with Cluster scope, then
+Flux instances will be created in the namespace specified in the Flux spec. If the
+CRD is deployed at the Namespaced scope, then the Flux instances will be created in
+the same namespace as the Flux CR.
+
+### Namespaced scope
+
+Namespaced scope is recommended for most users:
 
 ```
-kubectl apply -f deploy/flux-crd.yaml
+kubectl apply -f deploy/flux-crd-namespaced.yaml
+```
+
+### Cluster scope
+
+However, if you have a central control for your Flux CRs, then it may make sense
+to deploy your CRs Cluster scoped:
+
+```
+kubectl apply -f deploy/flux-crd-cluster.yaml
+```
+
+## Deploy flux operator
+
+Now, deploy the flux operator:
+
+```
 kubectl apply -f deploy/fluxhelmrelease-crd.yaml
 kubectl apply -f deploy/k8s.yaml
 ```
@@ -26,8 +52,8 @@ apiVersion: flux.codesink.net/v1alpha1
 kind: Flux
 metadata:
   name: example
-spec:
   namespace: default
+spec:
   gitUrl: ssh://git@github.com/justinbarrick/manifests
   role:
     enabled: true
@@ -37,9 +63,8 @@ spec:
 
 This will create a flux pod called `flux-example` in the `default` namespace.
 
-Settings:
+Settings in the Flux spec:
 
-* `namespace`: the namespace to deploy flux to.
 * `gitUrl`: the URL to git repository to clone (required).
 * `gitBranch`: the git branch to use (default: `master`).
 * `gitPath`: the path with in the git repository to look for YAML in (default: `.`).
@@ -64,6 +89,9 @@ Settings:
 * `helmOperator.chartPath`: the chart path to use with Helm Operator (default: `.`).
 * `helmOperator.gitPollInterval`: the frequency with which to sync Git and the charts (default: the flux `gitPollInterval` or, if not set, `3m0s`).
 * `helmOperator.gitUrl`: the URL of the git repository to use if it is different than the primary flux `gitUrl`.
+* `namespace`: if the Flux CRD is cluster-scpoed, then the namespace to deploy Flux to is
+               specified in the Flux spec - if the Flux CRD is namespaced, then this
+               namespace is ignored and the Flux CR's actual namespace is used instead.
 
 You can also override some of the defaults by setting environment variables on the
 operator itself:
@@ -77,6 +105,8 @@ operator itself:
 * `MEMCACHED_VERSION`: the default memcached version.
 * `TILLER_IMAGE`: the default tiller image.
 * `TILLER_VERSION`: the default tiller version.
+* `FLUX_NAMESPACE`: if set, the namespace to watch instead of watching all namespaces
+                    for Flux CRs - only has an effect if the Flux CRD is namespaced.
 
 # Git SSH key
 

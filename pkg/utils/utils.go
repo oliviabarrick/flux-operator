@@ -11,6 +11,15 @@ import (
 	"github.com/cnf/structhash"
 )
 
+// Return the namespace the CR's resources should be created in.
+func FluxNamespace(cr *v1alpha1.Flux) string {
+	if cr.ObjectMeta.Namespace == "" {
+		return cr.Spec.Namespace
+	} else {
+		return cr.ObjectMeta.Namespace
+	}
+}
+
 // Getenv returns an environment variable or `value` if it does not exist.
 func Getenv(name, value string) string {
 	ret := os.Getenv(name)
@@ -29,7 +38,7 @@ func NewObjectMeta(cr *v1alpha1.Flux, name string) metav1.ObjectMeta {
 
 	return metav1.ObjectMeta{
 		Name:      name,
-		Namespace: cr.Spec.Namespace,
+		Namespace: FluxNamespace(cr),
 		OwnerReferences: []metav1.OwnerReference{
 			*metav1.NewControllerRef(cr, schema.GroupVersionKind{
 				Group:   v1alpha1.SchemeGroupVersion.Group,
