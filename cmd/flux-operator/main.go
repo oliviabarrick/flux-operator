@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"runtime"
+	"os"
 
 	stub "github.com/justinbarrick/flux-operator/pkg/stub"
 	sdk "github.com/operator-framework/operator-sdk/pkg/sdk"
-	k8sutil "github.com/operator-framework/operator-sdk/pkg/util/k8sutil"
 	sdkVersion "github.com/operator-framework/operator-sdk/version"
 
 	"github.com/sirupsen/logrus"
@@ -23,13 +23,17 @@ func main() {
 
 	resource := "flux.codesink.net/v1alpha1"
 	kind := "Flux"
-	namespace, err := k8sutil.GetWatchNamespace()
-	if err != nil {
-		logrus.Fatalf("Failed to get watch namespace: %v", err)
-	}
+
+	namespace := os.Getenv("FLUX_NAMESPACE")
 	resyncPeriod := 5
-	logrus.Infof("Watching %s, %s, %s, %d", resource, kind, namespace, resyncPeriod)
-	sdk.Watch(resource, kind, namespace, resyncPeriod)
+
+	if namespace == "" {
+		logrus.Infof("Watching for Fluxes at cluster scope.")
+	} else {
+		logrus.Infof("Watching for Fluxes in %s.", namespace)
+	}
+
+	sdk.Watch(resource, kind, "", resyncPeriod)
 	sdk.Handle(stub.NewHandler())
 	sdk.Run(context.TODO())
 }

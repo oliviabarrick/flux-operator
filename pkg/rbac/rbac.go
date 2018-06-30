@@ -74,7 +74,7 @@ func NewClusterRoleBinding(cr *v1alpha1.Flux) *rbacv1.ClusterRoleBinding {
 			rbacv1.Subject{
 				Kind: "ServiceAccount",
 				Name: serviceAccount,
-				Namespace: cr.Spec.Namespace,
+				Namespace: utils.FluxNamespace(cr),
 			},
 		},
 		RoleRef: rbacv1.RoleRef{
@@ -130,7 +130,7 @@ func NewRoleBinding(cr *v1alpha1.Flux) *rbacv1.RoleBinding {
 			rbacv1.Subject{
 				Kind: "ServiceAccount",
 				Name: ServiceAccountName(cr),
-				Namespace: cr.Spec.Namespace,
+				Namespace: utils.FluxNamespace(cr),
 			},
 		},
 		RoleRef: rbacv1.RoleRef{
