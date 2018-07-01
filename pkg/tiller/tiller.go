@@ -45,7 +45,7 @@ func TillerOptions(cr *v1alpha1.Flux) *installer.Options {
 
 // Create the name for a Tiller instance.
 func TillerName(cr *v1alpha1.Flux) string {
-	return "tiller-deploy"
+	return fmt.Sprintf("flux-%s-tiller-deploy", cr.ObjectMeta.Name)
 }
 
 // Create the ObjectMeta for a Tiller installation manifest.

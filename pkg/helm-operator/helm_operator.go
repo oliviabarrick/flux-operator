@@ -6,6 +6,7 @@ import (
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
 	"github.com/justinbarrick/flux-operator/pkg/rbac"
 	"github.com/justinbarrick/flux-operator/pkg/flux"
+	"github.com/justinbarrick/flux-operator/pkg/tiller"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	extensions "k8s.io/api/extensions/v1beta1"
@@ -45,6 +46,8 @@ func MakeHelmOperatorArgs(cr *v1alpha1.Flux) (args []string) {
 		"git-charts-path": path,
 		"charts-sync-interval": poll,
 		"tiller-namespace": utils.FluxNamespace(cr),
+		"tiller-ip": tiller.TillerName(cr),
+		"tiller-port": "44134",
 	}
 
 	for key, value := range argMap {
