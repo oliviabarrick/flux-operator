@@ -1,3 +1,8 @@
+[prune]
+  unused-packages = true
+  non-go = true
+  go-tests = true
+
 [[override]]
   name = "k8s.io/apiserver"
   version = "kubernetes-1.9.3"
