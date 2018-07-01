@@ -22,6 +22,13 @@ func TestFluxNamespaceFromSpecIfClusterScope(t *testing.T) {
 	assert.Equal(t, "hello", FluxNamespace(cr))
 }
 
+func TestFluxNamespaceFromSpecIfClusterScopeDefault(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr.Spec.Namespace = ""
+	cr.ObjectMeta.Namespace = ""
+	assert.Equal(t, "default", FluxNamespace(cr))
+}
+
 func TestGetenv(t *testing.T) {
 	os.Setenv("MY_VAR", "value")
 	defer os.Setenv("MY_VAR", "")

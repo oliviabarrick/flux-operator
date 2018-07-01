@@ -24,6 +24,7 @@ func TestMakeFluxArgs(t *testing.T) {
 		"--git-poll-interval=0m30s",
 		"--connect=ws://fluxcloud/",
 		"--k8s-secret-name=flux-git-example-deploy",
+		"--ssh-keygen-dir=/etc/fluxd/",
 		"--memcached-hostname=" + memcached.MemcachedName(cr),
 	}
 
@@ -43,6 +44,7 @@ func TestMakeFluxArgsNoArgs(t *testing.T) {
 		"--git-path=manifests",
 		"--git-poll-interval=0m30s",
 		"--k8s-secret-name=flux-git-example-deploy",
+		"--ssh-keygen-dir=/etc/fluxd/",
 		"--memcached-hostname=" + memcached.MemcachedName(cr),
 	}
 
@@ -66,6 +68,7 @@ func TestMakeFluxArgsArgsOverride(t *testing.T) {
 		"--git-path=manifests",
 		"--git-poll-interval=0m30s",
 		"--k8s-secret-name=flux-git-example-deploy",
+		"--ssh-keygen-dir=/etc/fluxd/",
 		"--memcached-hostname=" + memcached.MemcachedName(cr),
 	}
 
@@ -83,6 +86,7 @@ func TestNewFluxDeployment(t *testing.T) {
 	assert.Equal(t, dep.ObjectMeta.Namespace, "default")
 	assert.Equal(t, pod.ServiceAccountName, "flux-example")
 	assert.Equal(t, pod.Volumes[0].VolumeSource.Secret.SecretName, "flux-git-example-deploy")
+	assert.Equal(t, *pod.Volumes[0].VolumeSource.Secret.DefaultMode, int32(0400))
 
 	c := pod.Containers[0]
 	assert.Equal(t, c.Image, "quay.io/weaveworks/flux:1.4.0")

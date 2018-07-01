@@ -225,7 +225,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 							},
 						},
 					},
-					Required: []string{"namespace", "gitUrl"},
+					Required: []string{"gitUrl"},
 				},
 			},
 			Dependencies: []string{
