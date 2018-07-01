@@ -25,7 +25,11 @@ func BoolEnv(name string) bool {
 // Return the namespace the CR's resources should be created in.
 func FluxNamespace(cr *v1alpha1.Flux) string {
 	if cr.ObjectMeta.Namespace == "" {
-		return cr.Spec.Namespace
+		if cr.Spec.Namespace == "" {
+			return "default"
+		} else {
+			return cr.Spec.Namespace
+		}
 	} else {
 		return cr.ObjectMeta.Namespace
 	}

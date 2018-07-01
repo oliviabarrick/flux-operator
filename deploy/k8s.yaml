@@ -42,6 +42,12 @@ metadata:
   name: default-account-flux-operator
 subjects:
 - kind: ServiceAccount
+  name: default
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: flux-operator
+  apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -59,8 +65,8 @@ spec:
     spec:
       containers:
         - name: flux-operator
-          image: justinbarrick/flux-operator
-          imagePullPolicy: Always
+          image: justinbarrick/flux-operator:latest
+          imagePullPolicy: IfNotPresent
           env:
             - name: WATCH_NAMESPACE
               valueFrom:

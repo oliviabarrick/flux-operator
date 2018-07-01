@@ -2,13 +2,18 @@ apiVersion: "flux.codesink.net/v1alpha1"
 kind: "Flux"
 metadata:
   name: "example"
-spec:
   namespace: default
-  gitUrl: ssh://git@github.com/justinbarrick/manifests
-  gitBranch: master
-  gitPath: manifests
+spec:
+  gitUrl: ssh://git@github.com/justinbarrick/flux-operator
+  gitBranch: minikube
+  gitPath: deploy/flux-example/
   gitPollInterval: 0m30s
-  args:
-    connect: "ws://fluxcloud/"
+  helmOperator:
+    enabled: false
+    chartPath: deploy/chart-example/
+  tiller:
+    enabled: false
   clusterRole:
+    enabled: true
+  role:
     enabled: true

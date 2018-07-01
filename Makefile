@@ -37,4 +37,5 @@ generate-crds: clean deploy/flux-crd-namespaced.yaml deploy/flux-crd-cluster.yam
 
 clean:
 	rm -f pkg/apis/flux/v1alpha1/openapi_generated.go
-	rm -f deploy/flux-crd.yaml
+	rm -f deploy/flux-crd-namespaced.yaml
+	rm -f deploy/flux-crd-cluster.yaml

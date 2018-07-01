@@ -2,7 +2,10 @@ FROM golang:1.10.1-alpine3.7
 
 WORKDIR /go/src/github.com/justinbarrick/flux-operator
 
-ADD . .
+ADD vendor vendor
+ADD version version
+ADD cmd cmd
+ADD pkg pkg
 
 RUN go test github.com/justinbarrick/flux-operator/...
 RUN CGO_ENABLED=0 go build -ldflags '-w -s' -a -installsuffix cgo -o flux-operator cmd/flux-operator/main.go
