@@ -4,6 +4,8 @@ import (
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
 	"github.com/justinbarrick/flux-operator/pkg/utils"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"github.com/operator-framework/operator-sdk/pkg/sdk"
 	"k8s.io/apimachinery/pkg/runtime"
 	"github.com/sirupsen/logrus"
@@ -21,7 +23,10 @@ func GarbageCollectResources(cr *v1alpha1.Flux, existingObjs []runtime.Object, d
 		}
 
 		logrus.Infof("Deleting unwanted resource from %s", utils.ReadableObjectName(cr, existing))
-		err := sdk.Delete(existing)
+		deletePropagation := metav1.DeletePropagationBackground
+		err := sdk.Delete(existing, sdk.WithDeleteOptions(&metav1.DeleteOptions{
+			PropagationPolicy: &deletePropagation,
+		}))
 		if err != nil {
 			return err
 		}

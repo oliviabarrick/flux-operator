@@ -395,7 +395,6 @@ spec:
                     or `$TILLER_VERSION`).'
                   type: string
           required:
-          - namespace
           - gitUrl
         status: {}
       required:

@@ -56,6 +56,7 @@ func TestNewHelmOperatorDeployment(t *testing.T) {
 	assert.Equal(t, dep.ObjectMeta.Namespace, "default")
 	assert.Equal(t, pod.ServiceAccountName, "flux-example")
 	assert.Equal(t, pod.Volumes[0].VolumeSource.Secret.SecretName, "flux-git-example-deploy")
+	assert.Equal(t, *pod.Volumes[0].VolumeSource.Secret.DefaultMode, int32(0400))
 
 	c := pod.Containers[0]
 	assert.Equal(t, c.Image, "quay.io/weaveworks/helm-operator:master-1dfdc61")

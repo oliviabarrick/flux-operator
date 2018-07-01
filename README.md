@@ -1,5 +1,7 @@
 Operator for creating and managing instances of [Weaveworks flux](https://github.com/weaveworks/flux), [helm-operator](https://github.com/weaveworks/flux/blob/master/site/helm/helm-integration.md) and [tiller, the cluster component of Helm](https://github.com/kubernetes/helm).
 
+![build status](https://ci.codesink.net/api/badges/justinbarrick/flux-operator/status.svg)
+
 Use-cases:
 
 * Doing GitOps without a monorepo. You can easily split your manifests into repos per team, project or namespace.
@@ -250,3 +252,26 @@ See [Kubernetes role documentation](https://kubernetes.io/docs/reference/access-
 
 Using environment variables, it is also possible to disable assigning
 roles (`DISABLE_ROLES=true`) and disabling cluster roles (`DISABLE_CLUSTER_ROLES=true`).
+
+# Contributing
+
+If you are fixing a bug or adding a feature, please open a ticket describing it and reference
+it in your commit message.
+
+Please add a test for your change :)
+
+## Testing
+
+Flux-operator is unit tested and integration tested using minikube in drone. You can run
+the tests locally using minikube and the `integration-test.sh` script:
+
+```
+go test ./...
+minikube start
+eval $(minikube docker-env)
+export SSH_KEY="$(cat /path/to/ssh/deploy/key/for/repository)"
+./integration-test.sh
+```
+
+Note: you will need to fork this repository and add your own deploy keys to the fork since
+flux requires read/write access to a repository.

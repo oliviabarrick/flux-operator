@@ -27,7 +27,7 @@ type Flux struct {
 // +k8s:openapi-gen=true
 type FluxSpec struct {
 	// Namespace to deploy Flux and Tiller into.
-	Namespace       string `json:"namespace"`
+	Namespace       string `json:"namespace,omitempty"`
 	// The URL to the Git repository (required).
 	GitUrl          string `json:"gitUrl"`
 	// The git branch to use (default: `master`).
