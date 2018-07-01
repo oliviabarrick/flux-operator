@@ -1,0 +1,7 @@
+integration-test.sh
+.drone.yml
+.git/
+README.md
+tmp/
+deploy/
+Dockerfile
