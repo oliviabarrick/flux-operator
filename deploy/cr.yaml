@@ -5,7 +5,7 @@ metadata:
   namespace: default
 spec:
   gitUrl: ssh://git@github.com/justinbarrick/flux-operator
-  gitBranch: minikube
+  gitBranch: master
   gitPath: deploy/flux-example/
   gitPollInterval: 0m30s
   helmOperator:
