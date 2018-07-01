@@ -25,6 +25,9 @@ func (h *Handler) Handle(ctx context.Context, event sdk.Event) (err error) {
 		}
 
 		err = SynchronizeFluxState(o)
+		if err != nil {
+			logrus.Errorf("Error synchronizing Flux state: %v", err)
+		}
 	}
 	return
 }
