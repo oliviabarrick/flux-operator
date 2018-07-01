@@ -9,8 +9,11 @@ import (
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/labels"
 	"github.com/cnf/structhash"
 )
+
+const FLUX_LABEL = "flux.codesink.net.flux"
 
 // Get an environment variable, pass through strconv.ParseBool, return false if there
 // is an error.
@@ -55,6 +58,63 @@ func NewObjectMeta(cr *v1alpha1.Flux, name string) metav1.ObjectMeta {
 			}),
 		},
 	}
+}
+
+// Return the labels that should be set on any object owned by a Flux.
+func FluxLabels(cr *v1alpha1.Flux) map[string]string {
+	label := cr.ObjectMeta.Name
+	if cr.ObjectMeta.Namespace != "" {
+		label = fmt.Sprintf("%s/%s", cr.ObjectMeta.Namespace, label)
+	}
+
+	return map[string]string{
+		FLUX_LABEL: label,
+	}
+}
+
+// Return the list options that can be used to find an object owned by a Flux.
+func ListOptionsForFlux(cr *v1alpha1.Flux) *metav1.ListOptions {
+	return &metav1.ListOptions{LabelSelector: labels.SelectorFromSet(FluxLabels(cr)).String()}
+}
+
+// Return true if the object is owned by the Flux.
+func OwnedByFlux(cr *v1alpha1.Flux, obj runtime.Object) bool {
+	objectMeta, err := meta.Accessor(obj)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	labels := objectMeta.GetLabels()
+	if labels == nil {
+		return false
+	}
+
+	for k, v := range FluxLabels(cr) {
+		if labels[k] != v {
+			return false
+		}
+	}
+
+	return true
+}
+
+// Set the owner of an object.
+func SetObjectOwner(cr *v1alpha1.Flux, obj runtime.Object) {
+	objectMeta, err := meta.Accessor(obj)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	labels := objectMeta.GetLabels()
+	if labels == nil {
+		labels = map[string]string{}
+	}
+
+	for k, v := range FluxLabels(cr) {
+		labels[k] = v
+	}
+
+	objectMeta.SetLabels(labels)
 }
 
 // Takes a Kubernetes object and returns the hash in its annotations as a string.

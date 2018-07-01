@@ -10,6 +10,7 @@ import (
 	"github.com/justinbarrick/flux-operator/pkg/rbac"
 	"github.com/justinbarrick/flux-operator/pkg/tiller"
 	"github.com/justinbarrick/flux-operator/pkg/utils"
+	"github.com/justinbarrick/flux-operator/pkg/garbage"
 
 	corev1 "k8s.io/api/core/v1"
 	"github.com/operator-framework/operator-sdk/pkg/sdk"
@@ -47,8 +48,9 @@ func CreateFluxObjects(cr *v1alpha1.Flux) ([]runtime.Object, error) {
 	objects = append(objects, dep)
 	objects = append(objects, memcached.NewMemcached(cr)...)
 
-	err := sdk.Get(flux.NewFluxSSHKey(cr))
-	if err != nil {
+	sshKey := flux.NewFluxSSHKey(cr)
+	err := sdk.Get(sshKey)
+	if err != nil || utils.OwnedByFlux(cr, sshKey) {
 		objects = append(objects, flux.NewFluxSSHKey(cr))
 	}
 
@@ -66,6 +68,7 @@ func CreateFluxObjects(cr *v1alpha1.Flux) ([]runtime.Object, error) {
 	}
 
 	for index, object := range objects {
+		utils.SetObjectOwner(cr, object)
 		utils.SetObjectHash(object)
 		objects[index] = object
 	}
@@ -125,6 +128,11 @@ func CreateFlux (cr *v1alpha1.Flux) error {
 		} else {
 			logrus.Infof("Created %s", name)
 		}
+	}
+
+	err = garbage.GarbageCollectResources(cr, objects)
+	if err != nil {
+		logrus.Errorf("Error garbage collecting resources: %s", err)
 	}
 
 	return nil
