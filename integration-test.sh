@@ -83,7 +83,7 @@ sed 's/enabled: false/enabled: true/g' deploy/cr.yaml |kubectl apply -f -
 echo Waiting for helm-operator and tiller to start.
 
 wait_for $MAXIMUM_TIMEOUT kubectl get deployment flux-example-helm-operator
-wait_for $MAXIMUM_TIMEOUT kubectl get deployment tiller-deploy
+wait_for $MAXIMUM_TIMEOUT kubectl get deployment flux-example-tiller-deploy
 
 echo Waiting for helm-operator to create resources.
 wait_for $MAXIMUM_TIMEOUT kubectl get statefulset memcached-memcached
@@ -105,6 +105,6 @@ echo Waiting for resources to clean up
 wait_for $MAXIMUM_TIMEOUT not kubectl get deployment flux-operator
 wait_for $MAXIMUM_TIMEOUT not kubectl get deployment flux-example
 wait_for $MAXIMUM_TIMEOUT not kubectl get deployment flux-example-memcached
-wait_for $MAXIMUM_TIMEOUT not kubectl get deployment tiller-deploy
+wait_for $MAXIMUM_TIMEOUT not kubectl get deployment flux-example-tiller-deploy
 
 echo "Exiting with success!"
