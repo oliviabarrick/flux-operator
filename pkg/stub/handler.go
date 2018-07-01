@@ -46,11 +46,13 @@ func SynchronizeFluxState(cr *v1alpha1.Flux) error {
 	err = CreateOrUpdate(cr, existingObjs, desiredObjs)
 	if err != nil {
 		logrus.Errorf("Error creating resources: %s", err)
+		return err
 	}
 
 	err = GarbageCollectResources(cr, existingObjs, desiredObjs)
 	if err != nil {
 		logrus.Errorf("Error garbage collecting resources: %s", err)
+		return err
 	}
 
 	return nil
