@@ -1,10 +1,43 @@
+workspace:
+  base: /go
+  path: src/github.com/justinbarrick/flux-operator
+
 pipeline:
+  check-config:
+    image: golang
+    commands:
+      - make generate-crds
+      - echo "Checking if generated files are different than commited, will fail if changes are detected."
+      - git diff --exit-code
+    when:
+      event: push
+
+  test:
+    image: presslabs/kluster-toolbox
+    secrets: [ SSH_KEY ]
+    environment:
+      - KUBECONFIG=/go/.kube/config
+      - DOCKER_HOST=tcp://minikube:2375
+    commands:
+      - ./integration-test.sh
+    when:
+      event: push
+
   publish:
-    image: plugins/docker
-    secrets: [ DOCKER_USERNAME, DOCKER_PASSWORD ]
-    repo: justinbarrick/flux-operator
-    tags:
-    - latest
-    - ${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:7}
+    image: presslabs/kluster-toolbox
+    environment:
+      - DOCKER_HOST=tcp://minikube:2375
+    commands:
+    - docker tag justinbarrick/flux-operator:latest justinbarrick/flux-operator:${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:7}
+    - docker push justinbarrick/flux-operator:latest
+    - docker push justinbarrick/flux-operator:${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:7}
     when:
       branch: master
+      event: push
+
+services:
+  minikube:
+    image: presslabs/drone-minikube:v1.9.0
+    privileged: true
+    when:
+      event: push
