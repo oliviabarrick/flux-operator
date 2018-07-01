@@ -32,6 +32,7 @@ func NewClusterRole(cr *v1alpha1.Flux) *rbacv1.ClusterRole {
 		},
 		ObjectMeta: utils.NewObjectMeta(cr, fmt.Sprintf("flux-%s", cr.Name)),
 	}
+	clusterRole.ObjectMeta.Namespace = ""
 
 	if cr.Spec.ClusterRole.Enabled == false || utils.BoolEnv("DISABLE_CLUSTER_ROLES") {
 		clusterRole.Rules = []rbacv1.PolicyRule{
@@ -63,6 +64,7 @@ func NewClusterRole(cr *v1alpha1.Flux) *rbacv1.ClusterRole {
 func NewClusterRoleBinding(cr *v1alpha1.Flux) *rbacv1.ClusterRoleBinding {
 	serviceAccount := fmt.Sprintf("flux-%s", cr.Name)
 	meta := utils.NewObjectMeta(cr, fmt.Sprintf("flux-%s", cr.Name))
+	meta.Namespace = ""
 
 	return &rbacv1.ClusterRoleBinding{
 		TypeMeta: metav1.TypeMeta{

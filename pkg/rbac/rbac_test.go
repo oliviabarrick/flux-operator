@@ -118,6 +118,7 @@ func TestNewClusterRole(t *testing.T) {
 	}
 
 	assert.Equal(t, clusterRole.Rules, defaultRules)
+	assert.Equal(t, clusterRole.ObjectMeta.Namespace, "")
 }
 
 func TestNewCustomClusterRole(t *testing.T) {
@@ -186,6 +187,8 @@ func TestNewClusterRoleBinding(t *testing.T) {
 	cr.Spec.ClusterRole.Enabled = true
 
 	roleBinding := NewClusterRoleBinding(cr)
+
+	assert.Equal(t, roleBinding.ObjectMeta.Namespace, "")
 
 	assert.Equal(t, roleBinding.Subjects[0].Kind, "ServiceAccount")
 	assert.Equal(t, roleBinding.Subjects[0].Name, "flux-example")
