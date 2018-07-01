@@ -74,6 +74,7 @@ wait_for $MAXIMUM_TIMEOUT kubectl get deployment flux-example
 wait_for $MAXIMUM_TIMEOUT kubectl get deployment flux-example-memcached
 wait_for $MAXIMUM_TIMEOUT kubectl get deployment flux-operator
 wait_for $MAXIMUM_TIMEOUT kubectl get fluxhelmreleases memcached
+kubectl logs $(kubectl get pods -l app=flux -o 'go-template={{ range .items }}{{ .metadata.name }}{{ "\n" }}{{ end }}' |head -n1)
 wait_for $MAXIMUM_TIMEOUT kubectl get deployment nginx
 
 echo Enabling the helm-operator
