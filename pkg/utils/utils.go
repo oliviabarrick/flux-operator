@@ -64,7 +64,7 @@ func NewObjectMeta(cr *v1alpha1.Flux, name string) metav1.ObjectMeta {
 func FluxLabels(cr *v1alpha1.Flux) map[string]string {
 	label := cr.ObjectMeta.Name
 	if cr.ObjectMeta.Namespace != "" {
-		label = fmt.Sprintf("%s/%s", cr.ObjectMeta.Namespace, label)
+		label = fmt.Sprintf("%s-%s", cr.ObjectMeta.Namespace, label)
 	}
 
 	return map[string]string{
