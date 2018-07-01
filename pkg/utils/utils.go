@@ -183,3 +183,34 @@ func ReadableObjectName(cr *v1alpha1.Flux, object runtime.Object) string {
 		cr.Name, object.GetObjectKind().GroupVersionKind().Kind,
 		objectMeta.GetNamespace(), objectMeta.GetName(), GetObjectHash(object))
 }
+
+// Return true if first and second have the same Name, Namespace, and Kind.
+func ObjectNameMatches(first runtime.Object, second runtime.Object) bool {
+	firstMeta, _ := meta.Accessor(first)
+	secondMeta, _ := meta.Accessor(second)
+
+	if firstMeta.GetName() != secondMeta.GetName() {
+		return false
+	}
+
+	if firstMeta.GetNamespace() != secondMeta.GetNamespace() {
+		return false
+	}
+
+	if first.GetObjectKind().GroupVersionKind() != second.GetObjectKind().GroupVersionKind() {
+		return false
+	}
+
+	return true
+}
+
+// Return the object from existing that matches Name, Namespace, and Kind with object.
+func GetObject(object runtime.Object, existing []runtime.Object) runtime.Object {
+	for _, obj := range existing {
+		if ObjectNameMatches(obj, object) {
+			return obj
+		}
+	}
+
+	return nil
+}

@@ -5,6 +5,7 @@ import (
 	"os"
 	"github.com/justinbarrick/flux-operator/pkg/utils/test"
 	"github.com/stretchr/testify/assert"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 func TestFluxNamespace(t *testing.T) {
@@ -75,4 +76,43 @@ func TestBoolEnv(t *testing.T) {
 	assert.Equal(t, BoolEnv("MY_VAR"), false)
 	os.Setenv("MY_VAR", "TRUE")
 	assert.Equal(t, BoolEnv("MY_VAR"), true)
+}
+
+func TestObjectNameMatches(t *testing.T) {
+	cr := test_utils.NewFlux()
+	assert.Equal(t, ObjectNameMatches(cr, cr), true)
+
+	cr2 := test_utils.NewFlux()
+	assert.Equal(t, ObjectNameMatches(cr, cr2), true)
+
+	cr2 = test_utils.NewFlux()
+	cr2.ObjectMeta.Name = "newname"
+	assert.Equal(t, ObjectNameMatches(cr, cr2), false)
+
+	cr2 = test_utils.NewFlux()
+	cr2.ObjectMeta.Namespace = "newnamespace"
+	assert.Equal(t, ObjectNameMatches(cr, cr2), false)
+
+	cr2 = test_utils.NewFlux()
+	cr2.TypeMeta.Kind = "Hello"
+	assert.Equal(t, ObjectNameMatches(cr, cr2), false)
+
+	cr2 = test_utils.NewFlux()
+	cr2.ObjectMeta.Annotations = map[string]string{"myannotation":"myannotation"}
+	assert.Equal(t, ObjectNameMatches(cr, cr2), true)
+}
+
+func TestGetObject(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr2 := test_utils.NewFlux()
+	cr2.ObjectMeta.Annotations = map[string]string{"myannotation":"myannotation"}
+
+	cr3 := test_utils.NewFlux()
+	cr3.ObjectMeta.Name = "newname"
+
+	cr4 := test_utils.NewFlux()
+	cr4.ObjectMeta.Name = "othername"
+
+	assert.Equal(t, GetObject(cr, []runtime.Object{cr3, cr2, cr4, }), cr2)
+	assert.Equal(t, GetObject(cr, []runtime.Object{cr3, cr4, }), nil)
 }

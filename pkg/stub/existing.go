@@ -1,4 +1,4 @@
-package garbage
+package stub
 
 import (
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
@@ -11,43 +11,10 @@ import (
 	"k8s.io/apimachinery/pkg/api/meta"
 	"github.com/operator-framework/operator-sdk/pkg/sdk"
 	"k8s.io/apimachinery/pkg/runtime"
-	"github.com/sirupsen/logrus"
 )
 
-// Remove any resources that should no longer exist.
-// If a CR is completed deleted, it will be deleted automatically by Kubernetes finalizers.
-// This method deletes resources that need to be deleted if a CR is updated and a
-// resource is obsolete, e.g., helmOperator.enabled is changed from true to false.
-func GarbageCollectResources(cr *v1alpha1.Flux, expected []runtime.Object) error {
-	existing, err := CollectResources(cr)
-	if err != nil {
-		logrus.Errorf("Error collecting resources: %s", err)
-		return err
-	}
-
-	validHashes := map[string]bool{}
-
-	for _, obj := range expected {
-		validHashes[utils.GetObjectHash(obj)] = true
-	}
-
-	for _, obj := range existing {
-		if validHashes[utils.GetObjectHash(obj)] {
-			continue
-		}
-
-		logrus.Infof("Deleting unwanted resource from %s", utils.ReadableObjectName(cr, obj))
-		err := sdk.Delete(obj)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 // Find all resources that currently exist for the CR.
-func CollectResources(cr *v1alpha1.Flux) (existing []runtime.Object, err error) {
+func ExistingFluxObjects(cr *v1alpha1.Flux) (existing []runtime.Object, err error) {
 	lists := []runtime.Object{
 		&extensions.DeploymentList{
 			TypeMeta: metav1.TypeMeta{
@@ -123,5 +90,3 @@ func ListForFlux(cr *v1alpha1.Flux, list sdk.Object) error {
 
 	return nil
 }
-
-
