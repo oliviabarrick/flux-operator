@@ -37,7 +37,7 @@ pipeline:
 
 services:
   minikube:
-    image: presslabs/drone-minikube
+    image: justinbarrick/drone-minikube
     privileged: true
     commands:
     - echo nameserver 8.8.8.8 > /etc/resolv.conf
