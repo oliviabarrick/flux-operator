@@ -38,6 +38,7 @@ pipeline:
 services:
   minikube:
     image: justinbarrick/drone-minikube
+    secrets: [ DOCKER_USER, DOCKER_PASSWORD ]
     privileged: true
     commands:
     - echo nameserver 8.8.8.8 > /etc/resolv.conf
