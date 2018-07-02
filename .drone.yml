@@ -37,7 +37,10 @@ pipeline:
 
 services:
   minikube:
-    image: presslabs/drone-minikube:v1.9.0
+    image: justinbarrick/drone-minikube
     privileged: true
+    commands:
+    - echo nameserver 8.8.8.8 > /etc/resolv.conf
+    - /usr/local/bin/docker-entrypoint.sh start
     when:
       event: push

@@ -13,7 +13,7 @@ import (
 
 func TestTillerName(t *testing.T) {
 	cr := test_utils.NewFlux()
-	assert.Equal(t, TillerName(cr), "tiller-deploy")
+	assert.Equal(t, TillerName(cr), "flux-example-tiller-deploy")
 }
 
 func TestTillerOptions(t *testing.T) {
