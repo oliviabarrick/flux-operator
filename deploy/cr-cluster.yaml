@@ -8,5 +8,7 @@ spec:
   gitBranch: master
   gitPath: deploy/flux-example/
   gitPollInterval: 0m30s
+  fluxImage: justinbarrick/flux
+  fluxVersion: latest
   clusterRole:
     enabled: true
