@@ -253,6 +253,26 @@ See [Kubernetes role documentation](https://kubernetes.io/docs/reference/access-
 Using environment variables, it is also possible to disable assigning
 roles (`DISABLE_ROLES=true`) and disabling cluster roles (`DISABLE_CLUSTER_ROLES=true`).
 
+Flux currently does not support having access to only a single namespace, so if you want to
+restrict Flux to a single namespace, use my Flux fork (`justinbarrick/flux:latest`) until
+my [Pull Request](https://github.com/weaveworks/flux/pull/1184) is merged:
+
+```
+apiVersion: flux.codesink.net/v1alpha1
+kind: Flux
+metadata:
+  name: example
+  namespace: default
+spec:
+  gitUrl: ssh://git@github.com/justinbarrick/manifests
+  role:
+    enabled: true
+  fluxImage: justinbarrick/flux
+  fluxVersion: latest
+  args:
+    flux-namespace: default
+```
+
 # Contributing
 
 If you are fixing a bug or adding a feature, please open a ticket describing it and reference
