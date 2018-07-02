@@ -8,12 +8,16 @@ spec:
   gitBranch: master
   gitPath: deploy/flux-example/
   gitPollInterval: 0m30s
+  fluxImage: justinbarrick/flux
+  fluxVersion: latest
+  args:
+    flux-namespace: default
   helmOperator:
     enabled: false
     chartPath: deploy/chart-example/
   tiller:
     enabled: false
   clusterRole:
-    enabled: true
+    enabled: false
   role:
     enabled: true

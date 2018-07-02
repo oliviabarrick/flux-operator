@@ -1,0 +1,12 @@
+apiVersion: "flux.codesink.net/v1alpha1"
+kind: "Flux"
+metadata:
+  name: "example"
+spec:
+  namespace: default
+  gitUrl: ssh://git@github.com/justinbarrick/flux-operator
+  gitBranch: master
+  gitPath: deploy/flux-example/
+  gitPollInterval: 0m30s
+  clusterRole:
+    enabled: true

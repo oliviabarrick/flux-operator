@@ -18,6 +18,8 @@ func TestMakeHelmOperatorArgs(t *testing.T) {
 		"--git-charts-path=./",
 		"--charts-sync-interval=0m30s",
 		"--tiller-namespace=default",
+		"--tiller-ip=flux-example-tiller-deploy",
+		"--tiller-port=44134",
 	}
 
 	sort.Strings(expectedArgs)
@@ -39,6 +41,8 @@ func TestMakeHelmOperatorArgsOverrides(t *testing.T) {
 		"--git-charts-path=charts/",
 		"--charts-sync-interval=1m0s",
 		"--tiller-namespace=default",
+		"--tiller-ip=flux-example-tiller-deploy",
+		"--tiller-port=44134",
 	}
 
 	sort.Strings(expectedArgs)
