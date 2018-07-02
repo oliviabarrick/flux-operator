@@ -41,7 +41,7 @@ func NewMemcachedService(cr *v1alpha1.Flux) *corev1.Service {
 // NewMemcachedDeployment creates a new memcached deployment
 func NewMemcachedDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 	memcachedImage := utils.Getenv("MEMCACHED_IMAGE", "memcached")
-	memcachedVersion := utils.Getenv("MEMCACHED_VERSION", "1.4.25")
+	memcachedVersion := utils.Getenv("MEMCACHED_VERSION", "1.4.36-alpine")
 
 	labels := map[string]string{
 		"name": MemcachedName(cr),

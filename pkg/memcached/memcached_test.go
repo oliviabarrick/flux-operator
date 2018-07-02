@@ -23,7 +23,7 @@ func TestNewMemcachedDeployment(t *testing.T) {
 	assert.Equal(t, dep.ObjectMeta.Namespace, "default")
 
 	c := pod.Containers[0]
-	assert.Equal(t, c.Image, "memcached:1.4.25")
+	assert.Equal(t, c.Image, "memcached:1.4.36-alpine")
 	assert.Equal(t, c.Args, []string{"-m 64", "-p 11211", "-vv"})
 }
 
