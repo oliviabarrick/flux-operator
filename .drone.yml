@@ -6,6 +6,7 @@ pipeline:
   check-config:
     image: golang:1.9-alpine
     commands:
+      - apk update && apk add make git
       - make generate-crds
       - echo "Checking if generated files are different than commited, will fail if changes are detected."
       - git diff --exit-code
