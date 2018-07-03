@@ -18,12 +18,8 @@ pkg/apis/flux/v1alpha1/openapi_generated.go: $(GOBIN)/openapi-gen
 
 generate-openapi: pkg/apis/flux/v1alpha1/openapi_generated.go
 
-build: generate-openapi
+$(GOBIN)/flux-operator-crd-gen: generate-openapi
 	go install $(REPO)/cmd/flux-operator-crd-gen
-
-$(GOBIN)/flux-operator-crd-gen: build
-
-install: $(GOBIN)/flux-operator-crd-gen
 
 deploy/flux-crd-namespaced.yaml: $(GOBIN)/flux-operator-crd-gen
 	flux-operator-crd-gen --kind=Flux --plural=fluxes --apigroup=flux.codesink.net --scope=Namespaced --version=v1alpha1 --spec-name=github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.Flux > deploy/flux-crd-namespaced.yaml
@@ -33,9 +29,18 @@ deploy/flux-crd-cluster.yaml: $(GOBIN)/flux-operator-crd-gen
 
 generate-crds: clean deploy/flux-crd-namespaced.yaml deploy/flux-crd-cluster.yaml
 
-.PHONY: openapi-gen build all
+.PHONY: openapi-gen build test clean install all
+
+install: $(GOBIN)/flux-operator-crd-gen
+
+test:
+	go test github.com/justinbarrick/flux-operator/...
+
+build:
+	CGO_ENABLED=0 go build -ldflags '-w -s' -installsuffix cgo -o flux-operator cmd/flux-operator/main.go
 
 clean:
 	rm -f pkg/apis/flux/v1alpha1/openapi_generated.go
 	rm -f deploy/flux-crd-namespaced.yaml
 	rm -f deploy/flux-crd-cluster.yaml
+	rm -f ./flux-operator
