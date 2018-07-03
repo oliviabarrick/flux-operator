@@ -284,15 +284,19 @@ Please add a test for your change :)
 
 ## Testing
 
-Flux-operator is unit tested and integration tested using minikube in drone. You can run
-the tests locally using minikube and the `integration-test.sh` script:
+Flux-operator is unit tested:
 
 ```
-go test ./...
+make test
+```
+
+And integration tested using minikube in drone. You can run the tests locally using
+minikube and the `integration-test.sh` script:
+
+```
 minikube start
 eval $(minikube docker-env)
 export SSH_KEY="$(cat /path/to/ssh/deploy/key/for/repository)"
-make test
 make build
 ./integration-test.sh
 ```
