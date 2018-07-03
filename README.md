@@ -1,7 +1,8 @@
 Operator for creating and managing instances of [Weaveworks flux](https://github.com/weaveworks/flux), [helm-operator](https://github.com/weaveworks/flux/blob/master/site/helm/helm-integration.md) and [tiller, the cluster component of Helm](https://github.com/kubernetes/helm).
 
 ![build status](https://ci.codesink.net/api/badges/justinbarrick/flux-operator/status.svg)
-[![](https://images.microbadger.com/badges/version/justinbarrick/flux-operator.svg)](https://microbadger.com/images/justinbarrick/flux-operator)
+[![image version](https://images.microbadger.com/badges/version/justinbarrick/flux-operator.svg)](https://microbadger.com/images/justinbarrick/flux-operator)
+[![image size](https://images.microbadger.com/badges/image/justinbarrick/flux-operator.svg)](https://microbadger.com/images/justinbarrick/flux-operator "Get your own image badge on microbadger.com")
 
 Use-cases:
 
@@ -291,6 +292,8 @@ go test ./...
 minikube start
 eval $(minikube docker-env)
 export SSH_KEY="$(cat /path/to/ssh/deploy/key/for/repository)"
+make test
+make build
 ./integration-test.sh
 ```
 
