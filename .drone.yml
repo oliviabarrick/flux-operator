@@ -14,7 +14,7 @@ pipeline:
       event: push
 
   test:
-    image: justinbarrick/drone-minikube:stable2
+    image: justinbarrick/drone-minikube:localkube
     secrets: [ SSH_KEY ]
     environment:
       - KUBECONFIG=/go/.kube/config
@@ -25,20 +25,20 @@ pipeline:
       event: push
 
   publish:
-    image: justinbarrick/drone-minikube:stable2
+    image: justinbarrick/drone-minikube:localkube
     secrets: [ DOCKER_USER, DOCKER_PASSWORD ]
     environment:
       - DOCKER_HOST=tcp://minikube:2375
       - TAG=${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:7}
     commands:
-      - make push
+      - ./push.sh
     when:
       branch: master
       event: push
 
 services:
   minikube:
-    image: justinbarrick/drone-minikube:stable2
+    image: justinbarrick/drone-minikube:localkube
     privileged: true
     commands:
     - echo nameserver 8.8.8.8 > /etc/resolv.conf
