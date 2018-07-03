@@ -14,7 +14,7 @@ $(GOBIN)/openapi-gen:
 	go install k8s.io/code-generator/cmd/openapi-gen
 
 pkg/apis/flux/v1alpha1/openapi_generated.go: $(GOBIN)/openapi-gen
-	openapi-gen  -i $(REPO)/pkg/apis/flux/v1alpha1,k8s.io/apimachinery/pkg/apis/meta/v1,k8s.io/api/core/v1  -p $(REPO)/pkg/apis/flux/v1alpha1 --go-header-file="$(GOPATH)/src/github.com/justinbarrick/flux-operator/.header"
+	openapi-gen -i $(REPO)/pkg/apis/flux/v1alpha1,k8s.io/apimachinery/pkg/apis/meta/v1,k8s.io/api/core/v1 -p $(REPO)/pkg/apis/flux/v1alpha1 --go-header-file="$(GOPATH)/src/github.com/justinbarrick/flux-operator/.header"
 
 generate-openapi: pkg/apis/flux/v1alpha1/openapi_generated.go
 
