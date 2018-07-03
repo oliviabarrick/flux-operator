@@ -3,13 +3,15 @@ workspace:
   path: src/github.com/justinbarrick/flux-operator
 
 pipeline:
-  check-config:
-    image: golang:1.9-alpine
+  build:
+    image: golang:1.10-alpine
     commands:
       - apk update && apk add make git
       - make generate-crds
       - echo "Checking if generated files are different than commited, will fail if changes are detected."
       - git diff --exit-code
+      - make test
+      - make build
     when:
       event: push
 
