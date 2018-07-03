@@ -4,7 +4,7 @@ workspace:
 
 pipeline:
   check-config:
-    image: golang
+    image: golang:1.9-alpine
     commands:
       - make generate-crds
       - echo "Checking if generated files are different than commited, will fail if changes are detected."
@@ -28,9 +28,9 @@ pipeline:
     environment:
       - DOCKER_HOST=tcp://minikube:2375
     commands:
-    - docker tag justinbarrick/flux-operator:latest justinbarrick/flux-operator:${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:7}
-    - docker push justinbarrick/flux-operator:latest
-    - docker push justinbarrick/flux-operator:${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:7}
+      - docker tag justinbarrick/flux-operator:latest justinbarrick/flux-operator:${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:7}
+      - docker push justinbarrick/flux-operator:latest
+      - docker push justinbarrick/flux-operator:${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:7}
     when:
       branch: master
       event: push
