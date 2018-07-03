@@ -33,6 +33,12 @@ deploy/flux-crd-cluster.yaml: $(GOBIN)/flux-operator-crd-gen
 
 generate-crds: clean deploy/flux-crd-namespaced.yaml deploy/flux-crd-cluster.yaml
 
+push:
+	@docker login -u $(DOCKER_USER) -p $(DOCKER_PASSWORD)
+	docker tag justinbarrick/flux-operator:latest justinbarrick/flux-operator:$(TAG)
+	docker push justinbarrick/flux-operator:latest
+	docker push justinbarrick/flux-operator:$(TAG)
+
 .PHONY: openapi-gen build all
 
 clean:

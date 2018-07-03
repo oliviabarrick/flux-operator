@@ -14,7 +14,7 @@ pipeline:
       event: push
 
   test:
-    image: presslabs/kluster-toolbox
+    image: justinbarrick/drone-minikube:stable2
     secrets: [ SSH_KEY ]
     environment:
       - KUBECONFIG=/go/.kube/config
@@ -25,17 +25,13 @@ pipeline:
       event: push
 
   publish:
-    image: presslabs/kluster-toolbox
+    image: justinbarrick/drone-minikube:stable2
     secrets: [ DOCKER_USER, DOCKER_PASSWORD ]
     environment:
       - DOCKER_HOST=tcp://minikube:2375
+      - TAG=${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:7}
     commands:
-      - set +x
-      - docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
-      - set -x
-      - docker tag justinbarrick/flux-operator:latest justinbarrick/flux-operator:${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:7}
-      - docker push justinbarrick/flux-operator:latest
-      - docker push justinbarrick/flux-operator:${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:7}
+      - make push
     when:
       branch: master
       event: push
