@@ -25,9 +25,13 @@ pipeline:
 
   publish:
     image: presslabs/kluster-toolbox
+    secrets: [ DOCKER_USER, DOCKER_PASSWORD ]
     environment:
       - DOCKER_HOST=tcp://minikube:2375
     commands:
+      - set +x
+      - docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+      - set -x
       - docker tag justinbarrick/flux-operator:latest justinbarrick/flux-operator:${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:7}
       - docker push justinbarrick/flux-operator:latest
       - docker push justinbarrick/flux-operator:${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:7}
@@ -38,7 +42,6 @@ pipeline:
 services:
   minikube:
     image: justinbarrick/drone-minikube:stable
-    secrets: [ DOCKER_USER, DOCKER_PASSWORD ]
     privileged: true
     commands:
     - echo nameserver 8.8.8.8 > /etc/resolv.conf
