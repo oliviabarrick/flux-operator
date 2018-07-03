@@ -1,6 +1,7 @@
 Operator for creating and managing instances of [Weaveworks flux](https://github.com/weaveworks/flux), [helm-operator](https://github.com/weaveworks/flux/blob/master/site/helm/helm-integration.md) and [tiller, the cluster component of Helm](https://github.com/kubernetes/helm).
 
 ![build status](https://ci.codesink.net/api/badges/justinbarrick/flux-operator/status.svg)
+[![](https://images.microbadger.com/badges/version/justinbarrick/flux-operator.svg)](https://microbadger.com/images/justinbarrick/flux-operator)
 
 Use-cases:
 
