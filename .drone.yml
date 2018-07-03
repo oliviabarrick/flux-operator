@@ -41,7 +41,7 @@ pipeline:
 
 services:
   minikube:
-    image: justinbarrick/drone-minikube:stable
+    image: justinbarrick/drone-minikube:stable2
     privileged: true
     commands:
     - echo nameserver 8.8.8.8 > /etc/resolv.conf
