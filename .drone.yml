@@ -40,7 +40,7 @@ pipeline:
 
   slack:
     image: plugins/slack
-    secrets: [ WEBHOOK ]
+    webhook: https://hooks.slack.com/services/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
     channel: '#kubernetes'
     username: Drone CI
     icon_url: https://i.imgur.com/B7Tk2Xf.png
