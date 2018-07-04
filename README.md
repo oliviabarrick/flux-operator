@@ -13,13 +13,73 @@ Use-cases:
 
 # Installation
 
-## Create the CRD
+## Overview
+
+Flux-operator uses Custom Resource Definitions to declare what instances of Flux should
+exist in a cluster.
 
 The flux-operator allows creating the Flux Custom Resource Definition with either a
-Cluster scope or a Namespaced scope. If the CRD is deployed with Cluster scope, then
-Flux instances will be created in the namespace specified in the Flux spec. If the
-CRD is deployed at the Namespaced scope, then the Flux instances will be created in
-the same namespace as the Flux CR.
+Cluster scope or a Namespaced scope.
+
+If the CRD is deployed with Cluster scope, then Flux instances will be created in the
+namespace specified in the Flux spec, for example, the following Flux would be created
+in the default namespace:
+
+```
+apiVersion: flux.codesink.net/v1alpha1
+kind: Flux
+metadata:
+  name: example
+spec:
+  namespace: default
+  gitUrl: ssh://git@github.com/justinbarrick/manifests
+```
+
+If the CRD is deployed at the Namespaced scope, then the Flux instances will be created in
+the same namespace as the Flux CR, for example, to create a Flux instance in default, you
+would do:
+
+```
+apiVersion: flux.codesink.net/v1alpha1
+kind: Flux
+metadata:
+  name: example
+  namespace: default
+spec:
+  gitUrl: ssh://git@github.com/justinbarrick/manifests
+```
+
+In general, if users are creating Fluxes, it is best to create it Namespaced, if you
+are centrally controlling Fluxes, then Cluster scope may be better.
+
+## Using fluxopctl
+
+The easiest way to install flux-operator is with `fluxopctl`. Install it:
+
+```
+go install github.com/justinbarrick/flux-operator/cmd/fluxopctl
+```
+
+You can then setup your cluster:
+
+```
+fluxopctl |kubectl apply -f -
+```
+
+This will setup namespaced flux-operator. 
+
+The default settings should be sufficient for most users, but flux-operator
+settings can be tuned via command line arguments.
+
+For example, to install flux-operator at the cluster-scope, run:
+
+```
+fluxopctl -cluster |kubectl apply -f -
+```
+
+See: `fluxopctl -help` for a full list of arguments.
+
+## Manual
 
 ### Namespaced scope
 
@@ -38,7 +98,7 @@ to deploy your CRs Cluster scoped:
 kubectl apply -f deploy/flux-crd-cluster.yaml
 ```
 
-## Deploy flux operator
+### Deploy flux operator
 
 Now, deploy the flux operator:
 

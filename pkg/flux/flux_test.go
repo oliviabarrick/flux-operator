@@ -1,9 +1,11 @@
 package flux
 
 import (
+	"fmt"
 	"sort"
 	"testing"
 	"github.com/stretchr/testify/assert"
+	"github.com/justinbarrick/flux-operator/pkg/utils"
 	"github.com/justinbarrick/flux-operator/pkg/utils/test"
 	"github.com/justinbarrick/flux-operator/pkg/memcached"
 )
@@ -89,7 +91,7 @@ func TestNewFluxDeployment(t *testing.T) {
 	assert.Equal(t, *pod.Volumes[0].VolumeSource.Secret.DefaultMode, int32(0400))
 
 	c := pod.Containers[0]
-	assert.Equal(t, c.Image, "quay.io/weaveworks/flux:1.4.0")
+	assert.Equal(t, c.Image, fmt.Sprintf("%s:%s", utils.FluxImage, utils.FluxVersion))
 
 	expectedArgs := MakeFluxArgs(cr)
 	sort.Strings(expectedArgs)

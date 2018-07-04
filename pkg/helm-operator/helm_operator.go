@@ -65,12 +65,12 @@ func NewHelmOperatorDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 		return nil
 	}
 
-	operatorImage := utils.Getenv("HELM_OPERATOR_IMAGE", "quay.io/weaveworks/helm-operator")
+	operatorImage := utils.Getenv("HELM_OPERATOR_IMAGE", utils.HelmOperatorImage)
 	if cr.Spec.HelmOperator.HelmOperatorImage != "" {
 		operatorImage = cr.Spec.HelmOperator.HelmOperatorImage
 	}
 
-	operatorVersion := utils.Getenv("HELM_OPERATOR_VERSION", "master-1dfdc61")
+	operatorVersion := utils.Getenv("HELM_OPERATOR_VERSION", utils.HelmOperatorVersion)
 	if cr.Spec.HelmOperator.HelmOperatorVersion != "" {
 		operatorVersion = cr.Spec.HelmOperator.HelmOperatorVersion
 	}

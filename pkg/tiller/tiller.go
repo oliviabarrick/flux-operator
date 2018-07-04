@@ -26,12 +26,12 @@ func TillerManifest(asStr string, out interface{}) (error) {
 
 // Create Tiller installation options from a CR.
 func TillerOptions(cr *v1alpha1.Flux) *installer.Options {
-	tillerImage := utils.Getenv("TILLER_IMAGE", "gcr.io/kubernetes-helm/tiller")
+	tillerImage := utils.Getenv("TILLER_IMAGE", utils.TillerImage)
 	if cr.Spec.Tiller.TillerImage != "" {
 		tillerImage = cr.Spec.Tiller.TillerImage
 	}
 
-	tillerVersion := utils.Getenv("TILLER_VERSION", "v2.9.1")
+	tillerVersion := utils.Getenv("TILLER_VERSION", utils.TillerVersion)
 	if cr.Spec.Tiller.TillerVersion != "" {
 		tillerVersion = cr.Spec.Tiller.TillerVersion
 	}
