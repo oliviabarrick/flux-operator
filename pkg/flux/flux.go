@@ -66,12 +66,12 @@ func MakeFluxArgs(cr *v1alpha1.Flux) (args []string) {
 
 // NewFluxDeployment creates a new flux pod
 func NewFluxDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
-	fluxImage := utils.Getenv("FLUX_IMAGE", "quay.io/weaveworks/flux")
+	fluxImage := utils.Getenv("FLUX_IMAGE", utils.FluxImage)
 	if cr.Spec.FluxImage != "" {
 		fluxImage = cr.Spec.FluxImage
 	}
 
-	fluxVersion := utils.Getenv("FLUX_VERSION", "1.4.0")
+	fluxVersion := utils.Getenv("FLUX_VERSION", utils.FluxVersion)
 	if cr.Spec.FluxVersion != "" {
 		fluxVersion = cr.Spec.FluxVersion
 	}
