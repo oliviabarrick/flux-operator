@@ -3,11 +3,11 @@ package memcached
 import (
 	"fmt"
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
+	"github.com/justinbarrick/flux-operator/pkg/utils"
 	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	extensions "k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	"github.com/justinbarrick/flux-operator/pkg/utils"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
@@ -69,10 +69,10 @@ func NewMemcachedDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{
 						{
-							Name:    "memcached",
-							Image:   fmt.Sprintf("%s:%s", memcachedImage, memcachedVersion),
+							Name:            "memcached",
+							Image:           fmt.Sprintf("%s:%s", memcachedImage, memcachedVersion),
 							ImagePullPolicy: "IfNotPresent",
-							Args: []string{"-m 64", "-p 11211", "-vv"},
+							Args:            []string{"-m 64", "-p 11211", "-vv"},
 							Ports: []corev1.ContainerPort{
 								corev1.ContainerPort{
 									ContainerPort: 11211,
@@ -81,11 +81,11 @@ func NewMemcachedDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 							Resources: corev1.ResourceRequirements{
 								Limits: corev1.ResourceList{
 									corev1.ResourceMemory: resource.MustParse("512Mi"),
-									corev1.ResourceCPU: resource.MustParse("500m"),
+									corev1.ResourceCPU:    resource.MustParse("500m"),
 								},
 								Requests: corev1.ResourceList{
 									corev1.ResourceMemory: resource.MustParse("64Mi"),
-									corev1.ResourceCPU: resource.MustParse("100m"),
+									corev1.ResourceCPU:    resource.MustParse("100m"),
 								},
 							},
 						},

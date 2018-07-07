@@ -7,8 +7,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/operator-framework/operator-sdk/pkg/sdk"
-	"k8s.io/apimachinery/pkg/runtime"
 	"github.com/sirupsen/logrus"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // Remove any resources that should no longer exist.

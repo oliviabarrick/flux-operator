@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"runtime"
 	"os"
+	"runtime"
 
 	stub "github.com/justinbarrick/flux-operator/pkg/stub"
 	sdk "github.com/operator-framework/operator-sdk/pkg/sdk"

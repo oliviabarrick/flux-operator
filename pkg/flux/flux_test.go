@@ -2,12 +2,12 @@ package flux
 
 import (
 	"fmt"
-	"sort"
-	"testing"
-	"github.com/stretchr/testify/assert"
+	"github.com/justinbarrick/flux-operator/pkg/memcached"
 	"github.com/justinbarrick/flux-operator/pkg/utils"
 	"github.com/justinbarrick/flux-operator/pkg/utils/test"
-	"github.com/justinbarrick/flux-operator/pkg/memcached"
+	"github.com/stretchr/testify/assert"
+	"sort"
+	"testing"
 )
 
 func TestMakeFluxArgs(t *testing.T) {

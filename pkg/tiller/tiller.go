@@ -6,16 +6,16 @@ import (
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
 	"github.com/justinbarrick/flux-operator/pkg/rbac"
 	"github.com/justinbarrick/flux-operator/pkg/utils"
+	corev1 "k8s.io/api/core/v1"
+	extensions "k8s.io/api/extensions/v1beta1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/yaml"
 	"k8s.io/helm/cmd/helm/installer"
-	extensions "k8s.io/api/extensions/v1beta1"
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // Decode a YAML manifest into `out`.
-func TillerManifest(asStr string, out interface{}) (error) {
+func TillerManifest(asStr string, out interface{}) error {
 	err := yaml.NewYAMLOrJSONDecoder(bytes.NewBufferString(asStr), len(asStr)).Decode(out)
 	if err != nil {
 		return err
@@ -37,9 +37,9 @@ func TillerOptions(cr *v1alpha1.Flux) *installer.Options {
 	}
 
 	return &installer.Options{
-		Namespace: utils.FluxNamespace(cr),
+		Namespace:      utils.FluxNamespace(cr),
 		ServiceAccount: rbac.ServiceAccountName(cr),
-		ImageSpec: fmt.Sprintf("%s:%s", tillerImage, tillerVersion),
+		ImageSpec:      fmt.Sprintf("%s:%s", tillerImage, tillerVersion),
 	}
 }
 
@@ -52,7 +52,7 @@ func TillerName(cr *v1alpha1.Flux) string {
 func NewTillerObjectMeta(cr *v1alpha1.Flux) metav1.ObjectMeta {
 	meta := utils.NewObjectMeta(cr, TillerName(cr))
 	meta.Labels = map[string]string{
-		"app": "helm",
+		"app":  "helm",
 		"name": "tiller",
 	}
 	return meta
@@ -106,7 +106,7 @@ func NewTillerService(cr *v1alpha1.Flux) (*corev1.Service, error) {
 
 // Return all objects required to make tiller.
 func NewTiller(cr *v1alpha1.Flux) (objects []runtime.Object, err error) {
-	if ! cr.Spec.Tiller.Enabled {
+	if !cr.Spec.Tiller.Enabled {
 		return
 	}
 

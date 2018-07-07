@@ -4,11 +4,11 @@ import (
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
 	"github.com/justinbarrick/flux-operator/pkg/utils"
 
-	corev1 "k8s.io/api/core/v1"
 	"github.com/operator-framework/operator-sdk/pkg/sdk"
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/api/meta"
 	"github.com/sirupsen/logrus"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/meta"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // Create or update desiredObjs based on the current state in existingObjs
@@ -33,9 +33,9 @@ func CreateOrUpdate(cr *v1alpha1.Flux, existingObjs []runtime.Object, desiredObj
 		}
 
 		switch desired.(type) {
-			case *corev1.Service:
-				service := desired.(*corev1.Service)
-				service.Spec.ClusterIP = existing.(*corev1.Service).Spec.ClusterIP
+		case *corev1.Service:
+			service := desired.(*corev1.Service)
+			service.Spec.ClusterIP = existing.(*corev1.Service).Spec.ClusterIP
 		}
 
 		existingMeta, _ := meta.Accessor(existing)

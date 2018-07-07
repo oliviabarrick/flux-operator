@@ -2,15 +2,15 @@ package flux
 
 import (
 	"fmt"
-	"sort"
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
-	"github.com/justinbarrick/flux-operator/pkg/rbac"
 	"github.com/justinbarrick/flux-operator/pkg/memcached"
+	"github.com/justinbarrick/flux-operator/pkg/rbac"
+	"github.com/justinbarrick/flux-operator/pkg/utils"
 	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	extensions "k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	"github.com/justinbarrick/flux-operator/pkg/utils"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sort"
 )
 
 func GitSecretName(cr *v1alpha1.Flux) string {
@@ -18,7 +18,7 @@ func GitSecretName(cr *v1alpha1.Flux) string {
 
 	if cr.Spec.GitSecret != "" {
 		secretName = cr.Spec.GitSecret
-  }
+	}
 
 	return secretName
 }
@@ -41,13 +41,13 @@ func MakeFluxArgs(cr *v1alpha1.Flux) (args []string) {
 	}
 
 	argMap := map[string]string{
-		"git-url": cr.Spec.GitUrl,
-		"git-branch": branch,
-		"git-sync-tag": fmt.Sprintf("flux-sync-%s", cr.Name),
-		"git-path": path,
-		"git-poll-interval": poll,
-		"k8s-secret-name": GitSecretName(cr),
-		"ssh-keygen-dir": "/etc/fluxd/",
+		"git-url":            cr.Spec.GitUrl,
+		"git-branch":         branch,
+		"git-sync-tag":       fmt.Sprintf("flux-sync-%s", cr.Name),
+		"git-path":           path,
+		"git-poll-interval":  poll,
+		"k8s-secret-name":    GitSecretName(cr),
+		"ssh-keygen-dir":     "/etc/fluxd/",
 		"memcached-hostname": memcached.MemcachedName(cr),
 	}
 
@@ -78,7 +78,7 @@ func NewFluxDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 
 	meta := utils.NewObjectMeta(cr, "")
 	labels := map[string]string{
-		"app": "flux",
+		"app":  "flux",
 		"flux": cr.Name,
 	}
 
@@ -109,7 +109,7 @@ func NewFluxDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 							Name: "git-key",
 							VolumeSource: corev1.VolumeSource{
 								Secret: &corev1.SecretVolumeSource{
-									SecretName: GitSecretName(cr),
+									SecretName:  GitSecretName(cr),
 									DefaultMode: &secretMode,
 								},
 							},
@@ -117,8 +117,8 @@ func NewFluxDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 					},
 					Containers: []corev1.Container{
 						{
-							Name:    "flux",
-							Image:   fmt.Sprintf("%s:%s", fluxImage, fluxVersion),
+							Name:            "flux",
+							Image:           fmt.Sprintf("%s:%s", fluxImage, fluxVersion),
 							ImagePullPolicy: "IfNotPresent",
 							Ports: []corev1.ContainerPort{
 								corev1.ContainerPort{
@@ -127,20 +127,20 @@ func NewFluxDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 							},
 							VolumeMounts: []corev1.VolumeMount{
 								corev1.VolumeMount{
-									Name: "git-key",
+									Name:      "git-key",
 									MountPath: "/etc/fluxd/ssh",
-									ReadOnly: true,
+									ReadOnly:  true,
 								},
 							},
 							Args: MakeFluxArgs(cr),
 							Resources: corev1.ResourceRequirements{
 								Limits: corev1.ResourceList{
 									corev1.ResourceMemory: resource.MustParse("512Mi"),
-									corev1.ResourceCPU: resource.MustParse("500m"),
+									corev1.ResourceCPU:    resource.MustParse("500m"),
 								},
 								Requests: corev1.ResourceList{
 									corev1.ResourceMemory: resource.MustParse("128Mi"),
-									corev1.ResourceCPU: resource.MustParse("250m"),
+									corev1.ResourceCPU:    resource.MustParse("250m"),
 								},
 							},
 						},
@@ -153,11 +153,11 @@ func NewFluxDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 
 func NewFluxSSHKey(cr *v1alpha1.Flux) *corev1.Secret {
 	return &corev1.Secret{
-			TypeMeta: metav1.TypeMeta{
+		TypeMeta: metav1.TypeMeta{
 			Kind:       "Secret",
 			APIVersion: "v1",
 		},
 		ObjectMeta: utils.NewObjectMeta(cr, GitSecretName(cr)),
-		Type: "opaque",
+		Type:       "opaque",
 	}
 }

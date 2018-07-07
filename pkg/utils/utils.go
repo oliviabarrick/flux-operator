@@ -2,28 +2,28 @@ package utils
 
 import (
 	"fmt"
+	"github.com/cnf/structhash"
+	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
+	"k8s.io/apimachinery/pkg/api/meta"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"os"
 	"strconv"
-	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/api/meta"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/labels"
-	"github.com/cnf/structhash"
 )
 
 const (
-	FLUX_LABEL = "flux.codesink.net.flux"
-	FluxOperatorImage = "justinbarrick/flux-operator"
-	FluxImage = "quay.io/weaveworks/flux"
-	FluxVersion = "1.4.2"
-	HelmOperatorImage = "quay.io/weaveworks/helm-operator"
+	FLUX_LABEL          = "flux.codesink.net.flux"
+	FluxOperatorImage   = "justinbarrick/flux-operator"
+	FluxImage           = "quay.io/weaveworks/flux"
+	FluxVersion         = "1.4.2"
+	HelmOperatorImage   = "quay.io/weaveworks/helm-operator"
 	HelmOperatorVersion = "master-1dfdc61"
-	MemcachedImage = "memcached"
-	MemcachedVersion = "1.4.36-alpine"
-	TillerImage = "gcr.io/kubernetes-helm/tiller"
-	TillerVersion = "v2.9.1"
+	MemcachedImage      = "memcached"
+	MemcachedVersion    = "1.4.36-alpine"
+	TillerImage         = "gcr.io/kubernetes-helm/tiller"
+	TillerVersion       = "v2.9.1"
 )
 
 // Get an environment variable, pass through strconv.ParseBool, return false if there
@@ -134,14 +134,14 @@ func SetObjectOwner(cr *v1alpha1.Flux, obj runtime.Object) {
 
 // Takes a Kubernetes object and returns the hash in its annotations as a string.
 func GetObjectHash(obj runtime.Object) string {
-		objectMeta, _ := meta.Accessor(obj)
+	objectMeta, _ := meta.Accessor(obj)
 
-		annotations := objectMeta.GetAnnotations()
-		if annotations == nil {
-			annotations = map[string]string{}
-		}
+	annotations := objectMeta.GetAnnotations()
+	if annotations == nil {
+		annotations = map[string]string{}
+	}
 
-		return annotations["flux.codesink.net.hash"]
+	return annotations["flux.codesink.net.hash"]
 }
 
 // Takes a Kubernetes object and adds an annotation with its hash.
@@ -194,7 +194,7 @@ func ObjectName(object runtime.Object) string {
 		return err.Error()
 	}
 
-	return fmt.Sprintf("%s:%s/%s", objectMeta.GetNamespace(), 
+	return fmt.Sprintf("%s:%s/%s", objectMeta.GetNamespace(),
 		object.GetObjectKind().GroupVersionKind().Kind,
 		objectMeta.GetName())
 }

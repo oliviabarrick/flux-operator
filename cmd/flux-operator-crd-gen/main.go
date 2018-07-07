@@ -4,8 +4,8 @@ package main
 
 import (
 	"flag"
-	v1alpha1 "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
 	crdutils "github.com/ant31/crd-validation/pkg"
+	v1alpha1 "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
 	"os"
 )
 
