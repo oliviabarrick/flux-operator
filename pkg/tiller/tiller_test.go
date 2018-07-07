@@ -1,14 +1,14 @@
 package tiller
 
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
-	"github.com/justinbarrick/flux-operator/pkg/utils/test"
-	"github.com/justinbarrick/flux-operator/pkg/utils"
 	"github.com/justinbarrick/flux-operator/pkg/rbac"
-	"k8s.io/helm/cmd/helm/installer"
+	"github.com/justinbarrick/flux-operator/pkg/utils"
+	"github.com/justinbarrick/flux-operator/pkg/utils/test"
+	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
 	extensions "k8s.io/api/extensions/v1beta1"
+	"k8s.io/helm/cmd/helm/installer"
+	"testing"
 )
 
 func TestTillerName(t *testing.T) {
@@ -19,9 +19,9 @@ func TestTillerName(t *testing.T) {
 func TestTillerOptions(t *testing.T) {
 	cr := test_utils.NewFlux()
 	assert.Equal(t, *TillerOptions(cr), installer.Options{
-		Namespace: utils.FluxNamespace(cr),
+		Namespace:      utils.FluxNamespace(cr),
 		ServiceAccount: rbac.ServiceAccountName(cr),
-		ImageSpec: "gcr.io/kubernetes-helm/tiller:v2.9.1",
+		ImageSpec:      "gcr.io/kubernetes-helm/tiller:v2.9.1",
 	})
 }
 
@@ -31,9 +31,9 @@ func TestTillerImageOverride(t *testing.T) {
 	cr.Spec.Tiller.TillerVersion = "version"
 
 	assert.Equal(t, *TillerOptions(cr), installer.Options{
-		Namespace: utils.FluxNamespace(cr),
+		Namespace:      utils.FluxNamespace(cr),
 		ServiceAccount: rbac.ServiceAccountName(cr),
-		ImageSpec: "tiller:version",
+		ImageSpec:      "tiller:version",
 	})
 }
 

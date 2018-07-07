@@ -4,12 +4,12 @@ import (
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
 	"github.com/justinbarrick/flux-operator/pkg/utils"
 
+	"github.com/operator-framework/operator-sdk/pkg/sdk"
 	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	extensions "k8s.io/api/extensions/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
-	"github.com/operator-framework/operator-sdk/pkg/sdk"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
@@ -18,49 +18,49 @@ func ExistingFluxObjects(cr *v1alpha1.Flux) (existing []runtime.Object, err erro
 	lists := []runtime.Object{
 		&extensions.DeploymentList{
 			TypeMeta: metav1.TypeMeta{
-				Kind: "Deployment",
+				Kind:       "Deployment",
 				APIVersion: "extensions/v1beta1",
 			},
 		},
 		&corev1.ServiceList{
 			TypeMeta: metav1.TypeMeta{
-				Kind: "Service",
+				Kind:       "Service",
 				APIVersion: "v1",
 			},
 		},
 		&corev1.SecretList{
 			TypeMeta: metav1.TypeMeta{
-				Kind: "Secret",
+				Kind:       "Secret",
 				APIVersion: "v1",
 			},
 		},
 		&corev1.ServiceAccountList{
 			TypeMeta: metav1.TypeMeta{
-				Kind: "ServiceAccount",
+				Kind:       "ServiceAccount",
 				APIVersion: "v1",
 			},
 		},
 		&rbacv1.ClusterRoleList{
 			TypeMeta: metav1.TypeMeta{
-				Kind: "ClusterRole",
+				Kind:       "ClusterRole",
 				APIVersion: "rbac.authorization.k8s.io/v1",
 			},
 		},
 		&rbacv1.ClusterRoleBindingList{
 			TypeMeta: metav1.TypeMeta{
-				Kind: "ClusterRoleBinding",
+				Kind:       "ClusterRoleBinding",
 				APIVersion: "rbac.authorization.k8s.io/v1",
 			},
 		},
 		&rbacv1.RoleList{
 			TypeMeta: metav1.TypeMeta{
-				Kind: "Role",
+				Kind:       "Role",
 				APIVersion: "rbac.authorization.k8s.io/v1",
 			},
 		},
 		&rbacv1.RoleBindingList{
 			TypeMeta: metav1.TypeMeta{
-				Kind: "RoleBinding",
+				Kind:       "RoleBinding",
 				APIVersion: "rbac.authorization.k8s.io/v1",
 			},
 		},

@@ -2,14 +2,14 @@ package installer
 
 import (
 	"fmt"
-	"strconv"
-	"testing"
-	"github.com/stretchr/testify/assert"
 	"github.com/justinbarrick/flux-operator/pkg/utils"
+	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
 	v1beta1 "k8s.io/api/extensions/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	extensions "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
+	"strconv"
+	"testing"
 )
 
 func TestGetName(t *testing.T) {
@@ -28,7 +28,7 @@ func TestGetServiceAccountNameName(t *testing.T) {
 
 	assert.Equal(t, "", GetServiceAccountName(FluxOperatorConfig{
 		DisableRBAC: true,
-		Name: "my-name",
+		Name:        "my-name",
 	}))
 }
 
@@ -61,7 +61,7 @@ func TestNewFluxCRD(t *testing.T) {
 
 func TestNewFluxHelmReleaseCRD(t *testing.T) {
 	fluxCrd := NewFluxHelmReleaseCRD(FluxOperatorConfig{})
-	assert.Equal(t,  extensions.ResourceScope("Namespaced"), fluxCrd.Spec.Scope)
+	assert.Equal(t, extensions.ResourceScope("Namespaced"), fluxCrd.Spec.Scope)
 	assert.Equal(t, "FluxHelmRelease", fluxCrd.Spec.Names.Kind)
 	assert.Equal(t, "fluxhelmreleases", fluxCrd.Spec.Names.Plural)
 	assert.Equal(t, "FluxHelmReleaseList", fluxCrd.Spec.Names.ListKind)
@@ -81,28 +81,28 @@ func TestNewFluxOperatorDeploymentGitSecret(t *testing.T) {
 
 func TestNewFluxOperatorDeploymentFluxImage(t *testing.T) {
 	testFluxOperatorDeployment(t, FluxOperatorConfig{
-		FluxImage: "myimage",
+		FluxImage:   "myimage",
 		FluxVersion: "myversion",
 	})
 }
 
 func TestNewFluxOperatorDeploymentHelmOperatorImage(t *testing.T) {
 	testFluxOperatorDeployment(t, FluxOperatorConfig{
-		HelmOperatorImage: "myimage",
+		HelmOperatorImage:   "myimage",
 		HelmOperatorVersion: "myversion",
 	})
 }
 
 func TestNewFluxOperatorDeploymentMemcachedImage(t *testing.T) {
 	testFluxOperatorDeployment(t, FluxOperatorConfig{
-		MemcachedImage: "myimage",
+		MemcachedImage:   "myimage",
 		MemcachedVersion: "myversion",
 	})
 }
 
 func TestNewFluxOperatorDeploymentTillerImage(t *testing.T) {
 	testFluxOperatorDeployment(t, FluxOperatorConfig{
-		TillerImage: "myimage",
+		TillerImage:   "myimage",
 		TillerVersion: "myversion",
 	})
 }

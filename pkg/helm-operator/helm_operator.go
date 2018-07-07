@@ -2,16 +2,16 @@ package helm_operator
 
 import (
 	"fmt"
-	"sort"
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
-	"github.com/justinbarrick/flux-operator/pkg/rbac"
 	"github.com/justinbarrick/flux-operator/pkg/flux"
+	"github.com/justinbarrick/flux-operator/pkg/rbac"
 	"github.com/justinbarrick/flux-operator/pkg/tiller"
+	"github.com/justinbarrick/flux-operator/pkg/utils"
 	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	extensions "k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	"github.com/justinbarrick/flux-operator/pkg/utils"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sort"
 )
 
 // Create helm-operator command arguments from CR
@@ -41,13 +41,13 @@ func MakeHelmOperatorArgs(cr *v1alpha1.Flux) (args []string) {
 	}
 
 	argMap := map[string]string{
-		"git-url": gitUrl,
-		"git-branch": branch,
-		"git-charts-path": path,
+		"git-url":              gitUrl,
+		"git-branch":           branch,
+		"git-charts-path":      path,
 		"charts-sync-interval": poll,
-		"tiller-namespace": utils.FluxNamespace(cr),
-		"tiller-ip": tiller.TillerName(cr),
-		"tiller-port": "44134",
+		"tiller-namespace":     utils.FluxNamespace(cr),
+		"tiller-ip":            tiller.TillerName(cr),
+		"tiller-port":          "44134",
 	}
 
 	for key, value := range argMap {
@@ -61,7 +61,7 @@ func MakeHelmOperatorArgs(cr *v1alpha1.Flux) (args []string) {
 
 // NewHelmOperatorDeployment creates a new helm-operator deployment
 func NewHelmOperatorDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
-	if ! cr.Spec.HelmOperator.Enabled {
+	if !cr.Spec.HelmOperator.Enabled {
 		return nil
 	}
 
@@ -76,7 +76,7 @@ func NewHelmOperatorDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 	}
 
 	labels := map[string]string{
-		"app": "helm-operator",
+		"app":  "helm-operator",
 		"flux": cr.Name,
 	}
 
@@ -108,7 +108,7 @@ func NewHelmOperatorDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 							Name: "git-key",
 							VolumeSource: corev1.VolumeSource{
 								Secret: &corev1.SecretVolumeSource{
-									SecretName: flux.GitSecretName(cr),
+									SecretName:  flux.GitSecretName(cr),
 									DefaultMode: &secretMode,
 								},
 							},
@@ -116,25 +116,25 @@ func NewHelmOperatorDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 					},
 					Containers: []corev1.Container{
 						{
-							Name:    "helm-operator",
-							Image:   fmt.Sprintf("%s:%s", operatorImage, operatorVersion),
+							Name:            "helm-operator",
+							Image:           fmt.Sprintf("%s:%s", operatorImage, operatorVersion),
 							ImagePullPolicy: "IfNotPresent",
 							VolumeMounts: []corev1.VolumeMount{
 								corev1.VolumeMount{
-									Name: "git-key",
+									Name:      "git-key",
 									MountPath: "/etc/fluxd/ssh",
-									ReadOnly: true,
+									ReadOnly:  true,
 								},
 							},
 							Args: MakeHelmOperatorArgs(cr),
 							Resources: corev1.ResourceRequirements{
 								Limits: corev1.ResourceList{
 									corev1.ResourceMemory: resource.MustParse("512Mi"),
-									corev1.ResourceCPU: resource.MustParse("1000m"),
+									corev1.ResourceCPU:    resource.MustParse("1000m"),
 								},
 								Requests: corev1.ResourceList{
 									corev1.ResourceMemory: resource.MustParse("128Mi"),
-									corev1.ResourceCPU: resource.MustParse("250m"),
+									corev1.ResourceCPU:    resource.MustParse("250m"),
 								},
 							},
 						},

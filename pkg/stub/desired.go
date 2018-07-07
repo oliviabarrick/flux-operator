@@ -10,8 +10,8 @@ import (
 	"github.com/justinbarrick/flux-operator/pkg/utils"
 
 	"github.com/operator-framework/operator-sdk/pkg/sdk"
-	"k8s.io/apimachinery/pkg/runtime"
 	"github.com/sirupsen/logrus"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 // Create flux, tiller, and helm-operator instances from a CR and return them

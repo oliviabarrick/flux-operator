@@ -34,9 +34,11 @@ generate-crds: clean deploy/flux-crd-namespaced.yaml deploy/flux-crd-cluster.yam
 install: $(GOBIN)/flux-operator-crd-gen
 
 test:
+	test -z $(shell gofmt -l ./cmd ./pkg)
 	go test github.com/justinbarrick/flux-operator/...
 
 build:
+	gofmt -w ./cmd ./pkg
 	CGO_ENABLED=0 go build -ldflags '-w -s' -installsuffix cgo -o flux-operator cmd/flux-operator/main.go
 
 clean:

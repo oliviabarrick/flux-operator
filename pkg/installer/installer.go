@@ -2,20 +2,20 @@ package installer
 
 import (
 	"fmt"
-	"reflect"
-	"os"
-	"strconv"
-	"k8s.io/apimachinery/pkg/runtime"
-	v1beta1 "k8s.io/api/extensions/v1beta1"
-	corev1 "k8s.io/api/core/v1"
-	extensions "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	v1alpha1 "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
-	rbacv1 "k8s.io/api/rbac/v1"
 	crdutils "github.com/ant31/crd-validation/pkg"
-	"k8s.io/apimachinery/pkg/api/resource"
-	"k8s.io/apimachinery/pkg/runtime/serializer/json"
+	v1alpha1 "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
 	"github.com/justinbarrick/flux-operator/pkg/utils"
+	corev1 "k8s.io/api/core/v1"
+	v1beta1 "k8s.io/api/extensions/v1beta1"
+	rbacv1 "k8s.io/api/rbac/v1"
+	extensions "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
+	"k8s.io/apimachinery/pkg/api/resource"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/serializer/json"
+	"os"
+	"reflect"
+	"strconv"
 )
 
 // Represents the configuration for a flux-operator instance.
@@ -127,13 +127,13 @@ func NewFluxCRD(config FluxOperatorConfig) *extensions.CustomResourceDefinition 
 
 	spec := "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.Flux"
 	return crdutils.NewCustomResourceDefinition(crdutils.Config{
-		SpecDefinitionName: spec,
-		EnableValidation: true,
-		ResourceScope: scope,
-		Group: "flux.codesink.net",
-		Kind: "Flux",
-		Version: "v1alpha1",
-		Plural: "fluxes",
+		SpecDefinitionName:    spec,
+		EnableValidation:      true,
+		ResourceScope:         scope,
+		Group:                 "flux.codesink.net",
+		Kind:                  "Flux",
+		Version:               "v1alpha1",
+		Plural:                "fluxes",
 		GetOpenAPIDefinitions: v1alpha1.GetOpenAPIDefinitions,
 	})
 }
@@ -142,20 +142,20 @@ func NewFluxCRD(config FluxOperatorConfig) *extensions.CustomResourceDefinition 
 func NewFluxHelmReleaseCRD(FluxOperatorConfig) *extensions.CustomResourceDefinition {
 	return &extensions.CustomResourceDefinition{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "fluxhelmreleases.helm.integrations.flux.weave.works", 
+			Name: "fluxhelmreleases.helm.integrations.flux.weave.works",
 		},
 		TypeMeta: metav1.TypeMeta{
-			Kind: "CustomResourceDefinition",
+			Kind:       "CustomResourceDefinition",
 			APIVersion: "apiextensions.k8s.io/v1beta1",
 		},
 		Spec: extensions.CustomResourceDefinitionSpec{
 			Group: "helm.integrations.flux.weave.works",
 			Names: extensions.CustomResourceDefinitionNames{
-				Kind: "FluxHelmRelease",
+				Kind:     "FluxHelmRelease",
 				ListKind: "FluxHelmReleaseList",
-				Plural: "fluxhelmreleases",
+				Plural:   "fluxhelmreleases",
 			},
-			Scope: "Namespaced",
+			Scope:   "Namespaced",
 			Version: "v1alpha2",
 		},
 	}
@@ -175,7 +175,7 @@ func NewFluxOperatorDeployment(config FluxOperatorConfig) *v1beta1.Deployment {
 			APIVersion: "extensions/v1beta1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "flux-operator",
+			Name:      "flux-operator",
 			Namespace: GetNamespace(config),
 		},
 		Spec: v1beta1.DeploymentSpec{
@@ -191,67 +191,67 @@ func NewFluxOperatorDeployment(config FluxOperatorConfig) *v1beta1.Deployment {
 					ServiceAccountName: GetServiceAccountName(config),
 					Containers: []corev1.Container{
 						{
-							Name:    "flux-operator",
-							Image: GetFluxOperatorImage(config),
+							Name:            "flux-operator",
+							Image:           GetFluxOperatorImage(config),
 							ImagePullPolicy: "IfNotPresent",
 							Env: []corev1.EnvVar{
 								corev1.EnvVar{
-									Name: "WATCH_NAMESPACE",
+									Name:  "WATCH_NAMESPACE",
 									Value: GetNamespace(config),
 								},
 								corev1.EnvVar{
-									Name: "GIT_SECRET_NAME",
+									Name:  "GIT_SECRET_NAME",
 									Value: config.GitSecret,
 								},
 								corev1.EnvVar{
-									Name: "FLUX_IMAGE",
+									Name:  "FLUX_IMAGE",
 									Value: config.FluxImage,
 								},
 								corev1.EnvVar{
-									Name: "FLUX_VERSION",
+									Name:  "FLUX_VERSION",
 									Value: config.FluxVersion,
 								},
 								corev1.EnvVar{
-									Name: "HELM_OPERATOR_IMAGE",
+									Name:  "HELM_OPERATOR_IMAGE",
 									Value: config.HelmOperatorImage,
 								},
 								corev1.EnvVar{
-									Name: "HELM_OPERATOR_VERSION",
+									Name:  "HELM_OPERATOR_VERSION",
 									Value: config.HelmOperatorVersion,
 								},
 								corev1.EnvVar{
-									Name: "MEMCACHED_IMAGE",
+									Name:  "MEMCACHED_IMAGE",
 									Value: config.MemcachedImage,
 								},
 								corev1.EnvVar{
-									Name: "MEMCACHED_VERSION",
+									Name:  "MEMCACHED_VERSION",
 									Value: config.MemcachedVersion,
 								},
 								corev1.EnvVar{
-									Name: "TILLER_IMAGE",
+									Name:  "TILLER_IMAGE",
 									Value: config.TillerImage,
 								},
 								corev1.EnvVar{
-									Name: "TILLER_VERSION",
+									Name:  "TILLER_VERSION",
 									Value: config.TillerVersion,
 								},
 								corev1.EnvVar{
-									Name: "FLUX_NAMESPACE",
+									Name:  "FLUX_NAMESPACE",
 									Value: config.FluxNamespace,
 								},
 								corev1.EnvVar{
-									Name: "DISABLE_ROLES",
+									Name:  "DISABLE_ROLES",
 									Value: strconv.FormatBool(config.DisableRoles),
 								},
 								corev1.EnvVar{
-									Name: "DISABLE_CLUSTER_ROLES",
+									Name:  "DISABLE_CLUSTER_ROLES",
 									Value: strconv.FormatBool(config.DisableClusterRoles),
 								},
 							},
 							Resources: corev1.ResourceRequirements{
 								Limits: corev1.ResourceList{
 									corev1.ResourceMemory: resource.MustParse("512Mi"),
-									corev1.ResourceCPU: resource.MustParse("250m"),
+									corev1.ResourceCPU:    resource.MustParse("250m"),
 								},
 							},
 						},
@@ -274,7 +274,7 @@ func NewServiceAccount(config FluxOperatorConfig) *corev1.ServiceAccount {
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: GetServiceAccountName(config),
+			Name:      GetServiceAccountName(config),
 			Namespace: GetNamespace(config),
 		},
 	}
@@ -298,11 +298,11 @@ func NewClusterRole(config FluxOperatorConfig) *rbacv1.ClusterRole {
 			rbacv1.PolicyRule{
 				APIGroups: []string{"*"},
 				Resources: []string{"*"},
-				Verbs: []string{"*"},
+				Verbs:     []string{"*"},
 			},
 			rbacv1.PolicyRule{
 				NonResourceURLs: []string{"*"},
-				Verbs: []string{"*"},
+				Verbs:           []string{"*"},
 			},
 		},
 	}
@@ -324,15 +324,15 @@ func NewClusterRoleBinding(config FluxOperatorConfig) *rbacv1.ClusterRoleBinding
 		},
 		Subjects: []rbacv1.Subject{
 			rbacv1.Subject{
-				Kind: "ServiceAccount",
-				Name: GetServiceAccountName(config),
+				Kind:      "ServiceAccount",
+				Name:      GetServiceAccountName(config),
 				Namespace: GetNamespace(config),
 			},
 		},
 		RoleRef: rbacv1.RoleRef{
 			APIGroup: "rbac.authorization.k8s.io",
-			Kind: "ClusterRole",
-			Name: GetClusterRole(config),
+			Kind:     "ClusterRole",
+			Name:     GetClusterRole(config),
 		},
 	}
 }
@@ -361,7 +361,7 @@ func DryRun(config FluxOperatorConfig) {
 			panic(err)
 		}
 
-		if index + 1 != len(manifests) {
+		if index+1 != len(manifests) {
 			fmt.Println("---")
 		}
 	}

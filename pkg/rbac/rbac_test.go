@@ -1,12 +1,12 @@
 package rbac
 
 import (
-	"os"
-	"testing"
+	"github.com/justinbarrick/flux-operator/pkg/utils/test"
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
-	"github.com/justinbarrick/flux-operator/pkg/utils/test"
+	"os"
+	"testing"
 )
 
 func TestNewServiceAccount(t *testing.T) {
@@ -26,7 +26,7 @@ func TestNewRole(t *testing.T) {
 		rbacv1.PolicyRule{
 			APIGroups: []string{"*"},
 			Resources: []string{"*"},
-			Verbs: []string{"*"},
+			Verbs:     []string{"*"},
 		},
 	}
 
@@ -40,7 +40,7 @@ func TestNewCustomRole(t *testing.T) {
 		rbacv1.PolicyRule{
 			APIGroups: []string{"myapi"},
 			Resources: []string{"pods"},
-			Verbs: []string{"GET"},
+			Verbs:     []string{"GET"},
 		},
 	}
 
@@ -109,11 +109,11 @@ func TestNewClusterRole(t *testing.T) {
 		rbacv1.PolicyRule{
 			APIGroups: []string{"*"},
 			Resources: []string{"*"},
-			Verbs: []string{"*"},
+			Verbs:     []string{"*"},
 		},
 		rbacv1.PolicyRule{
 			NonResourceURLs: []string{"*"},
-			Verbs: []string{"*"},
+			Verbs:           []string{"*"},
 		},
 	}
 
@@ -128,11 +128,11 @@ func TestNewCustomClusterRole(t *testing.T) {
 		rbacv1.PolicyRule{
 			APIGroups: []string{"*"},
 			Resources: []string{"*"},
-			Verbs: []string{"*"},
+			Verbs:     []string{"*"},
 		},
 		rbacv1.PolicyRule{
 			NonResourceURLs: []string{"*"},
-			Verbs: []string{"*"},
+			Verbs:           []string{"*"},
 		},
 	}
 
@@ -149,7 +149,7 @@ func TestNewClusterRoleDefaultListAllNamespaces(t *testing.T) {
 		rbacv1.PolicyRule{
 			APIGroups: []string{""},
 			Resources: []string{"namespaces"},
-			Verbs: []string{"get", "watch", "list"},
+			Verbs:     []string{"get", "watch", "list"},
 		},
 	}
 
@@ -164,7 +164,7 @@ func TestNewClusterRoleDisabledByEnvironmentVariable(t *testing.T) {
 		rbacv1.PolicyRule{
 			APIGroups: []string{"*"},
 			Resources: []string{"*"},
-			Verbs: []string{"*"},
+			Verbs:     []string{"*"},
 		},
 	}
 
@@ -177,7 +177,7 @@ func TestNewClusterRoleDisabledByEnvironmentVariable(t *testing.T) {
 		rbacv1.PolicyRule{
 			APIGroups: []string{""},
 			Resources: []string{"namespaces"},
-			Verbs: []string{"get", "watch", "list"},
+			Verbs:     []string{"get", "watch", "list"},
 		},
 	})
 }

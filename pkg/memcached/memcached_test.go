@@ -1,17 +1,17 @@
 package memcached
 
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
 	"github.com/justinbarrick/flux-operator/pkg/utils/test"
+	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
 	extensions "k8s.io/api/extensions/v1beta1"
+	"testing"
 )
 
 func TestMemcachedName(t *testing.T) {
 	cr := test_utils.NewFlux()
 	name := MemcachedName(cr)
-	assert.Equal(t, name, "flux-" + cr.ObjectMeta.Name + "-memcached")
+	assert.Equal(t, name, "flux-"+cr.ObjectMeta.Name+"-memcached")
 }
 
 func TestNewMemcachedDeployment(t *testing.T) {
