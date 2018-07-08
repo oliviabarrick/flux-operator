@@ -117,7 +117,5 @@ func TestNewFluxcloudDisabled(t *testing.T) {
 
 	objects := NewFluxcloud(cr)
 
-	assert.Equal(t, len(objects), 2)
-	assert.Nil(t, objects[0])
-	assert.Nil(t, objects[1])
+	assert.Equal(t, len(objects), 0)
 }

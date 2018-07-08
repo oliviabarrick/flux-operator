@@ -141,5 +141,9 @@ func NewFluxcloudDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 
 // Create all of the resources necessary to create a memcached instance.
 func NewFluxcloud(cr *v1alpha1.Flux) []runtime.Object {
+	if cr.Spec.FluxCloud.Enabled == false {
+		return []runtime.Object{}
+	}
+
 	return []runtime.Object{NewFluxcloudDeployment(cr), NewFluxcloudService(cr)}
 }

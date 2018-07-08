@@ -120,6 +120,7 @@ func SetObjectOwner(cr *v1alpha1.Flux, obj runtime.Object) {
 	objectMeta, err := meta.Accessor(obj)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
 	labels := objectMeta.GetLabels()
