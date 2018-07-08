@@ -53,6 +53,28 @@ type FluxSpec struct {
 	Tiller Tiller `json:"tiller,omitempty"`
 	// The Helm Operator settings.
 	HelmOperator HelmOperator `json:"helmOperator,omitempty"`
+	// The Fluxcloud settings
+	FluxCloud FluxCloud `json:"fluxCloud,omitempty"`
+}
+
+type FluxCloud struct {
+	// If enabled, a fluxcloud instance will be deployed to deliver slack notifications
+	// to a slack channel.
+	Enabled bool `json:"enabled,omitempty"`
+	// Fluxcloud image to use.
+	FluxCloudImage string `json:"fluxCloudImage,omitempty"`
+	// Fluxcloud image version to use.
+	FluxCloudVersion string `json:"fluxCloudVersion,omitempty"`
+	// Github URL to use in Slack notifications (required).
+	GithubURL string `json:"githubUrl"`
+	// Slack webhook URL to use (required).
+	SlackURL string `json:"slackUrl"`
+	// Channel to send slack notifications to (required).
+	SlackChannel string `json:"slackChannel"`
+	// Slack username to use when sending slack messages (default: `Flux Deployer`)
+	SlackUsername string `json:"slackUser,omitempty"`
+	// Icon emoji to use when sending slack messages (default: `:star-struck:`)
+	SlackIconEmoji string `json:"slackIconEmoji,omitempty"`
 }
 
 // Represents a Role or ClusterRole for the Flux service account user.

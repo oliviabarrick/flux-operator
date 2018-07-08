@@ -3,6 +3,7 @@ package flux
 import (
 	"fmt"
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
+	"github.com/justinbarrick/flux-operator/pkg/fluxcloud"
 	"github.com/justinbarrick/flux-operator/pkg/memcached"
 	"github.com/justinbarrick/flux-operator/pkg/rbac"
 	"github.com/justinbarrick/flux-operator/pkg/utils"
@@ -49,6 +50,10 @@ func MakeFluxArgs(cr *v1alpha1.Flux) (args []string) {
 		"k8s-secret-name":    GitSecretName(cr),
 		"ssh-keygen-dir":     "/etc/fluxd/",
 		"memcached-hostname": memcached.MemcachedName(cr),
+	}
+
+	if cr.Spec.FluxCloud.Enabled == true {
+		argMap["connect"] = fmt.Sprintf("ws://%s/", fluxcloud.FluxcloudName(cr))
 	}
 
 	for key, value := range cr.Spec.Args {

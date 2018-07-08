@@ -50,16 +50,16 @@ func TestNewObjectMetaWithName(t *testing.T) {
 
 func TestHashObject(t *testing.T) {
 	cr := test_utils.NewFlux()
-	assert.Equal(t, HashObject(cr), "f3c2a42e485dadf412f495ae5e5bcf7b90bb7349")
+	assert.Equal(t, HashObject(cr), "1ccca12dec7164607cb5a0d50b7569e3b5df488a")
 	cr.ObjectMeta.Name = "hello"
-	assert.Equal(t, HashObject(cr), "fa5d630d05d2c6974cf99a8e06e76f4b09e3f407")
+	assert.Equal(t, HashObject(cr), "06a1a60960034c50685ee6348505672c3bd27e71")
 }
 
 func TestObjectHash(t *testing.T) {
 	cr := test_utils.NewFlux()
 	assert.Equal(t, GetObjectHash(cr), "")
 	SetObjectHash(cr)
-	assert.Equal(t, GetObjectHash(cr), "f3c2a42e485dadf412f495ae5e5bcf7b90bb7349")
+	assert.Equal(t, GetObjectHash(cr), "1ccca12dec7164607cb5a0d50b7569e3b5df488a")
 	ClearObjectHash(cr)
 	assert.Equal(t, GetObjectHash(cr), "")
 }

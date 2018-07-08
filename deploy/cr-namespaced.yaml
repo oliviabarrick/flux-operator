@@ -8,10 +8,8 @@ spec:
   gitBranch: master
   gitPath: deploy/flux-example/
   gitPollInterval: 0m30s
-  fluxImage: justinbarrick/flux
-  fluxVersion: latest
   args:
-    flux-namespace: default
+    k8s-namespace-whitelist: default
   helmOperator:
     enabled: false
     chartPath: deploy/chart-example/
@@ -21,3 +19,8 @@ spec:
     enabled: false
   role:
     enabled: true
+  fluxCloud:
+    enabled: true
+    githubUrl: https://github.com/justinbarrick/flux-operator
+    slackUrl: https://example.com/
+    slackChannel: "#mychannel"
