@@ -84,6 +84,8 @@ func TestNewFluxDeployment(t *testing.T) {
 	dep := NewFluxDeployment(cr)
 	pod := dep.Spec.Template.Spec
 
+	assert.Equal(t, dep.Spec.Selector.MatchLabels["name"], "flux")
+	assert.Equal(t, dep.Spec.Template.ObjectMeta.Labels["name"], "flux")
 	assert.Equal(t, dep.ObjectMeta.Name, "flux-example")
 	assert.Equal(t, dep.ObjectMeta.Namespace, "default")
 	assert.Equal(t, pod.ServiceAccountName, "flux-example")
