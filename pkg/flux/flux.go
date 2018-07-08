@@ -78,7 +78,7 @@ func NewFluxDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 
 	meta := utils.NewObjectMeta(cr, "")
 	labels := map[string]string{
-		"app":  "flux",
+		"name":  "flux",
 		"flux": cr.Name,
 	}
 
