@@ -86,7 +86,7 @@ See: `fluxopctl -help` for a full list of arguments.
 Namespaced scope is recommended for most users:
 
 ```
-kubectl apply -f deploy/flux-crd-namespaced.yaml
+kubectl apply -f deploy/flux-operator-namespaced.yaml
 ```
 
 ### Cluster scope
@@ -95,16 +95,7 @@ However, if you have a central control for your Flux CRs, then it may make sense
 to deploy your CRs Cluster scoped:
 
 ```
-kubectl apply -f deploy/flux-crd-cluster.yaml
-```
-
-### Deploy flux operator
-
-Now, deploy the flux operator:
-
-```
-kubectl apply -f deploy/fluxhelmrelease-crd.yaml
-kubectl apply -f deploy/k8s.yaml
+kubectl apply -f deploy/flux-operator-cluster.yaml
 ```
 
 # Creating a Flux instance

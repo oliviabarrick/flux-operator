@@ -68,9 +68,7 @@ docker build -t justinbarrick/flux-operator:latest .
 echo Creating Flux resources.
 kubectl create namespace lol
 kubectl create secret generic flux-git-example-deploy --from-file=identity=/tmp/ssh_key
-kubectl apply -f deploy/flux-crd-namespaced.yaml
-kubectl apply -f deploy/fluxhelmrelease-crd.yaml
-kubectl apply -f deploy/k8s.yaml
+./fluxopctl |kubectl apply -f -
 cr deploy/cr-namespaced.yaml | kubectl apply -f -
 kubectl get deployments
 kubectl get pods
@@ -110,9 +108,7 @@ echo Waiting for helm-operator to go away.
 wait_for $MAXIMUM_TIMEOUT not kubectl get deployment flux-example-helm-operator
 
 cr deploy/cr-namespaced.yaml |kubectl delete -f -
-kubectl delete -f deploy/flux-crd-namespaced.yaml
-kubectl delete -f deploy/fluxhelmrelease-crd.yaml
-kubectl delete -f deploy/k8s.yaml
+./fluxopctl |kubectl delete -f -
 kubectl delete deployment nginx
 
 echo Waiting for resources to clean up
@@ -124,9 +120,7 @@ wait_for $MAXIMUM_TIMEOUT not kubectl get deployment flux-example-tiller-deploy
 
 echo Starting cluster scoped flux
 
-kubectl apply -f deploy/flux-crd-cluster.yaml
-kubectl apply -f deploy/fluxhelmrelease-crd.yaml
-kubectl apply -f deploy/k8s.yaml
+./fluxopctl -cluster |kubectl apply -f -
 cr deploy/cr-cluster.yaml | kubectl apply -f -
 
 wait_for $MAXIMUM_TIMEOUT kubectl get deployment nginx
