@@ -87,7 +87,7 @@ not kubectl get deployment -n lol nginx2
 
 echo Enabling the helm-operator
 cr deploy/cr-namespaced.yaml |sed 's/enabled: false/enabled: true/g' \
-    |sed 's/flux-namespace: default/flux-namespace: ""/g' |kubectl apply -f -
+    |sed 's/k8s-namespace-whitelist: default/k8s-namespace-whitelist: ""/g' |kubectl apply -f -
 
 echo Waiting for helm-operator and tiller to start.
 
