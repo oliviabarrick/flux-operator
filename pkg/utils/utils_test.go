@@ -1,11 +1,11 @@
 package utils
 
 import (
-	"testing"
-	"os"
 	"github.com/justinbarrick/flux-operator/pkg/utils/test"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime"
+	"os"
+	"testing"
 )
 
 func TestFluxNamespace(t *testing.T) {
@@ -39,7 +39,7 @@ func TestGetenv(t *testing.T) {
 func TestNewObjectMeta(t *testing.T) {
 	cr := test_utils.NewFlux()
 	objectMeta := NewObjectMeta(cr, "")
-	assert.Equal(t, objectMeta.Name, "flux-" + cr.Name)
+	assert.Equal(t, objectMeta.Name, "flux-"+cr.Name)
 	assert.Equal(t, objectMeta.Namespace, FluxNamespace(cr))
 	assert.Equal(t, objectMeta.OwnerReferences[0].Kind, "Flux")
 }
@@ -105,14 +105,14 @@ func TestObjectNameMatches(t *testing.T) {
 	assert.Equal(t, ObjectNameMatches(cr, cr2), false)
 
 	cr2 = test_utils.NewFlux()
-	cr2.ObjectMeta.Annotations = map[string]string{"myannotation":"myannotation"}
+	cr2.ObjectMeta.Annotations = map[string]string{"myannotation": "myannotation"}
 	assert.Equal(t, ObjectNameMatches(cr, cr2), true)
 }
 
 func TestGetObject(t *testing.T) {
 	cr := test_utils.NewFlux()
 	cr2 := test_utils.NewFlux()
-	cr2.ObjectMeta.Annotations = map[string]string{"myannotation":"myannotation"}
+	cr2.ObjectMeta.Annotations = map[string]string{"myannotation": "myannotation"}
 
 	cr3 := test_utils.NewFlux()
 	cr3.ObjectMeta.Name = "newname"
@@ -120,6 +120,6 @@ func TestGetObject(t *testing.T) {
 	cr4 := test_utils.NewFlux()
 	cr4.ObjectMeta.Name = "othername"
 
-	assert.Equal(t, GetObject(cr, []runtime.Object{cr3, cr2, cr4, }), cr2)
-	assert.Equal(t, GetObject(cr, []runtime.Object{cr3, cr4, }), nil)
+	assert.Equal(t, GetObject(cr, []runtime.Object{cr3, cr2, cr4}), cr2)
+	assert.Equal(t, GetObject(cr, []runtime.Object{cr3, cr4}), nil)
 }

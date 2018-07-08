@@ -1,10 +1,10 @@
 package helm_operator
 
 import (
+	"github.com/justinbarrick/flux-operator/pkg/utils/test"
+	"github.com/stretchr/testify/assert"
 	"sort"
 	"testing"
-	"github.com/stretchr/testify/assert"
-	"github.com/justinbarrick/flux-operator/pkg/utils/test"
 )
 
 func TestMakeHelmOperatorArgs(t *testing.T) {

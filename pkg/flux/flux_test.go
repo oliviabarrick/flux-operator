@@ -1,11 +1,13 @@
 package flux
 
 import (
+	"fmt"
+	"github.com/justinbarrick/flux-operator/pkg/memcached"
+	"github.com/justinbarrick/flux-operator/pkg/utils"
+	"github.com/justinbarrick/flux-operator/pkg/utils/test"
+	"github.com/stretchr/testify/assert"
 	"sort"
 	"testing"
-	"github.com/stretchr/testify/assert"
-	"github.com/justinbarrick/flux-operator/pkg/utils/test"
-	"github.com/justinbarrick/flux-operator/pkg/memcached"
 )
 
 func TestMakeFluxArgs(t *testing.T) {
@@ -82,6 +84,8 @@ func TestNewFluxDeployment(t *testing.T) {
 	dep := NewFluxDeployment(cr)
 	pod := dep.Spec.Template.Spec
 
+	assert.Equal(t, dep.Spec.Selector.MatchLabels["name"], "flux")
+	assert.Equal(t, dep.Spec.Template.ObjectMeta.Labels["name"], "flux")
 	assert.Equal(t, dep.ObjectMeta.Name, "flux-example")
 	assert.Equal(t, dep.ObjectMeta.Namespace, "default")
 	assert.Equal(t, pod.ServiceAccountName, "flux-example")
@@ -89,7 +93,7 @@ func TestNewFluxDeployment(t *testing.T) {
 	assert.Equal(t, *pod.Volumes[0].VolumeSource.Secret.DefaultMode, int32(0400))
 
 	c := pod.Containers[0]
-	assert.Equal(t, c.Image, "quay.io/weaveworks/flux:1.4.0")
+	assert.Equal(t, c.Image, fmt.Sprintf("%s:%s", utils.FluxImage, utils.FluxVersion))
 
 	expectedArgs := MakeFluxArgs(cr)
 	sort.Strings(expectedArgs)

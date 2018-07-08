@@ -2,18 +2,29 @@ package utils
 
 import (
 	"fmt"
+	"github.com/cnf/structhash"
+	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
+	"k8s.io/apimachinery/pkg/api/meta"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"os"
 	"strconv"
-	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/api/meta"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/labels"
-	"github.com/cnf/structhash"
 )
 
-const FLUX_LABEL = "flux.codesink.net.flux"
+const (
+	FLUX_LABEL          = "flux.codesink.net.flux"
+	FluxOperatorImage   = "justinbarrick/flux-operator"
+	FluxImage           = "quay.io/weaveworks/flux"
+	FluxVersion         = "1.4.2"
+	HelmOperatorImage   = "quay.io/weaveworks/helm-operator"
+	HelmOperatorVersion = "master-1dfdc61"
+	MemcachedImage      = "memcached"
+	MemcachedVersion    = "1.4.36-alpine"
+	TillerImage         = "gcr.io/kubernetes-helm/tiller"
+	TillerVersion       = "v2.9.1"
+)
 
 // Get an environment variable, pass through strconv.ParseBool, return false if there
 // is an error.
@@ -123,14 +134,14 @@ func SetObjectOwner(cr *v1alpha1.Flux, obj runtime.Object) {
 
 // Takes a Kubernetes object and returns the hash in its annotations as a string.
 func GetObjectHash(obj runtime.Object) string {
-		objectMeta, _ := meta.Accessor(obj)
+	objectMeta, _ := meta.Accessor(obj)
 
-		annotations := objectMeta.GetAnnotations()
-		if annotations == nil {
-			annotations = map[string]string{}
-		}
+	annotations := objectMeta.GetAnnotations()
+	if annotations == nil {
+		annotations = map[string]string{}
+	}
 
-		return annotations["flux.codesink.net.hash"]
+	return annotations["flux.codesink.net.hash"]
 }
 
 // Takes a Kubernetes object and adds an annotation with its hash.
@@ -176,16 +187,22 @@ func HashObject(obj runtime.Object) string {
 	return fmt.Sprintf("%x", structhash.Sha1(copied, 1))
 }
 
-// Return a human readable string representing the object.
-func ReadableObjectName(cr *v1alpha1.Flux, object runtime.Object) string {
+// Return a human readable name for an object.
+func ObjectName(object runtime.Object) string {
 	objectMeta, err := meta.Accessor(object)
 	if err != nil {
 		return err.Error()
 	}
 
-	return fmt.Sprintf("flux instance '%s': %s %s/%s (hash: %s)",
-		cr.Name, object.GetObjectKind().GroupVersionKind().Kind,
-		objectMeta.GetNamespace(), objectMeta.GetName(), GetObjectHash(object))
+	return fmt.Sprintf("%s:%s/%s", objectMeta.GetNamespace(),
+		object.GetObjectKind().GroupVersionKind().Kind,
+		objectMeta.GetName())
+}
+
+// Return a human readable string representing the object.
+func ReadableObjectName(cr *v1alpha1.Flux, object runtime.Object) string {
+	return fmt.Sprintf("flux instance '%s': %s (hash: %s)",
+		cr.Name, ObjectName(object), GetObjectHash(object))
 }
 
 // Return true if first and second have the same Name, Namespace, and Kind.

@@ -3,11 +3,11 @@ package rbac
 import (
 	"fmt"
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	rbacv1 "k8s.io/api/rbac/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"github.com/justinbarrick/flux-operator/pkg/utils"
+	corev1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
 func ServiceAccountName(cr *v1alpha1.Flux) string {
@@ -39,7 +39,7 @@ func NewClusterRole(cr *v1alpha1.Flux) *rbacv1.ClusterRole {
 			rbacv1.PolicyRule{
 				APIGroups: []string{""},
 				Resources: []string{"namespaces"},
-				Verbs: []string{"get", "watch", "list"},
+				Verbs:     []string{"get", "watch", "list"},
 			},
 		}
 	} else if len(cr.Spec.ClusterRole.Rules) > 0 {
@@ -49,11 +49,11 @@ func NewClusterRole(cr *v1alpha1.Flux) *rbacv1.ClusterRole {
 			rbacv1.PolicyRule{
 				APIGroups: []string{"*"},
 				Resources: []string{"*"},
-				Verbs: []string{"*"},
+				Verbs:     []string{"*"},
 			},
 			rbacv1.PolicyRule{
 				NonResourceURLs: []string{"*"},
-				Verbs: []string{"*"},
+				Verbs:           []string{"*"},
 			},
 		}
 	}
@@ -74,15 +74,15 @@ func NewClusterRoleBinding(cr *v1alpha1.Flux) *rbacv1.ClusterRoleBinding {
 		ObjectMeta: meta,
 		Subjects: []rbacv1.Subject{
 			rbacv1.Subject{
-				Kind: "ServiceAccount",
-				Name: serviceAccount,
+				Kind:      "ServiceAccount",
+				Name:      serviceAccount,
 				Namespace: utils.FluxNamespace(cr),
 			},
 		},
 		RoleRef: rbacv1.RoleRef{
 			APIGroup: "rbac.authorization.k8s.io",
-			Kind: "ClusterRole",
-			Name: meta.Name,
+			Kind:     "ClusterRole",
+			Name:     meta.Name,
 		},
 	}
 }
@@ -107,7 +107,7 @@ func NewRole(cr *v1alpha1.Flux) *rbacv1.Role {
 			rbacv1.PolicyRule{
 				APIGroups: []string{"*"},
 				Resources: []string{"*"},
-				Verbs: []string{"*"},
+				Verbs:     []string{"*"},
 			},
 		}
 	}
@@ -130,15 +130,15 @@ func NewRoleBinding(cr *v1alpha1.Flux) *rbacv1.RoleBinding {
 		ObjectMeta: meta,
 		Subjects: []rbacv1.Subject{
 			rbacv1.Subject{
-				Kind: "ServiceAccount",
-				Name: ServiceAccountName(cr),
+				Kind:      "ServiceAccount",
+				Name:      ServiceAccountName(cr),
 				Namespace: utils.FluxNamespace(cr),
 			},
 		},
 		RoleRef: rbacv1.RoleRef{
 			APIGroup: "rbac.authorization.k8s.io",
-			Kind: "Role",
-			Name: meta.Name,
+			Kind:     "Role",
+			Name:     meta.Name,
 		},
 	}
 }
