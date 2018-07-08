@@ -2,6 +2,7 @@ package flux
 
 import (
 	"fmt"
+	"github.com/justinbarrick/flux-operator/pkg/fluxcloud"
 	"github.com/justinbarrick/flux-operator/pkg/memcached"
 	"github.com/justinbarrick/flux-operator/pkg/utils"
 	"github.com/justinbarrick/flux-operator/pkg/utils/test"
@@ -72,6 +73,29 @@ func TestMakeFluxArgsArgsOverride(t *testing.T) {
 		"--k8s-secret-name=flux-git-example-deploy",
 		"--ssh-keygen-dir=/etc/fluxd/",
 		"--memcached-hostname=" + memcached.MemcachedName(cr),
+	}
+
+	sort.Strings(expectedArgs)
+
+	assert.Equal(t, args, expectedArgs)
+}
+
+func TestMakeFluxArgsFluxcloudEnabled(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr.Spec.FluxCloud.Enabled = true
+
+	args := MakeFluxArgs(cr)
+
+	expectedArgs := []string{
+		"--git-url=git@github.com:justinbarrick/manifests",
+		"--git-branch=master",
+		"--git-sync-tag=flux-sync-example",
+		"--git-path=manifests",
+		"--git-poll-interval=0m30s",
+		"--k8s-secret-name=flux-git-example-deploy",
+		"--ssh-keygen-dir=/etc/fluxd/",
+		"--memcached-hostname=" + memcached.MemcachedName(cr),
+		"--connect=ws://" + fluxcloud.FluxcloudName(cr) + "/",
 	}
 
 	sort.Strings(expectedArgs)

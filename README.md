@@ -32,7 +32,7 @@ metadata:
   name: example
 spec:
   namespace: default
-  gitUrl: ssh://git@github.com/justinbarrick/manifests
+  gitUrl: ssh://git@github.com/justinbarrick/flux-operator
 ```
 
 If the CRD is deployed at the Namespaced scope, then the Flux instances will be created in
@@ -46,7 +46,7 @@ metadata:
   name: example
   namespace: default
 spec:
-  gitUrl: ssh://git@github.com/justinbarrick/manifests
+  gitUrl: ssh://git@github.com/justinbarrick/flux-operator
 ```
 
 In general, if users are creating Fluxes, it is best to create it Namespaced, if you
@@ -118,7 +118,7 @@ metadata:
   name: example
   namespace: default
 spec:
-  gitUrl: ssh://git@github.com/justinbarrick/manifests
+  gitUrl: ssh://git@github.com/justinbarrick/flux-operator
   role:
     enabled: true
   args:
@@ -153,6 +153,14 @@ Settings in the Flux spec:
 * `helmOperator.chartPath`: the chart path to use with Helm Operator (default: `.`).
 * `helmOperator.gitPollInterval`: the frequency with which to sync Git and the charts (default: the flux `gitPollInterval` or, if not set, `3m0s`).
 * `helmOperator.gitUrl`: the URL of the git repository to use if it is different than the primary flux `gitUrl`.
+* `fluxCloud.enabled`: if set to true, a fluxcloud instance will be deployed.
+* `fluxCloud.githubUrl`: the HTTP URL to the Github repository.
+* `fluxCloud.slackUrl`: the slack webhook to use.
+* `fluxCloud.slackChannel`: the slack channel to send messages to.
+* `fluxCloud.slackUsername`: the slack username to use when sending messages (default: `Flux Deployer`).
+* `fluxCloud.slackIconEmoji`: the icon emoji to use with slack (default: `:star-struck:`).
+* `fluxcloud.fluxCloudImage`: the fluxcloud image to use (default: `justinbarrick/fluxcloud`).
+* `fluxcloud.fluxCloudVersion`: the fluxcloud image to use (default: `master-89f5fec`).
 * `namespace`: if the Flux CRD is cluster-scpoed, then the namespace to deploy Flux to is
                specified in the Flux spec - if the Flux CRD is namespaced, then this
                namespace is ignored and the Flux CR's actual namespace is used instead.
@@ -208,7 +216,7 @@ metadata:
   name: example
 spec:
   namespace: default
-  gitUrl: ssh://git@github.com/justinbarrick/manifests
+  gitUrl: ssh://git@github.com/justinbarrick/flux-operator
   role:
     enabled: true
   tiller:
@@ -234,7 +242,7 @@ metadata:
   name: flux
 spec:
   namespace: kube-system
-  gitUrl: ssh://git@github.com/justinbarrick/manifests
+  gitUrl: ssh://git@github.com/justinbarrick/flux-operator
   clusterRole:
     enabled: true
   tiller:
@@ -265,7 +273,7 @@ metadata:
   name: example
   namespace: default
 spec:
-  gitUrl: ssh://git@github.com/justinbarrick/manifests
+  gitUrl: ssh://git@github.com/justinbarrick/flux-operator
   clusterRole:
     enabled: true
   tiller:
@@ -275,6 +283,29 @@ spec:
 ```
 
 You should then be able to create a FluxHelmRelease. See the [helm-operator example](https://github.com/weaveworks/flux-helm-test) for more information.
+
+# Slack
+
+Flux operator supports Slack notifications of Flux activity via [fluxcloud](https://github.com/justinbarrick/fluxcloud).
+
+To enable, create a Slack [incoming webhook](https://api.slack.com/incoming-webhooks).
+
+Then add the following to your Flux:
+
+```
+apiVersion: flux.codesink.net/v1alpha1
+kind: Flux
+metadata:
+  name: example
+  namespace: default
+spec:
+  gitUrl: ssh://git@github.com/justinbarrick/flux-operator
+  fluxCloud:
+    enabled: true
+    githubUrl: https://github.com/justinbarrick/flux-operator
+    slackUrl: YOUR_WEBHOOK
+    slackChannel: "#mychannel"
+```
 
 # RBAC
 
@@ -299,7 +330,7 @@ metadata:
   name: example
   namespace: default
 spec:
-  gitUrl: ssh://git@github.com/justinbarrick/manifests
+  gitUrl: ssh://git@github.com/justinbarrick/flux-operator
   clusterRole:
     enabled: true
     rules:
@@ -316,8 +347,7 @@ Using environment variables, it is also possible to disable assigning
 roles (`DISABLE_ROLES=true`) and disabling cluster roles (`DISABLE_CLUSTER_ROLES=true`).
 
 Flux currently does not support having access to only a single namespace, so if you want to
-restrict Flux to a single namespace, use my Flux fork (`justinbarrick/flux:latest`) until
-my [Pull Request](https://github.com/weaveworks/flux/pull/1184) is merged:
+restrict Flux to a single namespace, set `k8s-namespace-whitelist` to the namespace:
 
 ```
 apiVersion: flux.codesink.net/v1alpha1
@@ -326,13 +356,11 @@ metadata:
   name: example
   namespace: default
 spec:
-  gitUrl: ssh://git@github.com/justinbarrick/manifests
+  gitUrl: ssh://git@github.com/justinbarrick/flux-operator
   role:
     enabled: true
-  fluxImage: justinbarrick/flux
-  fluxVersion: latest
   args:
-    flux-namespace: default
+    k8s-namespace-whitelist: default
 ```
 
 # Contributing

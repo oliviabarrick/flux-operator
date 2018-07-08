@@ -3,6 +3,7 @@ package stub
 import (
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
 	"github.com/justinbarrick/flux-operator/pkg/flux"
+	"github.com/justinbarrick/flux-operator/pkg/fluxcloud"
 	"github.com/justinbarrick/flux-operator/pkg/helm-operator"
 	"github.com/justinbarrick/flux-operator/pkg/memcached"
 	"github.com/justinbarrick/flux-operator/pkg/rbac"
@@ -21,6 +22,7 @@ func DesiredFluxObjects(cr *v1alpha1.Flux) ([]runtime.Object, error) {
 	dep := flux.NewFluxDeployment(cr)
 	objects = append(objects, dep)
 	objects = append(objects, memcached.NewMemcached(cr)...)
+	objects = append(objects, fluxcloud.NewFluxcloud(cr)...)
 
 	sshKey := flux.NewFluxSSHKey(cr)
 	err := sdk.Get(sshKey)

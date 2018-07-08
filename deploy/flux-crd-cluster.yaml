@@ -312,6 +312,7 @@ spec:
                   description: 'the list of rbac rules to use (default: full access).'
                   items: {}
                   type: array
+            fluxCloud: {}
             fluxImage:
               description: 'The image to use for flux (default: `quay.io/weaveworks/flux`
                 or `$FLUX_IMAGE`).'

@@ -93,6 +93,7 @@ cr deploy/cr-namespaced.yaml |sed 's/enabled: false/enabled: true/g' \
 
 echo Waiting for helm-operator and tiller to start.
 
+wait_for $MAXIMUM_TIMEOUT kubectl get deployment flux-example-fluxcloud
 wait_for $MAXIMUM_TIMEOUT kubectl get deployment flux-example-helm-operator
 wait_for $MAXIMUM_TIMEOUT kubectl get deployment flux-example-tiller-deploy
 

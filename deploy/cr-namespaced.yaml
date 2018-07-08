@@ -21,3 +21,8 @@ spec:
     enabled: false
   role:
     enabled: true
+  fluxCloud:
+    enabled: true
+    githubUrl: https://github.com/justinbarrick/flux-operator
+    slackUrl: https://example.com/
+    slackChannel: "#mychannel"

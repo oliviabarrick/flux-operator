@@ -224,12 +224,18 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 								Ref:         ref("github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.HelmOperator"),
 							},
 						},
+						"fluxCloud": {
+							SchemaProps: spec.SchemaProps{
+								Description: "The Fluxcloud settings",
+								Ref:         ref("github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.FluxCloud"),
+							},
+						},
 					},
 					Required: []string{"gitUrl"},
 				},
 			},
 			Dependencies: []string{
-				"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.FluxRole", "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.HelmOperator", "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.Tiller"},
+				"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.FluxCloud", "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.FluxRole", "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.HelmOperator", "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.Tiller"},
 		},
 		"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.HelmOperator": {
 			Schema: spec.Schema{

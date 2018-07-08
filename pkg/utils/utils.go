@@ -15,6 +15,8 @@ import (
 
 const (
 	FLUX_LABEL          = "flux.codesink.net.flux"
+	FluxcloudImage      = "justinbarrick/fluxcloud"
+	FluxcloudVersion    = "master-89f5fec"
 	FluxOperatorImage   = "justinbarrick/flux-operator"
 	FluxImage           = "quay.io/weaveworks/flux"
 	FluxVersion         = "1.4.2"
