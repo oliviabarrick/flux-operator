@@ -141,7 +141,7 @@ Settings in the Flux spec:
 * `args`: a map of args to pass to flux without `--` prepended.
 * `helmOperator.enabled`: whether or not to deploy a helm-operator instance in the same namespace (default: false).
 * `helmOperator.helmOperatorImage`: the image to use with helm-operator (default: `quay.io/weaveworks/helm-operator` or `$HELM_OPERATOR_IMAGE`).
-* `helmOperator.helmOperatorVersion`: the image version to use with helm-operator (default: `master-1dfdc61` or `$HELM_OPERATOR_VERSION`).
+* `helmOperator.helmOperatorVersion`: the image version to use with helm-operator (default: `master-a61c1d5` or `$HELM_OPERATOR_VERSION`).
 * `helmOperator.resources`: resource limits to set on the helm-operator pod.
 * `helmOperator.chartPath`: the chart path to use with Helm Operator (default: `.`).
 * `helmOperator.gitPollInterval`: the frequency with which to sync Git and the charts (default: the flux `gitPollInterval` or, if not set, `3m0s`).
