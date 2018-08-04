@@ -362,7 +362,7 @@ spec:
                   type: string
                 helmOperatorVersion:
                   description: 'The image version to use with helm-operator (default:
-                    `master-1dfdc61` or `$HELM_OPERATOR_VERSION`).'
+                    `master-a61c1d5` or `$HELM_OPERATOR_VERSION`).'
                   type: string
             namespace:
               description: Namespace to deploy Flux and Tiller into.
@@ -496,7 +496,7 @@ spec:
         - name: HELM_OPERATOR_IMAGE
           value: quay.io/weaveworks/helm-operator
         - name: HELM_OPERATOR_VERSION
-          value: master-1dfdc61
+          value: master-a61c1d5
         - name: MEMCACHED_IMAGE
           value: memcached
         - name: MEMCACHED_VERSION

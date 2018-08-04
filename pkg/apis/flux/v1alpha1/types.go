@@ -107,7 +107,7 @@ type HelmOperator struct {
 	Enabled bool `json:"enabled,omitempty"`
 	// The image to use with helm-operator (default: `quay.io/weaveworks/helm-operator` or `$HELM_OPERATOR_IMAGE`).
 	HelmOperatorImage string `json:"helmOperatorImage,omitempty"`
-	// The image version to use with helm-operator (default: `master-1dfdc61` or `$HELM_OPERATOR_VERSION`).
+	// The image version to use with helm-operator (default: `master-a61c1d5` or `$HELM_OPERATOR_VERSION`).
 	HelmOperatorVersion string `json:"helmOperatorVersion,omitempty"`
 	// The chart path to use with Helm Operator (default: `.`).
 	ChartPath string `json:"chartPath,omitempty"`

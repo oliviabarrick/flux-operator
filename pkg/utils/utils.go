@@ -21,7 +21,7 @@ const (
 	FluxImage           = "quay.io/weaveworks/flux"
 	FluxVersion         = "1.4.2"
 	HelmOperatorImage   = "quay.io/weaveworks/helm-operator"
-	HelmOperatorVersion = "master-1dfdc61"
+	HelmOperatorVersion = "master-a61c1d5"
 	MemcachedImage      = "memcached"
 	MemcachedVersion    = "1.4.36-alpine"
 	TillerImage         = "gcr.io/kubernetes-helm/tiller"

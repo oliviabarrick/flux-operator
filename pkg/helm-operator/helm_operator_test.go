@@ -63,7 +63,7 @@ func TestNewHelmOperatorDeployment(t *testing.T) {
 	assert.Equal(t, *pod.Volumes[0].VolumeSource.Secret.DefaultMode, int32(0400))
 
 	c := pod.Containers[0]
-	assert.Equal(t, c.Image, "quay.io/weaveworks/helm-operator:master-1dfdc61")
+	assert.Equal(t, c.Image, "quay.io/weaveworks/helm-operator:master-a61c1d5")
 
 	expectedArgs := MakeHelmOperatorArgs(cr)
 	sort.Strings(expectedArgs)

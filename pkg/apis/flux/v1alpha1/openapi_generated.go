@@ -258,7 +258,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 						},
 						"helmOperatorVersion": {
 							SchemaProps: spec.SchemaProps{
-								Description: "The image version to use with helm-operator (default: `master-1dfdc61` or `$HELM_OPERATOR_VERSION`).",
+								Description: "The image version to use with helm-operator (default: `master-a61c1d5` or `$HELM_OPERATOR_VERSION`).",
 								Type:        []string{"string"},
 								Format:      "",
 							},
