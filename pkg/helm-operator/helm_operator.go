@@ -86,6 +86,20 @@ func NewHelmOperatorDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 	replicas := int32(1)
 	secretMode := int32(0400)
 
+	resourceRequirements := corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceMemory: resource.MustParse("512Mi"),
+			corev1.ResourceCPU:    resource.MustParse("1000m"),
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceMemory: resource.MustParse("128Mi"),
+			corev1.ResourceCPU:    resource.MustParse("250m"),
+		},
+	}
+	if cr.Spec.HelmOperator.Resources != nil {
+		resourceRequirements = *cr.Spec.HelmOperator.Resources
+	}
+
 	return &extensions.Deployment{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Deployment",
@@ -126,17 +140,8 @@ func NewHelmOperatorDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 									ReadOnly:  true,
 								},
 							},
-							Args: MakeHelmOperatorArgs(cr),
-							Resources: corev1.ResourceRequirements{
-								Limits: corev1.ResourceList{
-									corev1.ResourceMemory: resource.MustParse("512Mi"),
-									corev1.ResourceCPU:    resource.MustParse("1000m"),
-								},
-								Requests: corev1.ResourceList{
-									corev1.ResourceMemory: resource.MustParse("128Mi"),
-									corev1.ResourceCPU:    resource.MustParse("250m"),
-								},
-							},
+							Args:      MakeHelmOperatorArgs(cr),
+							Resources: resourceRequirements,
 						},
 					},
 				},

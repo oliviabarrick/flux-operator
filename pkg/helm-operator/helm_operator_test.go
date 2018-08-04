@@ -3,6 +3,8 @@ package helm_operator
 import (
 	"github.com/justinbarrick/flux-operator/pkg/utils/test"
 	"github.com/stretchr/testify/assert"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	"sort"
 	"testing"
 )
@@ -69,6 +71,10 @@ func TestNewHelmOperatorDeployment(t *testing.T) {
 	sort.Strings(expectedArgs)
 
 	assert.Equal(t, c.Args, expectedArgs)
+	assert.Equal(t, resource.MustParse("512Mi"), c.Resources.Limits[corev1.ResourceMemory])
+	assert.Equal(t, resource.MustParse("128Mi"), c.Resources.Requests[corev1.ResourceMemory])
+	assert.Equal(t, resource.MustParse("1000m"), c.Resources.Limits[corev1.ResourceCPU])
+	assert.Equal(t, resource.MustParse("250m"), c.Resources.Requests[corev1.ResourceCPU])
 }
 
 func TestNewHelmOperatorDeploymentOverrides(t *testing.T) {
@@ -87,4 +93,28 @@ func TestNewHelmOperatorDeploymentOverrides(t *testing.T) {
 
 func TestNewHelmOperatorDeploymentDisabledByDefault(t *testing.T) {
 	assert.Nil(t, NewHelmOperatorDeployment(test_utils.NewFlux()))
+}
+
+func TestNewHelmOperatorDeploymentOverrideResources(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr.Spec.HelmOperator.Enabled = true
+	cr.Spec.HelmOperator.Resources = &corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceMemory: resource.MustParse("1234Mi"),
+			corev1.ResourceCPU:    resource.MustParse("1235m"),
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceMemory: resource.MustParse("1000Mi"),
+			corev1.ResourceCPU:    resource.MustParse("1337m"),
+		},
+	}
+
+	dep := NewHelmOperatorDeployment(cr)
+	pod := dep.Spec.Template.Spec
+	c := pod.Containers[0]
+
+	assert.Equal(t, resource.MustParse("1234Mi"), c.Resources.Limits[corev1.ResourceMemory])
+	assert.Equal(t, resource.MustParse("1000Mi"), c.Resources.Requests[corev1.ResourceMemory])
+	assert.Equal(t, resource.MustParse("1235m"), c.Resources.Limits[corev1.ResourceCPU])
+	assert.Equal(t, resource.MustParse("1337m"), c.Resources.Requests[corev1.ResourceCPU])
 }

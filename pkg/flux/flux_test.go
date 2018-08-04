@@ -7,6 +7,8 @@ import (
 	"github.com/justinbarrick/flux-operator/pkg/utils"
 	"github.com/justinbarrick/flux-operator/pkg/utils/test"
 	"github.com/stretchr/testify/assert"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	"sort"
 	"testing"
 )
@@ -123,6 +125,11 @@ func TestNewFluxDeployment(t *testing.T) {
 	sort.Strings(expectedArgs)
 
 	assert.Equal(t, c.Args, expectedArgs)
+
+	assert.Equal(t, resource.MustParse("512Mi"), c.Resources.Limits[corev1.ResourceMemory])
+	assert.Equal(t, resource.MustParse("128Mi"), c.Resources.Requests[corev1.ResourceMemory])
+	assert.Equal(t, resource.MustParse("500m"), c.Resources.Limits[corev1.ResourceCPU])
+	assert.Equal(t, resource.MustParse("250m"), c.Resources.Requests[corev1.ResourceCPU])
 }
 
 func TestNewFluxDeploymentOverrides(t *testing.T) {
@@ -135,4 +142,27 @@ func TestNewFluxDeploymentOverrides(t *testing.T) {
 	pod := dep.Spec.Template.Spec
 	assert.Equal(t, pod.Volumes[0].VolumeSource.Secret.SecretName, "mysecret")
 	assert.Equal(t, pod.Containers[0].Image, "myimage:myversion")
+}
+
+func TestNewFluxDeploymentOverrideResources(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr.Spec.Resources = &corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceMemory: resource.MustParse("1234Mi"),
+			corev1.ResourceCPU:    resource.MustParse("1235m"),
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceMemory: resource.MustParse("1000Mi"),
+			corev1.ResourceCPU:    resource.MustParse("1337m"),
+		},
+	}
+
+	dep := NewFluxDeployment(cr)
+	pod := dep.Spec.Template.Spec
+	c := pod.Containers[0]
+
+	assert.Equal(t, resource.MustParse("1234Mi"), c.Resources.Limits[corev1.ResourceMemory])
+	assert.Equal(t, resource.MustParse("1000Mi"), c.Resources.Requests[corev1.ResourceMemory])
+	assert.Equal(t, resource.MustParse("1235m"), c.Resources.Limits[corev1.ResourceCPU])
+	assert.Equal(t, resource.MustParse("1337m"), c.Resources.Requests[corev1.ResourceCPU])
 }

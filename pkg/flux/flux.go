@@ -92,6 +92,20 @@ func NewFluxDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 	replicas := int32(1)
 	secretMode := int32(0400)
 
+	resourceRequirements := corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceMemory: resource.MustParse("512Mi"),
+			corev1.ResourceCPU:    resource.MustParse("500m"),
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceMemory: resource.MustParse("128Mi"),
+			corev1.ResourceCPU:    resource.MustParse("250m"),
+		},
+	}
+	if cr.Spec.Resources != nil {
+		resourceRequirements = *cr.Spec.Resources
+	}
+
 	return &extensions.Deployment{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Deployment",
@@ -137,17 +151,8 @@ func NewFluxDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 									ReadOnly:  true,
 								},
 							},
-							Args: MakeFluxArgs(cr),
-							Resources: corev1.ResourceRequirements{
-								Limits: corev1.ResourceList{
-									corev1.ResourceMemory: resource.MustParse("512Mi"),
-									corev1.ResourceCPU:    resource.MustParse("500m"),
-								},
-								Requests: corev1.ResourceList{
-									corev1.ResourceMemory: resource.MustParse("128Mi"),
-									corev1.ResourceCPU:    resource.MustParse("250m"),
-								},
-							},
+							Args:      MakeFluxArgs(cr),
+							Resources: resourceRequirements,
 						},
 					},
 				},
