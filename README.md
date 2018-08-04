@@ -128,6 +128,7 @@ Settings in the Flux spec:
                be generated (default: `flux-$name-git-deploy` or `$GIT_SECRET_NAME`).
 * `fluxImage`: the image to use for flux (default: `quay.io/weaveworks/flux` or `$FLUX_IMAGE`).
 * `fluxVersion`: the version to use for flux (default: `1.4.0` or `$FLUX_VERSION`).
+* `resources`: resource limits to set on the flux pod.
 * `clusterRole.enabled`: if enabled, a cluster role will be assigned to the service
                          account (default: `false`).
 * `clusterRole.rules`: the list of rbac rules to use (default: full access to all resources).
@@ -141,6 +142,7 @@ Settings in the Flux spec:
 * `helmOperator.enabled`: whether or not to deploy a helm-operator instance in the same namespace (default: false).
 * `helmOperator.helmOperatorImage`: the image to use with helm-operator (default: `quay.io/weaveworks/helm-operator` or `$HELM_OPERATOR_IMAGE`).
 * `helmOperator.helmOperatorVersion`: the image version to use with helm-operator (default: `master-1dfdc61` or `$HELM_OPERATOR_VERSION`).
+* `helmOperator.resources`: resource limits to set on the helm-operator pod.
 * `helmOperator.chartPath`: the chart path to use with Helm Operator (default: `.`).
 * `helmOperator.gitPollInterval`: the frequency with which to sync Git and the charts (default: the flux `gitPollInterval` or, if not set, `3m0s`).
 * `helmOperator.gitUrl`: the URL of the git repository to use if it is different than the primary flux `gitUrl`.
