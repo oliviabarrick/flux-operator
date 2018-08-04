@@ -34,7 +34,9 @@ generate-crds: clean generate-openapi fluxopctl deploy/flux-operator-namespaced.
 install: $(GOBIN)/flux-operator-crd-gen
 
 test:
+	echo Checking for unformatted files..
 	test -z $(shell gofmt -l ./cmd ./pkg)
+	echo Running unit tests..
 	go test github.com/justinbarrick/flux-operator/...
 
 build:
@@ -46,3 +48,4 @@ clean:
 	rm -f deploy/flux-operator-namespaced.yaml
 	rm -f deploy/flux-operator-cluster.yaml
 	rm -f ./flux-operator
+	rm -f ./fluxopctl

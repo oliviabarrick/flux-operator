@@ -186,6 +186,12 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 								Format:      "",
 							},
 						},
+						"resources": {
+							SchemaProps: spec.SchemaProps{
+								Description: "Resource limits to apply to Flux.",
+								Ref:         ref("k8s.io/api/core/v1.ResourceRequirements"),
+							},
+						},
 						"args": {
 							SchemaProps: spec.SchemaProps{
 								Description: "A map of args to pass to flux without `--` prepended.",
@@ -235,7 +241,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 				},
 			},
 			Dependencies: []string{
-				"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.FluxCloud", "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.FluxRole", "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.HelmOperator", "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.Tiller"},
+				"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.FluxCloud", "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.FluxRole", "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.HelmOperator", "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.Tiller", "k8s.io/api/core/v1.ResourceRequirements"},
 		},
 		"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.HelmOperator": {
 			Schema: spec.Schema{
@@ -263,6 +269,12 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 								Format:      "",
 							},
 						},
+						"resources": {
+							SchemaProps: spec.SchemaProps{
+								Description: "Resource limits to apply to helm-operator.",
+								Ref:         ref("k8s.io/api/core/v1.ResourceRequirements"),
+							},
+						},
 						"chartPath": {
 							SchemaProps: spec.SchemaProps{
 								Description: "The chart path to use with Helm Operator (default: `.`).",
@@ -287,7 +299,8 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 					},
 				},
 			},
-			Dependencies: []string{},
+			Dependencies: []string{
+				"k8s.io/api/core/v1.ResourceRequirements"},
 		},
 		"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.Tiller": {
 			Schema: spec.Schema{

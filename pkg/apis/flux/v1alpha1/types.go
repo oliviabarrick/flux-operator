@@ -1,6 +1,7 @@
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -43,6 +44,8 @@ type FluxSpec struct {
 	FluxImage string `json:"fluxImage,omitempty"`
 	// The version to use for flux (default: `1.4.0` or `$FLUX_VERSION`).
 	FluxVersion string `json:"fluxVersion,omitempty"`
+	// Resource limits to apply to Flux.
+	Resources *corev1.ResourceRequirements `json:"resources,omitempty"`
 	// A map of args to pass to flux without `--` prepended.
 	Args map[string]string `json:"args,omitempty"`
 	// A role to add to the service account (default: none)
@@ -109,6 +112,9 @@ type HelmOperator struct {
 	HelmOperatorImage string `json:"helmOperatorImage,omitempty"`
 	// The image version to use with helm-operator (default: `master-1dfdc61` or `$HELM_OPERATOR_VERSION`).
 	HelmOperatorVersion string `json:"helmOperatorVersion,omitempty"`
+	// Resource limits to apply to helm-operator.
+	Resources *corev1.ResourceRequirements `json:"resources,omitempty"`
+
 	// The chart path to use with Helm Operator (default: `.`).
 	ChartPath string `json:"chartPath,omitempty"`
 	// The frequency with which to sync Git and the charts (default: the flux `GitPollInterval` or, if not set, `3m0s`).
