@@ -1,6 +1,8 @@
 package helm_operator
 
 import (
+	"fmt"
+	"github.com/justinbarrick/flux-operator/pkg/utils"
 	"github.com/justinbarrick/flux-operator/pkg/utils/test"
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
@@ -65,7 +67,7 @@ func TestNewHelmOperatorDeployment(t *testing.T) {
 	assert.Equal(t, *pod.Volumes[0].VolumeSource.Secret.DefaultMode, int32(0400))
 
 	c := pod.Containers[0]
-	assert.Equal(t, c.Image, "quay.io/weaveworks/helm-operator:master-a61c1d5")
+	assert.Equal(t, c.Image, fmt.Sprintf("%s:%s", utils.HelmOperatorImage, utils.HelmOperatorVersion))
 
 	expectedArgs := MakeHelmOperatorArgs(cr)
 	sort.Strings(expectedArgs)
