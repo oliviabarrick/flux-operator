@@ -38,7 +38,12 @@ func MakeFluxArgs(cr *v1alpha1.Flux) (args []string) {
 
 	poll := cr.Spec.GitPollInterval
 	if poll == "" {
-		poll = "5m30s"
+		poll = "5m00s"
+	}
+
+	sync := cr.Spec.SyncInterval
+	if sync == "" {
+		sync = "5m00s"
 	}
 
 	argMap := map[string]string{
@@ -47,6 +52,7 @@ func MakeFluxArgs(cr *v1alpha1.Flux) (args []string) {
 		"git-sync-tag":       fmt.Sprintf("flux-sync-%s", cr.Name),
 		"git-path":           path,
 		"git-poll-interval":  poll,
+		"sync-interval":      sync,
 		"k8s-secret-name":    GitSecretName(cr),
 		"ssh-keygen-dir":     "/etc/fluxd/",
 		"memcached-hostname": memcached.MemcachedName(cr),

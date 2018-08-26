@@ -165,6 +165,13 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 								Format:      "",
 							},
 						},
+						"syncInterval": {
+							SchemaProps: spec.SchemaProps{
+								Description: "The frequency with which to sync the charts (default: '5m0s`).",
+								Type:        []string{"string"},
+								Format:      "",
+							},
+						},
 						"gitSecret": {
 							SchemaProps: spec.SchemaProps{
 								Description: "The Kubernetes secret to use for cloning, if it does not exist it will be generated (default: `flux-$name-git-deploy` or `$GIT_SECRET_NAME`).",
@@ -284,7 +291,14 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 						},
 						"gitPollInterval": {
 							SchemaProps: spec.SchemaProps{
-								Description: "The frequency with which to sync Git and the charts (default: the flux `GitPollInterval` or, if not set, `3m0s`).",
+								Description: "The frequency with which to sync Git (default: the flux `GitPollInterval` or, if not set, `5m0s`).",
+								Type:        []string{"string"},
+								Format:      "",
+							},
+						},
+						"chartSyncInterval": {
+							SchemaProps: spec.SchemaProps{
+								Description: "The frequency with which to sync the charts (default: the flux `syncInterval`, or, if not set, `3m0s`).",
 								Type:        []string{"string"},
 								Format:      "",
 							},

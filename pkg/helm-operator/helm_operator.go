@@ -35,19 +35,29 @@ func MakeHelmOperatorArgs(cr *v1alpha1.Flux) (args []string) {
 		}
 	}
 
+	sync := cr.Spec.HelmOperator.ChartSyncInterval
+	if sync == "" {
+		sync = cr.Spec.SyncInterval
+
+		if sync == "" {
+			sync = "3m0s"
+		}
+	}
+
 	gitUrl := cr.Spec.HelmOperator.GitUrl
 	if gitUrl == "" {
 		gitUrl = cr.Spec.GitUrl
 	}
 
 	argMap := map[string]string{
-		"git-url":              gitUrl,
-		"git-branch":           branch,
-		"git-charts-path":      path,
-		"charts-sync-interval": poll,
-		"tiller-namespace":     utils.FluxNamespace(cr),
-		"tiller-ip":            tiller.TillerName(cr),
-		"tiller-port":          "44134",
+		"git-url":             gitUrl,
+		"git-branch":          branch,
+		"git-charts-path":     path,
+		"git-poll-interval":   poll,
+		"chart-sync-interval": sync,
+		"tiller-namespace":    utils.FluxNamespace(cr),
+		"tiller-ip":           tiller.TillerName(cr),
+		"tiller-port":         "44134",
 	}
 
 	for key, value := range argMap {

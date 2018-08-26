@@ -37,6 +37,8 @@ type FluxSpec struct {
 	GitPath string `json:"gitPath,omitempty"`
 	// The frequency with which to fetch the git repository (default: `5m0s`).
 	GitPollInterval string `json:"gitPollInterval,omitempty"`
+	// The frequency with which to sync the charts (default: '5m0s`).
+	SyncInterval string `json:"syncInterval,omitempty"`
 	// The Kubernetes secret to use for cloning, if it does not exist it will
 	// be generated (default: `flux-$name-git-deploy` or `$GIT_SECRET_NAME`).
 	GitSecret string `json:"gitSecret,omitempty"`
@@ -117,8 +119,11 @@ type HelmOperator struct {
 
 	// The chart path to use with Helm Operator (default: `.`).
 	ChartPath string `json:"chartPath,omitempty"`
-	// The frequency with which to sync Git and the charts (default: the flux `GitPollInterval` or, if not set, `3m0s`).
+	// The frequency with which to sync Git (default: the flux `GitPollInterval` or, if not set, `5m0s`).
 	GitPollInterval string `json:"gitPollInterval,omitempty"`
+	// The frequency with which to sync the charts (default: the flux `syncInterval`, or, if not set, `3m0s`).
+	ChartSyncInterval string `json:"chartSyncInterval,omitempty"`
+
 	// The URL of the git repository to use if it is different than the primary flux `GitUrl`.
 	GitUrl string `json:"gitUrl,omitempty"`
 }

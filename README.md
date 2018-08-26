@@ -124,6 +124,7 @@ Settings in the Flux spec:
 * `gitBranch`: the git branch to use (default: `master`).
 * `gitPath`: the path with in the git repository to look for YAML in (default: `.`).
 * `gitPollInterval`: the frequency with which to fetch the git repository (default: `5m0s`).
+* `syncInterval`: the frequency with which to sync the manifests in the repository to the cluster (default: `5m0s`).
 * `gitSecret`: the Kubernetes secret to use for cloning, if it does not exist it will
                be generated (default: `flux-$name-git-deploy` or `$GIT_SECRET_NAME`).
 * `fluxImage`: the image to use for flux (default: `quay.io/weaveworks/flux` or `$FLUX_IMAGE`).
@@ -144,7 +145,8 @@ Settings in the Flux spec:
 * `helmOperator.helmOperatorVersion`: the image version to use with helm-operator (default: `master-a61c1d5` or `$HELM_OPERATOR_VERSION`).
 * `helmOperator.resources`: resource limits to set on the helm-operator pod.
 * `helmOperator.chartPath`: the chart path to use with Helm Operator (default: `.`).
-* `helmOperator.gitPollInterval`: the frequency with which to sync Git and the charts (default: the flux `gitPollInterval` or, if not set, `3m0s`).
+* `helmOperator.gitPollInterval`: the frequency with which to sync Git (default: the flux `gitPollInterval` or, if not set, `3m0s`).
+* `helmOperator.chartSyncInterval`: the frequency with which to sync the charts (default: the flux `syncInterval` or, if not set, `3m0s`).
 * `helmOperator.gitUrl`: the URL of the git repository to use if it is different than the primary flux `gitUrl`.
 * `fluxCloud.enabled`: if set to true, a fluxcloud instance will be deployed.
 * `fluxCloud.githubUrl`: the HTTP URL to the Github repository.
