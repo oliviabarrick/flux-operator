@@ -14,6 +14,8 @@ pipeline:
       - make build
     when:
       event: [push, tag]
+      ref:
+        exclude: [refs/tags/flux-sync-*]
 
   test:
     image: justinbarrick/drone-minikube:localkube
@@ -25,6 +27,8 @@ pipeline:
       - ./integration-test.sh
     when:
       event: [push, tag]
+      ref:
+        exclude: [refs/tags/flux-sync-*]
 
   publish-dev:
     image: justinbarrick/drone-minikube:localkube
@@ -58,6 +62,9 @@ pipeline:
     when:
       status: [success, failure]
       event: [push, tag]
+      ref:
+        exclude: [refs/tags/flux-sync-*]
+
     template: >
       {{#success build.status}}
         Build <{{build.link}}|#{{build.number}}> for <https://github.com/{{repo.owner}}/{{repo.name}}/tree/{{build.commit}}|{{repo.name}}#{{build.branch}}> by {{build.author}} succeeded!
@@ -97,3 +104,5 @@ services:
     - /usr/local/bin/docker-entrypoint.sh start
     when:
       event: [push, tag]
+      ref:
+        exclude: [refs/tags/flux-sync-*]
