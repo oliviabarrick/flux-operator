@@ -122,7 +122,7 @@ type HelmOperator struct {
 	// The frequency with which to sync Git (default: the flux `GitPollInterval` or, if not set, `5m0s`).
 	GitPollInterval string `json:"gitPollInterval,omitempty"`
 	// The frequency with which to sync the charts (default: the flux `syncInterval`, or, if not set, `3m0s`).
-	ChartSyncInterval string `json:"chartSyncInterval,omitempty"`
+	ChartsSyncInterval string `json:"chartsSyncInterval,omitempty"`
 
 	// The URL of the git repository to use if it is different than the primary flux `GitUrl`.
 	GitUrl string `json:"gitUrl,omitempty"`

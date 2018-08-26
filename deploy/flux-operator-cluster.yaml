@@ -344,7 +344,7 @@ spec:
                   description: 'The chart path to use with Helm Operator (default:
                     `.`).'
                   type: string
-                chartSyncInterval:
+                chartsSyncInterval:
                   description: 'The frequency with which to sync the charts (default:
                     the flux `syncInterval`, or, if not set, `3m0s`).'
                   type: string

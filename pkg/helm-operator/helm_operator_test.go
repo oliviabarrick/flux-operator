@@ -21,7 +21,7 @@ func TestMakeHelmOperatorArgs(t *testing.T) {
 		"--git-url=git@github.com:justinbarrick/manifests",
 		"--git-branch=master",
 		"--git-charts-path=./",
-		"--chart-sync-interval=3m0s",
+		"--charts-sync-interval=3m0s",
 		"--git-poll-interval=3m0s",
 		"--tiller-namespace=default",
 		"--tiller-ip=flux-example-tiller-deploy",
@@ -37,7 +37,7 @@ func TestMakeHelmOperatorArgsOverrides(t *testing.T) {
 	cr := test_utils.NewFlux()
 	cr.Spec.HelmOperator.ChartPath = "charts/"
 	cr.Spec.HelmOperator.GitPollInterval = "1m0s"
-	cr.Spec.HelmOperator.ChartSyncInterval = "1m30s"
+	cr.Spec.HelmOperator.ChartsSyncInterval = "1m30s"
 	cr.Spec.HelmOperator.GitUrl = "example.git"
 
 	args := MakeHelmOperatorArgs(cr)
@@ -47,7 +47,7 @@ func TestMakeHelmOperatorArgsOverrides(t *testing.T) {
 		"--git-branch=master",
 		"--git-charts-path=charts/",
 		"--git-poll-interval=1m0s",
-		"--chart-sync-interval=1m30s",
+		"--charts-sync-interval=1m30s",
 		"--tiller-namespace=default",
 		"--tiller-ip=flux-example-tiller-deploy",
 		"--tiller-port=44134",
@@ -70,7 +70,7 @@ func TestMakeHelmOperatorArgsOverridesFromBase(t *testing.T) {
 		"--git-branch=master",
 		"--git-charts-path=./",
 		"--git-poll-interval=0m30s",
-		"--chart-sync-interval=1m30s",
+		"--charts-sync-interval=1m30s",
 		"--tiller-namespace=default",
 		"--tiller-ip=flux-example-tiller-deploy",
 		"--tiller-port=44134",

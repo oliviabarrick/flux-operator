@@ -296,7 +296,7 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 								Format:      "",
 							},
 						},
-						"chartSyncInterval": {
+						"chartsSyncInterval": {
 							SchemaProps: spec.SchemaProps{
 								Description: "The frequency with which to sync the charts (default: the flux `syncInterval`, or, if not set, `3m0s`).",
 								Type:        []string{"string"},

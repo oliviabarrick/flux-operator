@@ -146,7 +146,7 @@ Settings in the Flux spec:
 * `helmOperator.resources`: resource limits to set on the helm-operator pod.
 * `helmOperator.chartPath`: the chart path to use with Helm Operator (default: `.`).
 * `helmOperator.gitPollInterval`: the frequency with which to sync Git (default: the flux `gitPollInterval` or, if not set, `3m0s`).
-* `helmOperator.chartSyncInterval`: the frequency with which to sync the charts (default: the flux `syncInterval` or, if not set, `3m0s`).
+* `helmOperator.chartsSyncInterval`: the frequency with which to sync the charts (default: the flux `syncInterval` or, if not set, `3m0s`).
 * `helmOperator.gitUrl`: the URL of the git repository to use if it is different than the primary flux `gitUrl`.
 * `fluxCloud.enabled`: if set to true, a fluxcloud instance will be deployed.
 * `fluxCloud.githubUrl`: the HTTP URL to the Github repository.
