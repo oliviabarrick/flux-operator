@@ -519,11 +519,11 @@ spec:
         - name: FLUX_IMAGE
           value: quay.io/weaveworks/flux
         - name: FLUX_VERSION
-          value: 1.4.2
+          value: 1.5.0
         - name: HELM_OPERATOR_IMAGE
           value: quay.io/weaveworks/helm-operator
         - name: HELM_OPERATOR_VERSION
-          value: master-a61c1d5
+          value: 0.2.0
         - name: MEMCACHED_IMAGE
           value: memcached
         - name: MEMCACHED_VERSION
