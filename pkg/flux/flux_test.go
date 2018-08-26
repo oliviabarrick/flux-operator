@@ -27,6 +27,7 @@ func TestMakeFluxArgs(t *testing.T) {
 		"--git-sync-tag=flux-sync-example",
 		"--git-path=manifests",
 		"--git-poll-interval=0m30s",
+		"--sync-interval=5m00s",
 		"--connect=ws://fluxcloud/",
 		"--k8s-secret-name=flux-git-example-deploy",
 		"--ssh-keygen-dir=/etc/fluxd/",
@@ -48,6 +49,31 @@ func TestMakeFluxArgsNoArgs(t *testing.T) {
 		"--git-sync-tag=flux-sync-example",
 		"--git-path=manifests",
 		"--git-poll-interval=0m30s",
+		"--sync-interval=5m00s",
+		"--k8s-secret-name=flux-git-example-deploy",
+		"--ssh-keygen-dir=/etc/fluxd/",
+		"--memcached-hostname=" + memcached.MemcachedName(cr),
+	}
+
+	sort.Strings(expectedArgs)
+
+	assert.Equal(t, args, expectedArgs)
+}
+
+func TestMakeFluxArgsOverrideInterval(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr.Spec.GitPollInterval = "0m30s"
+	cr.Spec.SyncInterval = "1m30s"
+
+	args := MakeFluxArgs(cr)
+
+	expectedArgs := []string{
+		"--git-url=git@github.com:justinbarrick/manifests",
+		"--git-branch=master",
+		"--git-sync-tag=flux-sync-example",
+		"--git-path=manifests",
+		"--git-poll-interval=0m30s",
+		"--sync-interval=1m30s",
 		"--k8s-secret-name=flux-git-example-deploy",
 		"--ssh-keygen-dir=/etc/fluxd/",
 		"--memcached-hostname=" + memcached.MemcachedName(cr),
@@ -72,6 +98,7 @@ func TestMakeFluxArgsArgsOverride(t *testing.T) {
 		"--git-sync-tag=flux-sync-example",
 		"--git-path=manifests",
 		"--git-poll-interval=0m30s",
+		"--sync-interval=5m00s",
 		"--k8s-secret-name=flux-git-example-deploy",
 		"--ssh-keygen-dir=/etc/fluxd/",
 		"--memcached-hostname=" + memcached.MemcachedName(cr),
@@ -94,6 +121,7 @@ func TestMakeFluxArgsFluxcloudEnabled(t *testing.T) {
 		"--git-sync-tag=flux-sync-example",
 		"--git-path=manifests",
 		"--git-poll-interval=0m30s",
+		"--sync-interval=5m00s",
 		"--k8s-secret-name=flux-git-example-deploy",
 		"--ssh-keygen-dir=/etc/fluxd/",
 		"--memcached-hostname=" + memcached.MemcachedName(cr),

@@ -344,13 +344,17 @@ spec:
                   description: 'The chart path to use with Helm Operator (default:
                     `.`).'
                   type: string
+                chartsSyncInterval:
+                  description: 'The frequency with which to sync the charts (default:
+                    the flux `syncInterval`, or, if not set, `3m0s`).'
+                  type: string
                 enabled:
                   description: 'Whether or not to deploy a helm-operator instance
                     in the same namespace (default: false).'
                   type: boolean
                 gitPollInterval:
-                  description: 'The frequency with which to sync Git and the charts
-                    (default: the flux `GitPollInterval` or, if not set, `3m0s`).'
+                  description: 'The frequency with which to sync Git (default: the
+                    flux `GitPollInterval` or, if not set, `5m0s`).'
                   type: string
                 gitUrl:
                   description: The URL of the git repository to use if it is different
@@ -406,6 +410,10 @@ spec:
                   description: 'the list of rbac rules to use (default: full access).'
                   items: {}
                   type: array
+            syncInterval:
+              description: 'The frequency with which to sync the charts (default:
+                ''5m0s`).'
+              type: string
             tiller:
               description: Settings for operating Tiller alongside Flux.
               properties:
