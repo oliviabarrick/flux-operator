@@ -6,9 +6,16 @@ import (
 	"flag"
 	"github.com/justinbarrick/flux-operator/pkg/installer"
 	"github.com/justinbarrick/flux-operator/pkg/utils"
+	"log"
 )
 
 func main() {
+	fluxOperatorImageDefault := utils.FluxOperatorImage
+	fluxOperatorVersionDefault, err := utils.LatestRelease(fluxOperatorImageDefault)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	name := flag.String("name", "flux-operator", "Prefix to use for any resources created.")
 	namespace := flag.String("namespace", "default", "Namespace to deploy flux-operator into.")
 	watchNamespace := flag.String("watch-namespace", "", "If set, specifies the namespace to watch for Flux CRDs, if not set flux-operator watches all namespaces.")
@@ -17,8 +24,8 @@ func main() {
 	clusterRole := flag.String("cluster-role", "", "Cluster role to assign.")
 	disableRbac := flag.Bool("disable-rbac", false, "Disable setting any RBAC settings.")
 	gitSecret := flag.String("git-secret", "", "Default git secret name to use.")
-	fluxOperatorImage := flag.String("flux-operator-image", utils.FluxOperatorImage, "Flux operator image name.")
-	fluxOperatorVersion := flag.String("flux-operator-version", "latest", "Flux operator version name.")
+	fluxOperatorImage := flag.String("flux-operator-image", fluxOperatorImageDefault, "Flux operator image name.")
+	fluxOperatorVersion := flag.String("flux-operator-version", fluxOperatorVersionDefault, "Flux operator version name.")
 	fluxImage := flag.String("flux-image", utils.FluxImage, "Flux image name.")
 	fluxVersion := flag.String("flux-version", utils.FluxVersion, "Flux version name.")
 	helmOperatorImage := flag.String("helm-operator-image", utils.HelmOperatorImage, "Helm-operator image name.")

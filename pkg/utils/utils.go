@@ -1,8 +1,11 @@
 package utils
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"github.com/cnf/structhash"
+	"github.com/google/go-github/github"
 	"github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -11,6 +14,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"os"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -237,4 +241,20 @@ func GetObject(object runtime.Object, existing []runtime.Object) runtime.Object 
 	}
 
 	return nil
+}
+
+func LatestRelease(repo string) (string, error) {
+	client := github.NewClient(nil)
+
+	repo_parts := strings.Split(repo, "/")
+	if len(repo_parts) != 2 {
+		return "", errors.New(fmt.Sprintf("Could not parse Github repository name: %s", repo))
+	}
+
+	release, _, err := client.Repositories.GetLatestRelease(context.TODO(), repo_parts[0], repo_parts[1])
+	if err != nil {
+		return "", err
+	}
+
+	return *release.TagName, nil
 }

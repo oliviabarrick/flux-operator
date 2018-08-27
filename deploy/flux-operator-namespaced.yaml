@@ -545,7 +545,7 @@ spec:
           value: "false"
         - name: DISABLE_CLUSTER_ROLES
           value: "false"
-        image: justinbarrick/flux-operator:latest
+        image: justinbarrick/flux-operator:v0.0.1
         imagePullPolicy: IfNotPresent
         name: flux-operator
         resources:
