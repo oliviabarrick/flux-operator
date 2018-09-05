@@ -2,6 +2,7 @@ workspace:
   base: /go
   path: flux-operator
 
+
 pipeline:
   build-cache-dl:
     image: justinbarrick/drone-rclone:latest
