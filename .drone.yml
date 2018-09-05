@@ -7,11 +7,12 @@ pipeline:
     image: golang:1.10-alpine
     commands:
       - apk update && apk add make git
-      - make generate-crds
+      - make generate-openapi
       - echo "Checking if generated files are different than commited, will fail if changes are detected."
       - git diff --exit-code
       - make test
       - make build
+      - make fluxopctl
     when:
       event: [push, tag]
       ref:
@@ -53,6 +54,30 @@ pipeline:
       branch: master
       event: tag
 
+  github_release:
+    image: plugins/github-release
+    secrets: [ github_token ]
+    files:
+      - flux-operator
+      - fluxopctl
+    checksum:
+      - sha256
+    when:
+      branch: master
+      event: tag
+
+  lint-crds:
+    image: golang:1.10-alpine
+    commands:
+      - apk update && apk add make git
+      - make generate-crds
+      - echo "Checking if generated files are different than commited, will fail if changes are detected."
+      - git diff --exit-code
+    when:
+      event: [push, tag]
+      ref:
+        exclude: [refs/tags/flux-sync-*]
+
   slack:
     image: plugins/slack
     webhook: https://hooks.slack.com/services/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
@@ -87,12 +112,14 @@ pipeline:
     image: plugins/slack
     webhook: https://hooks.slack.com/services/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
     channel: '#kubernetes'
-    username: Drone CI Docker Push
+    username: Flux-operator Release Bot
     icon_url: https://i.imgur.com/B7Tk2Xf.png
     when:
       branch: master
       event: tag
     template: >
+      Released ${DRONE_TAG} to <https://github.com/{{repo.owner}}/{{repo.name}}/releases/tag/${DRONE_TAG}|Github>.
+
       Pushed <https://hub.docker.com/r/{{repo.owner}}/{{repo.name}}|{{repo.owner}}/{{repo.name}}:${DRONE_TAG}> to Dockerhub.
 
 services:

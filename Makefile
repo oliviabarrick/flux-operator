@@ -8,6 +8,19 @@ DATE := $(shell date '+%Y-%m-%d %H:%M:%S')
 
 all: generate-crds
 
+%-release: fluxopctl
+	@echo -e "Release $$(DRYRUN=1 git semver $*):\n" > /tmp/CHANGELOG
+	@echo -e "$$(git log --pretty=format:"%h (%an): %s" $$(git describe --tags --abbrev=0 @^)..@)\n" >> /tmp/CHANGELOG
+	@cat /tmp/CHANGELOG CHANGELOG > /tmp/NEW_CHANGELOG
+	@mv /tmp/NEW_CHANGELOG CHANGELOG
+
+	./fluxopctl -flux-operator-version $(shell DRYRUN=1 git semver $*) > deploy/flux-operator-namespaced.yaml
+	./fluxopctl -cluster -flux-operator-version $(shell DRYRUN=1 git semver $*) > deploy/flux-operator-cluster.yaml
+
+	@git add CHANGELOG deploy/flux-operator-namespaced.yaml deploy/flux-operator-cluster.yaml
+	@git commit -m "Release $(shell DRYRUN=1 git semver $*)"
+	@git semver $*
+
 $(GOBIN)/openapi-gen:
 	go get -u -v -d k8s.io/code-generator/cmd/openapi-gen
 	cd $(GOPATH)/src/k8s.io/code-generator; git checkout release-1.8
@@ -27,7 +40,7 @@ deploy/flux-operator-cluster.yaml:
 fluxopctl:
 	CGO_ENABLED=0 go build -ldflags '-w -s' -installsuffix cgo -o fluxopctl cmd/fluxopctl/main.go
 
-generate-crds: clean generate-openapi fluxopctl deploy/flux-operator-namespaced.yaml deploy/flux-operator-cluster.yaml
+generate-crds: deploy/flux-operator-namespaced.yaml deploy/flux-operator-cluster.yaml
 
 .PHONY: openapi-gen build test clean install all
 
