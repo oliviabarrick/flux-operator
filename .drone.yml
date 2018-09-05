@@ -14,6 +14,7 @@ pipeline:
     image: golang:1.11-alpine
     commands:
       - apk update && apk add make git
+      - dep ensure
       - make generate-openapi
       - echo "Checking if generated files are different than commited, will fail if changes are detected."
       - git diff --exit-code
@@ -35,6 +36,7 @@ pipeline:
     rebuild: true
     mount:
       - .go-cache/
+      - vendor
 
   test:
     image: justinbarrick/drone-minikube:localkube
