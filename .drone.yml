@@ -2,6 +2,7 @@ workspace:
   base: /go
   path: flux-operator
 
+
 pipeline:
   build:
     image: golang:1.11-stretch
