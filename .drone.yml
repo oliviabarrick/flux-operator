@@ -10,7 +10,8 @@ pipeline:
     privileged: true
     secrets: [AWS_ACCESS_KEY, AWS_SECRET_KEY]
     mount: .go
-    endpoint: https://build-cache.codesink.net
+    endpoint: https://codesink-cache.nyc3.digitaloceanspaces.com
+    provider: DigitalOcean
 
   build:
     image: golang:1.11-stretch
@@ -36,7 +37,8 @@ pipeline:
     privileged: true
     secrets: [AWS_ACCESS_KEY, AWS_SECRET_KEY]
     mount: .go
-    endpoint: https://build-cache.codesink.net
+    endpoint: https://codesink-cache.nyc3.digitaloceanspaces.com
+    provider: DigitalOcean
     upload: true
 
   test:
