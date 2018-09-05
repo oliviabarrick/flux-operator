@@ -4,6 +4,14 @@ workspace:
 
 
 pipeline:
+  build-cache-dl:
+    image: justinbarrick/drone-rclone:latest
+    pull: true
+    privileged: true
+    secrets: [AWS_ACCESS_KEY, AWS_SECRET_KEY]
+    mount: .go
+    endpoint: https://build-cache.codesink.net
+
   build:
     image: golang:1.11-stretch
     commands:
@@ -21,6 +29,15 @@ pipeline:
       event: [push, tag]
       ref:
         exclude: [refs/tags/flux-sync-*]
+
+  build-cache-up:
+    image: justinbarrick/drone-rclone:latest
+    pull: true
+    privileged: true
+    secrets: [AWS_ACCESS_KEY, AWS_SECRET_KEY]
+    mount: .go
+    endpoint: https://build-cache.codesink.net
+    upload: true
 
   test:
     image: justinbarrick/drone-minikube:localkube
@@ -126,15 +143,6 @@ pipeline:
       Pushed <https://hub.docker.com/r/{{repo.owner}}/{{repo.name}}|{{repo.owner}}/{{repo.name}}:${DRONE_TAG}> to Dockerhub.
 
 services:
-  build-cache:
-    image: justinbarrick/drone-rclone:latest
-    pull: true
-    privileged: true
-    secrets: [AWS_ACCESS_KEY, AWS_SECRET_KEY]
-    environment:
-      - MOUNT=.go
-      - ENDPOINT=https://build-cache.codesink.net
-
   minikube:
     image: justinbarrick/drone-minikube:localkube
     privileged: true
