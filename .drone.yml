@@ -127,6 +127,7 @@ pipeline:
 services:
   build-cache:
     image: justinbarrick/drone-rclone:latest
+    pull: true
     privileged: true
     secrets: [AWS_ACCESS_KEY, AWS_SECRET_KEY]
     endpoint: https://build-cache.codesink.net
