@@ -1,6 +1,6 @@
 workspace:
   base: /go
-  path: src/github.com/justinbarrick/flux-operator
+  path: flux-operator
 
 pipeline:
   restore-cache:
@@ -11,10 +11,9 @@ pipeline:
     restore: true
 
   build:
-    image: golang:1.11-alpine
+    image: golang:1.11-stretch
     commands:
-      - apk update && apk add make git
-      - dep ensure
+      - go get
       - make generate-openapi
       - echo "Checking if generated files are different than commited, will fail if changes are detected."
       - git diff --exit-code
@@ -22,7 +21,9 @@ pipeline:
       - make build
       - make fluxopctl
     environment:
-      - GOCACHE=/go/src/github.com/justinbarrick/flux-operator/.go-cache
+      - GOPATH=/go/flux-operator/.go
+      - CGO_ENABLED=0
+      - GO111MODULE=on
     when:
       event: [push, tag]
       ref:
@@ -35,8 +36,7 @@ pipeline:
     secret_key: minio123
     rebuild: true
     mount:
-      - .go-cache/
-      - vendor
+      - .go/
 
   test:
     image: justinbarrick/drone-minikube:localkube
@@ -87,9 +87,8 @@ pipeline:
       event: tag
 
   lint-crds:
-    image: golang:1.11-alpine
+    image: golang:1.11-stretch
     commands:
-      - apk update && apk add make git
       - make generate-crds
       - echo "Checking if generated files are different than commited, will fail if changes are detected."
       - git diff --exit-code

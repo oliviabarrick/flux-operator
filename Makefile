@@ -22,12 +22,10 @@ all: generate-crds
 	@git semver $*
 
 $(GOBIN)/openapi-gen:
-	go get -u -v -d k8s.io/code-generator/cmd/openapi-gen
-	cd $(GOPATH)/src/k8s.io/code-generator; git checkout release-1.8
-	go install k8s.io/code-generator/cmd/openapi-gen
+	go get -u k8s.io/code-generator/cmd/openapi-gen
 
 pkg/apis/flux/v1alpha1/openapi_generated.go: $(GOBIN)/openapi-gen
-	openapi-gen -i $(REPO)/pkg/apis/flux/v1alpha1,k8s.io/apimachinery/pkg/apis/meta/v1,k8s.io/api/core/v1 -p $(REPO)/pkg/apis/flux/v1alpha1 --go-header-file="$(GOPATH)/src/github.com/justinbarrick/flux-operator/.header"
+	openapi-gen -i $(REPO)/pkg/apis/flux/v1alpha1,k8s.io/apimachinery/pkg/apis/meta/v1,k8s.io/api/core/v1 -p $(REPO)/pkg/apis/flux/v1alpha1 --go-header-file=".header"
 
 generate-openapi: pkg/apis/flux/v1alpha1/openapi_generated.go
 
