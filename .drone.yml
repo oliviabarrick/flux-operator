@@ -131,7 +131,7 @@ services:
     privileged: true
     secrets: [AWS_ACCESS_KEY, AWS_SECRET_KEY]
     endpoint: https://build-cache.codesink.net
-    mount: .go
+    path: .go
 
   minikube:
     image: justinbarrick/drone-minikube:localkube
