@@ -3,8 +3,15 @@ workspace:
   path: src/github.com/justinbarrick/flux-operator
 
 pipeline:
+  restore-cache:
+    image: plugins/s3-cache:1
+    endpoint: https://build-cache.codesink.net
+    access_key: minio
+    secret_key: minio123
+    restore: true
+
   build:
-    image: golang:1.10-alpine
+    image: golang:1.11-alpine
     commands:
       - apk update && apk add make git
       - make generate-openapi
@@ -13,10 +20,21 @@ pipeline:
       - make test
       - make build
       - make fluxopctl
+    environment:
+      - GOCACHE=/go/src/github.com/justinbarrick/flux-operator/.go-cache
     when:
       event: [push, tag]
       ref:
         exclude: [refs/tags/flux-sync-*]
+
+  rebuild-cache:
+    image: plugins/s3-cache:1
+    endpoint: https://build-cache.codesink.net
+    access_key: minio
+    secret_key: minio123
+    rebuild: true
+    mount:
+      - .go-cache/
 
   test:
     image: justinbarrick/drone-minikube:localkube
@@ -67,7 +85,7 @@ pipeline:
       event: tag
 
   lint-crds:
-    image: golang:1.10-alpine
+    image: golang:1.11-alpine
     commands:
       - apk update && apk add make git
       - make generate-crds
