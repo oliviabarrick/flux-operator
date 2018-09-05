@@ -130,8 +130,9 @@ services:
     pull: true
     privileged: true
     secrets: [AWS_ACCESS_KEY, AWS_SECRET_KEY]
-    endpoint: https://build-cache.codesink.net
-    path: .go
+    environment:
+      - MOUNT=.go
+      - ENDPOINT=https://build-cache.codesink.net
 
   minikube:
     image: justinbarrick/drone-minikube:localkube
