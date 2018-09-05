@@ -13,7 +13,6 @@ pipeline:
   build:
     image: golang:1.11-stretch
     commands:
-      - go get
       - make generate-openapi
       - echo "Checking if generated files are different than commited, will fail if changes are detected."
       - git diff --exit-code
