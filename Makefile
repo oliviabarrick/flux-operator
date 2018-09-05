@@ -4,6 +4,12 @@ REPO := github.com/justinbarrick/flux-operator
 ifeq ($(GOBIN),)
 GOBIN :=${GOPATH}/bin
 endif
+
+CGO_ENABLED := 0
+PATH := ${GOBIN}:${PATH}
+
+export CGO_ENABLED
+
 DATE := $(shell date '+%Y-%m-%d %H:%M:%S')
 
 all: generate-crds
@@ -36,7 +42,7 @@ deploy/flux-operator-cluster.yaml:
 	./fluxopctl -cluster > deploy/flux-operator-cluster.yaml
 
 fluxopctl:
-	CGO_ENABLED=0 go build -ldflags '-w -s' -installsuffix cgo -o fluxopctl cmd/fluxopctl/main.go
+	go build -o fluxopctl cmd/fluxopctl/main.go
 
 generate-crds: deploy/flux-operator-namespaced.yaml deploy/flux-operator-cluster.yaml
 
@@ -52,7 +58,7 @@ test:
 
 build:
 	gofmt -w ./cmd ./pkg
-	CGO_ENABLED=0 go build -ldflags '-w -s' -installsuffix cgo -o flux-operator cmd/flux-operator/main.go
+	go build -o flux-operator cmd/flux-operator/main.go
 
 clean:
 	rm -f pkg/apis/flux/v1alpha1/openapi_generated.go
