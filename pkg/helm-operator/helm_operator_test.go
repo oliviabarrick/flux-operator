@@ -19,7 +19,6 @@ func TestMakeHelmOperatorArgs(t *testing.T) {
 
 	expectedArgs := []string{
 		"--git-url=git@github.com:justinbarrick/manifests",
-		"--git-branch=master",
 		"--git-charts-path=./",
 		"--charts-sync-interval=3m0s",
 		"--git-poll-interval=3m0s",
@@ -44,7 +43,6 @@ func TestMakeHelmOperatorArgsOverrides(t *testing.T) {
 
 	expectedArgs := []string{
 		"--git-url=example.git",
-		"--git-branch=master",
 		"--git-charts-path=charts/",
 		"--git-poll-interval=1m0s",
 		"--charts-sync-interval=1m30s",
@@ -67,7 +65,6 @@ func TestMakeHelmOperatorArgsOverridesFromBase(t *testing.T) {
 
 	expectedArgs := []string{
 		"--git-url=git@github.com:justinbarrick/manifests",
-		"--git-branch=master",
 		"--git-charts-path=./",
 		"--git-poll-interval=0m30s",
 		"--charts-sync-interval=1m30s",

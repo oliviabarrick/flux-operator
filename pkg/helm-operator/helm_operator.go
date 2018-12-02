@@ -16,11 +16,6 @@ import (
 
 // Create helm-operator command arguments from CR
 func MakeHelmOperatorArgs(cr *v1alpha1.Flux) (args []string) {
-	branch := cr.Spec.GitBranch
-	if branch == "" {
-		branch = "master"
-	}
-
 	path := cr.Spec.HelmOperator.ChartPath
 	if path == "" {
 		path = "./"
@@ -51,7 +46,6 @@ func MakeHelmOperatorArgs(cr *v1alpha1.Flux) (args []string) {
 
 	argMap := map[string]string{
 		"git-url":              gitUrl,
-		"git-branch":           branch,
 		"git-charts-path":      path,
 		"git-poll-interval":    poll,
 		"charts-sync-interval": sync,
