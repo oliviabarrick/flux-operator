@@ -3,20 +3,6 @@ workspace:
   path: src/github.com/justinbarrick/flux-operator
 
 pipeline:
-  build:
-    image: golang:1.10-alpine
-    commands:
-      - apk update && apk add make git
-      - make generate-crds
-      - echo "Checking if generated files are different than commited, will fail if changes are detected."
-      - git diff --exit-code
-      - make test
-      - make build
-    when:
-      event: [push, tag]
-      ref:
-        exclude: [refs/tags/flux-sync-*]
-
   test:
     image: justinbarrick/drone-minikube:localkube
     secrets: [ SSH_KEY ]
@@ -29,71 +15,6 @@ pipeline:
       event: [push, tag]
       ref:
         exclude: [refs/tags/flux-sync-*]
-
-  publish-dev:
-    image: justinbarrick/drone-minikube:localkube
-    secrets: [ DOCKER_USER, DOCKER_PASSWORD ]
-    environment:
-      - DOCKER_HOST=tcp://minikube:2375
-      - TAG=${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:7}
-    commands:
-      - ./push.sh
-    when:
-      event: push
-
-  publish:
-    image: justinbarrick/drone-minikube:localkube
-    secrets: [ DOCKER_USER, DOCKER_PASSWORD ]
-    environment:
-      - DOCKER_HOST=tcp://minikube:2375
-      - TAG=${DRONE_TAG}
-    commands:
-      - ./push.sh
-    when:
-      branch: master
-      event: tag
-
-  slack:
-    image: plugins/slack
-    webhook: https://hooks.slack.com/services/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
-    channel: '#kubernetes'
-    username: Drone CI
-    icon_url: https://i.imgur.com/B7Tk2Xf.png
-    when:
-      status: [success, failure]
-      event: [push, tag]
-      ref:
-        exclude: [refs/tags/flux-sync-*]
-
-    template: >
-      {{#success build.status}}
-        Build <{{build.link}}|#{{build.number}}> for <https://github.com/{{repo.owner}}/{{repo.name}}/tree/{{build.commit}}|{{repo.name}}#{{build.branch}}> by {{build.author}} succeeded!
-      {{else}}
-        Build <{{build.link}}|#{{build.number}}> for <https://github.com/{{repo.owner}}/{{repo.name}}/tree/{{build.commit}}|{{repo.name}}#{{build.branch}}> by {{build.author}} failed.
-      {{/success}}
-
-  slack-push:
-    image: plugins/slack
-    webhook: https://hooks.slack.com/services/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
-    channel: '#kubernetes'
-    username: Drone CI Docker Push
-    icon_url: https://i.imgur.com/B7Tk2Xf.png
-    when:
-      event: push
-    template: >
-      Pushed <https://hub.docker.com/r/{{repo.owner}}/{{repo.name}}|{{repo.owner}}/{{repo.name}}:${DRONE_BRANCH}-${DRONE_COMMIT_SHA:0:7}> to Dockerhub.
-
-  slack-tag:
-    image: plugins/slack
-    webhook: https://hooks.slack.com/services/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
-    channel: '#kubernetes'
-    username: Drone CI Docker Push
-    icon_url: https://i.imgur.com/B7Tk2Xf.png
-    when:
-      branch: master
-      event: tag
-    template: >
-      Pushed <https://hub.docker.com/r/{{repo.owner}}/{{repo.name}}|{{repo.owner}}/{{repo.name}}:${DRONE_TAG}> to Dockerhub.
 
 services:
   minikube:

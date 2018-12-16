@@ -3,6 +3,12 @@
 tmp/_output
 tmp/_test
 
+.go
+.go-cache
+.gocache
+.hone_cache
+.vscode
+bin/
 
 # Created by https://www.gitignore.io/api/go,vim,emacs,visualstudiocode
 

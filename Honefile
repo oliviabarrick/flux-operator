@@ -34,6 +34,22 @@ template "default" {
     }
 }
 
+template "docker" {
+    image = "justinbarrick/kaniko:latest"
+
+    env = {
+        "DOCKER_USER" = "${environ.DOCKER_USER}",
+        "DOCKER_PASS" = "${environ.DOCKER_PASS}",
+    }
+
+    input = "bin/flux-operator"
+
+    shell = <<EOF
+kaniko --dockerfile=Dockerfile --context=/build/bin/ \
+    --destination=${environ.DOCKER_USER}/flux-operator:$TAG
+EOF
+}
+
 job "format" {
     deps = ["generate-openapi"]
 
@@ -94,7 +110,7 @@ job "generate-openapi" {
     deps = ["openapi-gen"]
 
     inputs = [
-        "pkg/apis/flux/v1alpha1/types.go"
+        "pkg/apis/flux/v1alpha1/types.go", "./bin/openapi-gen"
     ]
 
     output = "pkg/apis/flux/v1alpha1/openapi_generated.go"
@@ -120,17 +136,21 @@ EOF
 }
 
 job "docker-build" {
-    image = "justinbarrick/kaniko:latest"
+    template = "docker"
 
     env = {
-        "DOCKER_USER" = "${environ.DOCKER_USER}",
-        "DOCKER_PASS" = "${environ.DOCKER_PASS}",
+        "TAG" = "${environ.GIT_BRANCH}-${environ.GIT_COMMIT_SHORT}"
     }
+}
 
-    shell = <<EOF
-kaniko --dockerfile=Dockerfile --context=/build/bin/ \
-    --destination=${environ.DOCKER_USER}/flux-operator:${environ.GIT_TAG}
-EOF
+job "docker-release" {
+    template = "docker"
+
+    condition = "GIT_BRANCH='master' and GIT_TAG!=''"
+
+    env = {
+        "TAG" = "${environ.GIT_TAG}"
+    }
 }
 
 job "all" {
