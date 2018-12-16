@@ -37,6 +37,8 @@ template "default" {
 template "docker" {
     image = "justinbarrick/kaniko:latest"
 
+    deps = ["flux-operator"]
+
     env = {
         "DOCKER_USER" = "${environ.DOCKER_USER}",
         "DOCKER_PASS" = "${environ.DOCKER_PASS}",
@@ -53,9 +55,7 @@ EOF
 job "format" {
     deps = ["generate-openapi"]
 
-    shell = <<EOF
-gofmt -w ./cmd ./pkg
-EOF
+    shell = "gofmt -w ./cmd ./pkg"
 }
 
 job "test" {
@@ -155,6 +155,6 @@ job "docker-release" {
 
 job "all" {
     engine = "local"
-    deps = ["manifests", "flux-operator", "fluxopctl"]
+    deps = ["manifests", "flux-operator", "fluxopctl", "docker-build", "docker-release"]
     shell = "echo build complete!"
 }
