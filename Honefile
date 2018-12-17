@@ -2,24 +2,40 @@ secrets = [
     "S3_ACCESS_KEY",
     "S3_SECRET_KEY",
     "DOCKER_USER",
-    "DOCKER_PASS"
+    "DOCKER_PASS",
+    "GITHUB_TOKEN"
 ]
 
 env = [
     "S3_BUCKET=codesink-cache",
     "S3_ENDPOINT=sfo2.digitaloceanspaces.com",
-    "S3_ENABLED=true",
+    "S3_ENABLED=false",
     "S3_ACCESS_KEY",
     "S3_SECRET_KEY",
     "DOCKER_USER",
     "DOCKER_PASS",
     "VAULT_ADDR=https://vault.codesink.net/",
-    "VAULT_TOKEN"
+    "VAULT_TOKEN",
+    "GITHUB_TOKEN"
 ]
 
 vault {
     address = "${environ.VAULT_ADDR}"
     token = "${environ.VAULT_TOKEN}"
+}
+
+cache {
+    s3 {
+        access_key = "${environ.S3_ACCESS_KEY}"
+        secret_key = "${environ.S3_SECRET_KEY}"
+        endpoint = "${environ.S3_ENDPOINT}"
+        bucket = "${environ.S3_BUCKET}"
+        disabled = "${environ.S3_ENABLED != "true"}"
+    }
+}
+
+report {
+    token = "${environ.GITHUB_TOKEN}"
 }
 
 template "default" {
@@ -44,7 +60,7 @@ template "docker" {
         "DOCKER_PASS" = "${environ.DOCKER_PASS}",
     }
 
-    input = "bin/flux-operator"
+    inputs = ["Dockerfile", "bin/flux-operator"]
 
     shell = <<EOF
 kaniko --dockerfile=Dockerfile --context=/build/bin/ \
