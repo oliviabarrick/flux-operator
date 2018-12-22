@@ -30,6 +30,11 @@ func DesiredFluxObjects(cr *v1alpha1.Flux) ([]runtime.Object, error) {
 		objects = append(objects, flux.NewFluxSSHKey(cr))
 	}
 
+	knownHosts := flux.NewFluxKnownHosts(cr)
+	if knownHosts != nil {
+		objects = append(objects, knownHosts)
+	}
+
 	tillerObjects, err := tiller.NewTiller(cr)
 	if err != nil {
 		logrus.Errorf("Failed to create tiller instance: %v", err)

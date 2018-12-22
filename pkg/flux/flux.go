@@ -24,6 +24,64 @@ func GitSecretName(cr *v1alpha1.Flux) string {
 	return secretName
 }
 
+func KnownHostsName(cr *v1alpha1.Flux) string {
+	if cr.Spec.KnownHosts != "" {
+		return fmt.Sprintf("flux-git-%s-known-hosts", cr.Name)
+	}
+
+	if utils.Getenv("KNOWN_HOSTS_CONFIGMAP", "") != "" {
+		return utils.Getenv("KNOWN_HOSTS_CONFIGMAP", "")
+	}
+
+	return ""
+}
+
+func MakeGitVolumes(cr *v1alpha1.Flux) ([]corev1.Volume, []corev1.VolumeMount) {
+	secretMode := int32(0400)
+
+	volumes := []corev1.Volume{
+		corev1.Volume{
+			Name: "git-key",
+			VolumeSource: corev1.VolumeSource{
+				Secret: &corev1.SecretVolumeSource{
+					SecretName:  GitSecretName(cr),
+					DefaultMode: &secretMode,
+				},
+			},
+		},
+	}
+
+	volumeMounts := []corev1.VolumeMount{
+		corev1.VolumeMount{
+			Name:      "git-key",
+			MountPath: "/etc/fluxd/ssh",
+			ReadOnly:  true,
+		},
+	}
+
+	if KnownHostsName(cr) != "" {
+		volumes = append(volumes, corev1.Volume{
+			Name: "known-hosts",
+			VolumeSource: corev1.VolumeSource{
+				ConfigMap: &corev1.ConfigMapVolumeSource{
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: KnownHostsName(cr),
+					},
+				},
+			},
+		})
+
+		volumeMounts = append(volumeMounts, corev1.VolumeMount{
+			Name:      "known-hosts",
+			MountPath: "/root/.ssh/known_hosts",
+			SubPath:   "known_hosts",
+			ReadOnly:  true,
+		})
+	}
+
+	return volumes, volumeMounts
+}
+
 // Create flux command arguments from CR
 func MakeFluxArgs(cr *v1alpha1.Flux) (args []string) {
 	branch := cr.Spec.GitBranch
@@ -96,7 +154,6 @@ func NewFluxDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 	meta.Labels = labels
 
 	replicas := int32(1)
-	secretMode := int32(0400)
 
 	resourceRequirements := corev1.ResourceRequirements{
 		Limits: corev1.ResourceList{
@@ -111,6 +168,8 @@ func NewFluxDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 	if cr.Spec.Resources != nil {
 		resourceRequirements = *cr.Spec.Resources
 	}
+
+	volumes, volumeMounts := MakeGitVolumes(cr)
 
 	return &extensions.Deployment{
 		TypeMeta: metav1.TypeMeta{
@@ -129,17 +188,7 @@ func NewFluxDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 				},
 				Spec: corev1.PodSpec{
 					ServiceAccountName: rbac.ServiceAccountName(cr),
-					Volumes: []corev1.Volume{
-						corev1.Volume{
-							Name: "git-key",
-							VolumeSource: corev1.VolumeSource{
-								Secret: &corev1.SecretVolumeSource{
-									SecretName:  GitSecretName(cr),
-									DefaultMode: &secretMode,
-								},
-							},
-						},
-					},
+					Volumes:            volumes,
 					Containers: []corev1.Container{
 						{
 							Name:            "flux",
@@ -150,15 +199,9 @@ func NewFluxDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 									ContainerPort: 3030,
 								},
 							},
-							VolumeMounts: []corev1.VolumeMount{
-								corev1.VolumeMount{
-									Name:      "git-key",
-									MountPath: "/etc/fluxd/ssh",
-									ReadOnly:  true,
-								},
-							},
-							Args:      MakeFluxArgs(cr),
-							Resources: resourceRequirements,
+							VolumeMounts: volumeMounts,
+							Args:         MakeFluxArgs(cr),
+							Resources:    resourceRequirements,
 						},
 					},
 				},
@@ -175,5 +218,22 @@ func NewFluxSSHKey(cr *v1alpha1.Flux) *corev1.Secret {
 		},
 		ObjectMeta: utils.NewObjectMeta(cr, GitSecretName(cr)),
 		Type:       "opaque",
+	}
+}
+
+func NewFluxKnownHosts(cr *v1alpha1.Flux) *corev1.ConfigMap {
+	if cr.Spec.KnownHosts == "" {
+		return nil
+	}
+
+	return &corev1.ConfigMap{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "ConfigMap",
+			APIVersion: "v1",
+		},
+		ObjectMeta: utils.NewObjectMeta(cr, KnownHostsName(cr)),
+		Data: map[string]string{
+			"known_hosts": cr.Spec.KnownHosts,
+		},
 	}
 }

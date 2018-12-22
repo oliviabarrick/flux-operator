@@ -127,6 +127,7 @@ Settings in the Flux spec:
 * `syncInterval`: the frequency with which to sync the manifests in the repository to the cluster (default: `5m0s`).
 * `gitSecret`: the Kubernetes secret to use for cloning, if it does not exist it will
                be generated (default: `flux-$name-git-deploy` or `$GIT_SECRET_NAME`).
+* `knownHosts`: The contents of the known_hosts file to mount into Flux and helm-operator.
 * `fluxImage`: the image to use for flux (default: `quay.io/weaveworks/flux` or `$FLUX_IMAGE`).
 * `fluxVersion`: the version to use for flux (default: `1.4.0` or `$FLUX_VERSION`).
 * `resources`: resource limits to set on the flux pod.
@@ -164,6 +165,7 @@ You can also override some of the defaults by setting environment variables on t
 operator itself:
 
 * `GIT_SECRET_NAME`: the git secret name to use.
+* `KNOWN_HOSTS_CONFIGMAP`: a configmap to mount in to all fluxes that do not specify a known hosts file.
 * `FLUX_IMAGE`: the default image to use for flux.
 * `FLUX_VERSION`: the default version to use for flux.
 * `HELM_OPERATOR_IMAGE`: the default image to use for helm-operator.

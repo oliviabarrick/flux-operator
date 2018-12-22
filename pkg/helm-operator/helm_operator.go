@@ -88,7 +88,6 @@ func NewHelmOperatorDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 	meta.Labels = labels
 
 	replicas := int32(1)
-	secretMode := int32(0400)
 
 	resourceRequirements := corev1.ResourceRequirements{
 		Limits: corev1.ResourceList{
@@ -103,6 +102,8 @@ func NewHelmOperatorDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 	if cr.Spec.HelmOperator.Resources != nil {
 		resourceRequirements = *cr.Spec.HelmOperator.Resources
 	}
+
+	volumes, volumeMounts := flux.MakeGitVolumes(cr)
 
 	return &extensions.Deployment{
 		TypeMeta: metav1.TypeMeta{
@@ -121,31 +122,15 @@ func NewHelmOperatorDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 				},
 				Spec: corev1.PodSpec{
 					ServiceAccountName: rbac.ServiceAccountName(cr),
-					Volumes: []corev1.Volume{
-						corev1.Volume{
-							Name: "git-key",
-							VolumeSource: corev1.VolumeSource{
-								Secret: &corev1.SecretVolumeSource{
-									SecretName:  flux.GitSecretName(cr),
-									DefaultMode: &secretMode,
-								},
-							},
-						},
-					},
+					Volumes:            volumes,
 					Containers: []corev1.Container{
 						{
 							Name:            "helm-operator",
 							Image:           fmt.Sprintf("%s:%s", operatorImage, operatorVersion),
 							ImagePullPolicy: "IfNotPresent",
-							VolumeMounts: []corev1.VolumeMount{
-								corev1.VolumeMount{
-									Name:      "git-key",
-									MountPath: "/etc/fluxd/ssh",
-									ReadOnly:  true,
-								},
-							},
-							Args:      MakeHelmOperatorArgs(cr),
-							Resources: resourceRequirements,
+							VolumeMounts:    volumeMounts,
+							Args:            MakeHelmOperatorArgs(cr),
+							Resources:       resourceRequirements,
 						},
 					},
 				},

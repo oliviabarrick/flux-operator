@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
+	"os"
 	"sort"
 	"testing"
 )
@@ -193,4 +194,98 @@ func TestNewFluxDeploymentOverrideResources(t *testing.T) {
 	assert.Equal(t, resource.MustParse("1000Mi"), c.Resources.Requests[corev1.ResourceMemory])
 	assert.Equal(t, resource.MustParse("1235m"), c.Resources.Limits[corev1.ResourceCPU])
 	assert.Equal(t, resource.MustParse("1337m"), c.Resources.Requests[corev1.ResourceCPU])
+}
+
+func TestKnownHostsName(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr.Spec.KnownHosts = `github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==`
+
+	assert.Equal(t, fmt.Sprintf("flux-git-%s-known-hosts", cr.Name), KnownHostsName(cr))
+}
+
+func TestKnownHostsNameNone(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr.Spec.KnownHosts = ``
+
+	assert.Equal(t, "", KnownHostsName(cr))
+}
+
+func TestKnownHostsNameFromEvironment(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr.Spec.KnownHosts = ``
+
+	os.Setenv("KNOWN_HOSTS_CONFIGMAP", "my-configmap")
+	defer os.Unsetenv("KNOWN_HOSTS_CONFIGMAP")
+
+	assert.Equal(t, "my-configmap", KnownHostsName(cr))
+}
+
+func TestKnownHostsNameOverridesEvironment(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr.Spec.KnownHosts = `github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==`
+
+	os.Setenv("KNOWN_HOSTS_CONFIGMAP", "my-configmap")
+	defer os.Unsetenv("KNOWN_HOSTS_CONFIGMAP")
+
+	assert.Equal(t, fmt.Sprintf("flux-git-%s-known-hosts", cr.Name), KnownHostsName(cr))
+}
+
+func TestNewFluxKnownHosts(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr.Spec.KnownHosts = `github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==`
+
+	knownHosts := NewFluxKnownHosts(cr)
+	assert.Equal(t, KnownHostsName(cr), knownHosts.ObjectMeta.Name)
+	assert.Equal(t, cr.Spec.KnownHosts, knownHosts.Data["known_hosts"])
+}
+
+func TestNewFluxKnownHostsEmpty(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr.Spec.KnownHosts = ""
+
+	assert.Nil(t, NewFluxKnownHosts(cr))
+}
+
+func TestMakeGitVolumes(t *testing.T) {
+	cr := test_utils.NewFlux()
+	volumes, volumeMounts := MakeGitVolumes(cr)
+	assert.Equal(t, 1, len(volumes))
+	assert.Equal(t, volumes[0].Name, "git-key")
+	assert.Equal(t, 1, len(volumeMounts))
+	assert.Equal(t, volumeMounts[0].Name, "git-key")
+}
+
+func TestMakeGitVolumesWithKnownHosts(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr.Spec.KnownHosts = `github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==`
+
+	volumes, volumeMounts := MakeGitVolumes(cr)
+	assert.Equal(t, 2, len(volumes))
+	assert.Equal(t, volumes[0].Name, "git-key")
+	assert.Equal(t, volumes[1].Name, "known-hosts")
+	assert.Equal(t, volumes[1].VolumeSource.ConfigMap.LocalObjectReference.Name, KnownHostsName(cr))
+	assert.Equal(t, 2, len(volumeMounts))
+	assert.Equal(t, volumeMounts[0].Name, "git-key")
+	assert.Equal(t, volumeMounts[1].Name, "known-hosts")
+	assert.Equal(t, volumeMounts[1].SubPath, "known_hosts")
+	assert.Equal(t, volumeMounts[1].MountPath, "/root/.ssh/known_hosts")
+}
+
+func TestMakeGitVolumesWithKnownHostsFromEnvironment(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr.Spec.KnownHosts = ``
+
+	os.Setenv("KNOWN_HOSTS_CONFIGMAP", "my-configmap")
+	defer os.Unsetenv("KNOWN_HOSTS_CONFIGMAP")
+
+	volumes, volumeMounts := MakeGitVolumes(cr)
+	assert.Equal(t, 2, len(volumes))
+	assert.Equal(t, volumes[0].Name, "git-key")
+	assert.Equal(t, volumes[1].Name, "known-hosts")
+	assert.Equal(t, volumes[1].VolumeSource.ConfigMap.LocalObjectReference.Name, KnownHostsName(cr))
+	assert.Equal(t, 2, len(volumeMounts))
+	assert.Equal(t, volumeMounts[0].Name, "git-key")
+	assert.Equal(t, volumeMounts[1].Name, "known-hosts")
+	assert.Equal(t, volumeMounts[1].SubPath, "known_hosts")
+	assert.Equal(t, volumeMounts[1].MountPath, "/root/.ssh/known_hosts")
 }

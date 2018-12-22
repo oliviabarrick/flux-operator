@@ -1,0 +1,176 @@
+secrets = [
+    "S3_ACCESS_KEY",
+    "S3_SECRET_KEY",
+    "DOCKER_USER",
+    "DOCKER_PASS",
+    "GITHUB_TOKEN"
+]
+
+env = [
+    "S3_BUCKET=codesink-cache",
+    "S3_ENDPOINT=sfo2.digitaloceanspaces.com",
+    "S3_ENABLED=false",
+    "S3_ACCESS_KEY",
+    "S3_SECRET_KEY",
+    "DOCKER_USER",
+    "DOCKER_PASS",
+    "VAULT_ADDR=https://vault.codesink.net/",
+    "VAULT_TOKEN",
+    "GITHUB_TOKEN"
+]
+
+vault {
+    address = "${environ.VAULT_ADDR}"
+    token = "${environ.VAULT_TOKEN}"
+}
+
+cache {
+    s3 {
+        access_key = "${environ.S3_ACCESS_KEY}"
+        secret_key = "${environ.S3_SECRET_KEY}"
+        endpoint = "${environ.S3_ENDPOINT}"
+        bucket = "${environ.S3_BUCKET}"
+        disabled = "${environ.S3_ENABLED != "true"}"
+    }
+}
+
+report {
+    token = "${environ.GITHUB_TOKEN}"
+}
+
+template "default" {
+    image = "golang:1.11.2"
+
+    env = {
+        "GO111MODULE" = "on"
+        "GOCACHE" = "/build/.gocache"
+        "GOPATH" = "/build/.go"
+        "GOBIN" = "/build/bin/"
+        "CGO_ENABLED" = "0"
+    }
+}
+
+template "docker" {
+    image = "justinbarrick/kaniko:latest"
+
+    deps = ["flux-operator"]
+
+    env = {
+        "DOCKER_USER" = "${environ.DOCKER_USER}",
+        "DOCKER_PASS" = "${environ.DOCKER_PASS}",
+    }
+
+    inputs = ["Dockerfile", "bin/flux-operator"]
+
+    shell = <<EOF
+kaniko --dockerfile=Dockerfile --context=/build/bin/ \
+    --destination=${environ.DOCKER_USER}/flux-operator:$TAG
+EOF
+}
+
+job "format" {
+    deps = ["generate-openapi"]
+
+    shell = "gofmt -w ./cmd ./pkg"
+}
+
+job "test" {
+    deps = ["format", "generate-openapi"]
+
+    inputs = [
+        "cmd/**/*.go", "pkg/**/*.go"
+    ]
+
+    shell = <<EOF
+echo Checking for unformatted files..
+test -z $(gofmt -l ./cmd ./pkg)
+echo Running unit tests..
+go test github.com/justinbarrick/flux-operator/...
+EOF
+}
+
+job "fluxopctl" {
+    deps = ["format"]
+
+    inputs = [
+        "cmd/fluxopctl/main.go", "pkg/**/*.go"
+    ]
+
+    output = "bin/fluxopctl"
+
+    shell = "go build -ldflags '-w -s' -installsuffix cgo -o bin/fluxopctl cmd/fluxopctl/main.go"
+}
+
+job "flux-operator" {
+    deps = ["format"]
+
+    inputs = [
+        "cmd/flux-operator/main.go", "pkg/**/*.go"
+    ]
+
+    output = "bin/flux-operator"
+
+    shell = "go build -ldflags '-w -s' -installsuffix cgo -o bin/flux-operator cmd/flux-operator/main.go"
+}
+
+job "openapi-gen" {
+    output = "bin/openapi-gen"
+
+    shell = <<EOF
+go get -u k8s.io/code-generator/cmd/openapi-gen@release-1.8
+go install k8s.io/code-generator/cmd/openapi-gen
+EOF
+}
+
+job "generate-openapi" {
+    deps = ["openapi-gen"]
+
+    inputs = [
+        "pkg/apis/flux/v1alpha1/types.go", "./bin/openapi-gen"
+    ]
+
+    output = "pkg/apis/flux/v1alpha1/openapi_generated.go"
+
+    shell = <<EOF
+./bin/openapi-gen -i github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1,k8s.io/apimachinery/pkg/apis/meta/v1,k8s.io/api/core/v1 -p github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1 --go-header-file="/build/.header"
+EOF
+}
+
+job "manifests" {
+    deps = ["fluxopctl"]
+
+    input = "fluxopctl"
+
+    outputs = [
+        "deploy/flux-operator-namespaced.yaml", "deploy/flux-operator-cluster.yaml"
+    ]
+
+    shell = <<EOF
+./fluxopctl > deploy/flux-operator-namespaced.yaml
+./fluxopctl -cluster > deploy/flux-operator-cluster.yaml
+EOF
+}
+
+job "docker-build" {
+    template = "docker"
+
+    env = {
+        "TAG" = "${environ.GIT_BRANCH}-${environ.GIT_COMMIT_SHORT}"
+    }
+}
+
+job "docker-release" {
+    template = "docker"
+
+    condition = "GIT_BRANCH='master' and GIT_TAG!=''"
+
+    env = {
+        "TAG" = "${environ.GIT_TAG}"
+    }
+}
+
+job "all" {
+    engine = "local"
+    deps = ["manifests", "flux-operator", "fluxopctl", "docker-build", "docker-release"]
+    shell = "echo build complete!"
+}
