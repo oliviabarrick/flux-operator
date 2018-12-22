@@ -42,6 +42,8 @@ type FluxSpec struct {
 	// The Kubernetes secret to use for cloning, if it does not exist it will
 	// be generated (default: `flux-$name-git-deploy` or `$GIT_SECRET_NAME`).
 	GitSecret string `json:"gitSecret,omitempty"`
+	// The contents of the known_hosts file to mount into Flux and helm-operator.
+	KnownHosts string `json:"knownHosts,omitempty"`
 	// The image to use for flux (default: `quay.io/weaveworks/flux` or `$FLUX_IMAGE`).
 	FluxImage string `json:"fluxImage,omitempty"`
 	// The version to use for flux (default: `1.4.0` or `$FLUX_VERSION`).
