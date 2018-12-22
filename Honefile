@@ -166,6 +166,7 @@ job "docker-release" {
 
     env = {
         "TAG" = "${environ.GIT_TAG}"
+        "BRANCH" = "${environ.GIT_BRANCH}"
     }
 }
 
