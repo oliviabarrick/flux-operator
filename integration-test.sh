@@ -3,7 +3,7 @@ set -e
 echo "$SSH_KEY" > /tmp/ssh_key
 
 function cr {
-    BRANCH="${DRONE_BRANCH:-$(git rev-parse --abbrev-ref HEAD)}"
+    BRANCH="${GIT_BRANCH:-$(git rev-parse --abbrev-ref HEAD)}"
     sed "s#gitBranch: master#gitBranch: $BRANCH#g" $1
 }
 
@@ -63,7 +63,11 @@ echo Waiting for docker.
 wait_for $MAXIMUM_TIMEOUT docker ps
 
 echo Building Docker image.
-docker build -t justinbarrick/flux-operator:latest .
+# workaround Dockerfile not being able to be outside of context.
+cp Dockerfile bin/
+docker build -t justinbarrick/flux-operator:latest bin/
+
+wait_for $MAXIMUM_TIMEOUT kubectl get pods
 
 echo Creating Flux resources.
 kubectl create namespace lol

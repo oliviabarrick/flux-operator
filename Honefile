@@ -3,7 +3,8 @@ secrets = [
     "S3_SECRET_KEY",
     "DOCKER_USER",
     "DOCKER_PASS",
-    "GITHUB_TOKEN"
+    "GITHUB_TOKEN",
+    "SSH_KEY"
 ]
 
 env = [
@@ -16,7 +17,8 @@ env = [
     "DOCKER_PASS",
     "VAULT_ADDR=https://vault.codesink.net/",
     "VAULT_TOKEN",
-    "GITHUB_TOKEN"
+    "GITHUB_TOKEN",
+    "SSH_KEY"
 ]
 
 vault {
@@ -66,6 +68,20 @@ template "docker" {
 kaniko --dockerfile=Dockerfile --context=/build/bin/ \
     --destination=${environ.DOCKER_USER}/flux-operator:$TAG
 EOF
+}
+
+service "minikube" {
+    image = "justinbarrick/drone-minikube:localkube"
+    privileged = true
+    shell = <<EOF
+rm -rf .kube/
+echo nameserver 8.8.8.8 > /etc/resolv.conf
+/usr/local/bin/docker-entrypoint.sh start
+EOF
+
+    env = {
+        "DRONE_WORKSPACE" = "/build/"
+    }
 }
 
 job "format" {
@@ -167,6 +183,26 @@ job "docker-release" {
     env = {
         "TAG" = "${environ.GIT_TAG}"
         "BRANCH" = "${environ.GIT_BRANCH}"
+    }
+}
+
+job "integration-test" {
+    deps = ["minikube", "flux-operator", "fluxopctl"]
+
+    inputs = [
+        "./bin/fluxopctl", "./bin/flux-operator", "deploy/cr-namespaced.yaml",
+        "deploy/cr-cluster.yaml"
+    ]
+
+    image = "justinbarrick/drone-minikube:localkube"
+
+    shell = "./integration-test.sh"
+
+    env = {
+        "KUBECONFIG" = "/build/.kube/config"
+        "DOCKER_HOST" = "tcp://minikube:2375"
+        "GIT_BRANCH" = "${environ.GIT_BRANCH}"
+        "SSH_KEY" = "${environ.SSH_KEY}"
     }
 }
 
