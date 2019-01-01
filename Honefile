@@ -96,7 +96,7 @@ job "fluxopctl" {
         "cmd/fluxopctl/main.go", "pkg/**/*.go"
     ]
 
-    output = "bin/fluxopctl"
+    outputs = ["bin/fluxopctl"]
 
     shell = "go build -ldflags '-w -s' -installsuffix cgo -o bin/fluxopctl cmd/fluxopctl/main.go"
 }
@@ -108,13 +108,13 @@ job "flux-operator" {
         "cmd/flux-operator/main.go", "pkg/**/*.go"
     ]
 
-    output = "bin/flux-operator"
+    outputs = ["bin/flux-operator"]
 
     shell = "go build -ldflags '-w -s' -installsuffix cgo -o bin/flux-operator cmd/flux-operator/main.go"
 }
 
 job "openapi-gen" {
-    output = "bin/openapi-gen"
+    outputs = ["bin/openapi-gen"]
 
     shell = <<EOF
 go get -u k8s.io/code-generator/cmd/openapi-gen@release-1.8
@@ -129,7 +129,7 @@ job "generate-openapi" {
         "pkg/apis/flux/v1alpha1/types.go", "./bin/openapi-gen"
     ]
 
-    output = "pkg/apis/flux/v1alpha1/openapi_generated.go"
+    outputs = ["pkg/apis/flux/v1alpha1/openapi_generated.go"]
 
     shell = <<EOF
 ./bin/openapi-gen -i github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1,k8s.io/apimachinery/pkg/apis/meta/v1,k8s.io/api/core/v1 -p github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1 --go-header-file="/build/.header"
@@ -139,15 +139,15 @@ EOF
 job "manifests" {
     deps = ["fluxopctl"]
 
-    input = "fluxopctl"
+    inputs = ["bin/fluxopctl"]
 
     outputs = [
         "deploy/flux-operator-namespaced.yaml", "deploy/flux-operator-cluster.yaml"
     ]
 
     shell = <<EOF
-./fluxopctl > deploy/flux-operator-namespaced.yaml
-./fluxopctl -cluster > deploy/flux-operator-cluster.yaml
+./bin/fluxopctl > deploy/flux-operator-namespaced.yaml
+./bin/fluxopctl -cluster > deploy/flux-operator-cluster.yaml
 EOF
 }
 
