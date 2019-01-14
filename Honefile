@@ -1,13 +1,4 @@
 secrets = [
-    "S3_ACCESS_KEY",
-    "S3_SECRET_KEY",
-    "DOCKER_USER",
-    "DOCKER_PASS",
-    "GITHUB_TOKEN",
-    "SSH_KEY"
-]
-
-env = [
     "S3_BUCKET=codesink-cache",
     "S3_ENDPOINT=sfo2.digitaloceanspaces.com",
     "S3_ENABLED=false",
@@ -15,29 +6,34 @@ env = [
     "S3_SECRET_KEY",
     "DOCKER_USER",
     "DOCKER_PASS",
-    "VAULT_ADDR=https://vault.codesink.net/",
-    "VAULT_TOKEN",
+    "DOCKER_USER",
+    "DOCKER_PASS",
     "GITHUB_TOKEN",
     "SSH_KEY"
 ]
 
+env = [
+    "VAULT_ADDR=https://vault.codesink.net/",
+    "VAULT_TOKEN",
+]
+
 vault {
-    address = "${environ.VAULT_ADDR}"
-    token = "${environ.VAULT_TOKEN}"
+    address = "${env.VAULT_ADDR}"
+    token = "${env.VAULT_TOKEN}"
 }
 
 cache {
     s3 {
-        access_key = "${environ.S3_ACCESS_KEY}"
-        secret_key = "${environ.S3_SECRET_KEY}"
-        endpoint = "${environ.S3_ENDPOINT}"
-        bucket = "${environ.S3_BUCKET}"
-        disabled = "${environ.S3_ENABLED != "true"}"
+        access_key = "${secrets.S3_ACCESS_KEY}"
+        secret_key = "${secrets.S3_SECRET_KEY}"
+        endpoint = "${secrets.S3_ENDPOINT}"
+        bucket = "${secrets.S3_BUCKET}"
+        disabled = "${secrets.S3_ENABLED != "true"}"
     }
 }
 
-report {
-    token = "${environ.GITHUB_TOKEN}"
+repository {
+    token = "${secrets.GITHUB_TOKEN}"
 }
 
 template "default" {
@@ -58,19 +54,21 @@ template "docker" {
     deps = ["flux-operator"]
 
     env = {
-        "DOCKER_USER" = "${environ.DOCKER_USER}",
-        "DOCKER_PASS" = "${environ.DOCKER_PASS}",
+        "DOCKER_USER" = "${secrets.DOCKER_USER}",
+        "DOCKER_PASS" = "${secrets.DOCKER_PASS}",
     }
 
     inputs = ["Dockerfile", "bin/flux-operator"]
 
     shell = <<EOF
 kaniko --dockerfile=Dockerfile --context=/build/bin/ \
-    --destination=${environ.DOCKER_USER}/flux-operator:$TAG
+    --destination=${secrets.DOCKER_USER}/flux-operator:$TAG
 EOF
 }
 
-service "minikube" {
+job "minikube" {
+    service = true
+
     image = "justinbarrick/drone-minikube:localkube"
     privileged = true
     shell = <<EOF
@@ -171,7 +169,7 @@ job "docker-build" {
     template = "docker"
 
     env = {
-        "TAG" = "${environ.GIT_BRANCH}-${environ.GIT_COMMIT_SHORT}"
+        "TAG" = "${env.GIT_BRANCH}-${env.GIT_COMMIT_SHORT}"
     }
 }
 
@@ -181,8 +179,8 @@ job "docker-release" {
     condition = "GIT_BRANCH='master' and GIT_TAG!=''"
 
     env = {
-        "TAG" = "${environ.GIT_TAG}"
-        "BRANCH" = "${environ.GIT_BRANCH}"
+        "TAG" = "${env.GIT_TAG}"
+        "BRANCH" = "${env.GIT_BRANCH}"
     }
 }
 
@@ -201,8 +199,8 @@ job "integration-test" {
     env = {
         "KUBECONFIG" = "/build/.kube/config"
         "DOCKER_HOST" = "tcp://minikube:2375"
-        "GIT_BRANCH" = "${environ.GIT_BRANCH}"
-        "SSH_KEY" = "${environ.SSH_KEY}"
+        "GIT_BRANCH" = "${env.GIT_BRANCH}"
+        "SSH_KEY" = "${secrets.SSH_KEY}"
     }
 }
 
