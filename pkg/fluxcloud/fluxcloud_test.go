@@ -68,6 +68,37 @@ func TestNewFluxcloudDeployment(t *testing.T) {
 	assert.Equal(t, getEnvVar("SLACK_CHANNEL", c.Env), cr.Spec.FluxCloud.SlackChannel)
 	assert.Equal(t, getEnvVar("SLACK_USERNAME", c.Env), cr.Spec.FluxCloud.SlackUsername)
 	assert.Equal(t, getEnvVar("SLACK_ICON_EMOJI", c.Env), cr.Spec.FluxCloud.SlackIconEmoji)
+	assert.Equal(t, getEnvVar("MATRIX_URL", c.Env), "")
+	assert.Equal(t, getEnvVar("MATRIX_ROOM_ID", c.Env), "")
+	assert.Equal(t, getEnvVar("MATRIX_TOKEN", c.Env), "")
+	assert.Equal(t, getEnvVar("EXPORTER_TYPE", c.Env), "slack")
+	assert.Equal(t, getEnvVar("GITHUB_URL", c.Env), cr.Spec.FluxCloud.GithubURL)
+}
+
+func TestNewFluxcloudDeploymentMatrix(t *testing.T) {
+	cr := test_utils.NewFlux()
+	cr.Spec.FluxCloud.Enabled = true
+	cr.Spec.FluxCloud.MatrixURL = "https://matrix/"
+	cr.Spec.FluxCloud.MatrixRoomId = "!mychan:matrix"
+	cr.Spec.FluxCloud.MatrixToken = "MyAccessToken"
+	cr.Spec.FluxCloud.GithubURL = "https://github.com/"
+
+	dep := NewFluxcloudDeployment(cr)
+	pod := dep.Spec.Template.Spec
+
+	assert.Equal(t, dep.ObjectMeta.Name, FluxcloudName(cr))
+	assert.Equal(t, dep.ObjectMeta.Namespace, "default")
+
+	c := pod.Containers[0]
+	assert.Equal(t, c.Image, fmt.Sprintf("%s:%s", utils.FluxcloudImage, utils.FluxcloudVersion))
+	assert.Equal(t, getEnvVar("SLACK_URL", c.Env), "")
+	assert.Equal(t, getEnvVar("SLACK_CHANNEL", c.Env), "")
+	assert.Equal(t, getEnvVar("SLACK_USERNAME", c.Env), "")
+	assert.Equal(t, getEnvVar("SLACK_ICON_EMOJI", c.Env), "")
+	assert.Equal(t, getEnvVar("MATRIX_URL", c.Env), cr.Spec.FluxCloud.MatrixURL)
+	assert.Equal(t, getEnvVar("MATRIX_ROOM_ID", c.Env), cr.Spec.FluxCloud.MatrixRoomId)
+	assert.Equal(t, getEnvVar("MATRIX_TOKEN", c.Env), cr.Spec.FluxCloud.MatrixToken)
+	assert.Equal(t, getEnvVar("EXPORTER_TYPE", c.Env), "matrix")
 	assert.Equal(t, getEnvVar("GITHUB_URL", c.Env), cr.Spec.FluxCloud.GithubURL)
 }
 

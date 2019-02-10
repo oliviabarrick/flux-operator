@@ -75,13 +75,19 @@ type FluxCloud struct {
 	// Github URL to use in Slack notifications (required).
 	GithubURL string `json:"githubUrl"`
 	// Slack webhook URL to use (required).
-	SlackURL string `json:"slackUrl"`
+	SlackURL string `json:"slackUrl,omitempty"`
 	// Channel to send slack notifications to (required).
-	SlackChannel string `json:"slackChannel"`
+	SlackChannel string `json:"slackChannel,omitempty"`
 	// Slack username to use when sending slack messages (default: `Flux Deployer`)
 	SlackUsername string `json:"slackUser,omitempty"`
 	// Icon emoji to use when sending slack messages (default: `:star-struck:`)
 	SlackIconEmoji string `json:"slackIconEmoji,omitempty"`
+	// Slack webhook URL to use (required).
+	MatrixURL string `json:"matrixUrl,omitempty"`
+	// Channel to send slack notifications to (required).
+	MatrixRoomId string `json:"matrixRoomId,omitempty"`
+	// Slack username to use when sending slack messages (default: `Flux Deployer`)
+	MatrixToken string `json:"matrixToken,omitempty"`
 }
 
 // Represents a Role or ClusterRole for the Flux service account user.

@@ -73,6 +73,11 @@ func NewFluxcloudDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 
 	replicas := int32(1)
 
+	exporter := "slack"
+	if cr.Spec.FluxCloud.MatrixURL != "" {
+		exporter = "matrix"
+	}
+
 	return &extensions.Deployment{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Deployment",
@@ -115,6 +120,22 @@ func NewFluxcloudDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 								corev1.EnvVar{
 									Name:  "SLACK_ICON_EMOJI",
 									Value: cr.Spec.FluxCloud.SlackIconEmoji,
+								},
+								corev1.EnvVar{
+									Name:  "MATRIX_URL",
+									Value: cr.Spec.FluxCloud.MatrixURL,
+								},
+								corev1.EnvVar{
+									Name:  "MATRIX_ROOM_ID",
+									Value: cr.Spec.FluxCloud.MatrixRoomId,
+								},
+								corev1.EnvVar{
+									Name:  "MATRIX_TOKEN",
+									Value: cr.Spec.FluxCloud.MatrixToken,
+								},
+								corev1.EnvVar{
+									Name:  "EXPORTER_TYPE",
+									Value: exporter,
 								},
 								corev1.EnvVar{
 									Name:  "GITHUB_URL",

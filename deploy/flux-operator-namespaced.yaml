@@ -531,7 +531,7 @@ spec:
         - name: HELM_OPERATOR_IMAGE
           value: quay.io/weaveworks/helm-operator
         - name: HELM_OPERATOR_VERSION
-          value: 0.5.1
+          value: 0.4.0
         - name: MEMCACHED_IMAGE
           value: memcached
         - name: MEMCACHED_VERSION
