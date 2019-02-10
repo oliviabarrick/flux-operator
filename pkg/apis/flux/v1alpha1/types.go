@@ -87,7 +87,9 @@ type FluxCloud struct {
 	// Channel to send slack notifications to (required).
 	MatrixRoomId string `json:"matrixRoomId,omitempty"`
 	// Slack username to use when sending slack messages (default: `Flux Deployer`)
-	MatrixToken string `json:"matrixToken,omitempty"`
+	MatrixToken   string `json:"matrixToken,omitempty"`
+	BodyTemplate  string `json:"bodyTemplate,omitempty"`
+	TitleTemplate string `json:"titleTemplate,omitempty"`
 }
 
 // Represents a Role or ClusterRole for the Flux service account user.

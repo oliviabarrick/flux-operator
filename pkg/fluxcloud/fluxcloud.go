@@ -141,6 +141,14 @@ func NewFluxcloudDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 									Name:  "GITHUB_URL",
 									Value: cr.Spec.FluxCloud.GithubURL,
 								},
+								corev1.EnvVar{
+									Name:  "BODY_TEMPLATE",
+									Value: cr.Spec.FluxCloud.BodyTemplate,
+								},
+								corev1.EnvVar{
+									Name:  "TITLE_TEMPLATE",
+									Value: cr.Spec.FluxCloud.TitleTemplate,
+								},
 							},
 							Resources: corev1.ResourceRequirements{
 								Limits: corev1.ResourceList{
