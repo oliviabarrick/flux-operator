@@ -1,0 +1,23 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: hone
+    image: justinbarrick/hone
+    commands:
+      - hone integration-test
+    environment:
+      VAULT_TOKEN:
+        from_secret: VAULT_TOKEN
+    when:
+      event: push
+
+  - name: hone
+    image: justinbarrick/hone
+    commands:
+      - hone
+    environment:
+      VAULT_TOKEN:
+        from_secret: VAULT_TOKEN
+    when:
+      event: push
