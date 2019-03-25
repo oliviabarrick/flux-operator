@@ -2,7 +2,7 @@ kind: pipeline
 name: default
 
 steps:
-  - name: hone
+  - name: integration-test
     image: justinbarrick/hone
     commands:
       - hone integration-test
@@ -12,7 +12,7 @@ steps:
     when:
       event: push
 
-  - name: hone
+  - name: build
     image: justinbarrick/hone
     commands:
       - hone
