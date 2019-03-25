@@ -154,6 +154,8 @@ k8s.io/client-go v0.0.0-20180103015815-9389c055a838 h1:3eHQsqKEOZ7zBLitCyNCfQkpy
 k8s.io/client-go v0.0.0-20180103015815-9389c055a838/go.mod h1:7vJpHMYJwNQCWgzmNV+VYUl1zCObLyodBc8nIyt8L5s=
 k8s.io/code-generator v0.0.0-20180510181735-d92d921fa5cd h1:MsTnQnfTtSu+/0h7cNtC31muSPZ9JGUbmHxS80sbcIs=
 k8s.io/code-generator v0.0.0-20180510181735-d92d921fa5cd/go.mod h1:MYiN+ZJZ9HkETbgVZdWw2AsuAi9PZ4V80cwfuf2axe8=
+k8s.io/code-generator v0.0.0-20190116203031-edc41f23fa91 h1:Z8j0Yhzr7hDSzKD9U8dwZla3bmCoMc6G4AWL9ybtmQ0=
+k8s.io/code-generator v0.0.0-20190116203031-edc41f23fa91/go.mod h1:MYiN+ZJZ9HkETbgVZdWw2AsuAi9PZ4V80cwfuf2axe8=
 k8s.io/gengo v0.0.0-20181113154421-fd15ee9cc2f7 h1:zjNgw2qqBQmKd0S59lGZBQqFxJqUZroVbDphfnVm5do=
 k8s.io/gengo v0.0.0-20181113154421-fd15ee9cc2f7/go.mod h1:ezvh/TsK7cY6rbqRK0oQQ8IAqLxYwwyPxAX1Pzy0ii0=
 k8s.io/helm v2.9.1+incompatible h1:uzemXeFUR3RUH7OU+vJ/lP2ym+d9IpzU8D614Qbu1h8=
