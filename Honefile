@@ -11,7 +11,7 @@ secrets = [
 ]
 
 env = [
-    "VAULT_ADDR=https://vault.codesink.net/",
+    "VAULT_ADDR=https://vault.codesink.io/",
     "VAULT_TOKEN",
 ]
 
