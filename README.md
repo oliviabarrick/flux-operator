@@ -369,10 +369,12 @@ Please add a test for your change :)
 
 ## Testing
 
+Flux-operator is built and tested with [Hone](http://github.com/justinbarrick/hone).
+
 Flux-operator is unit tested:
 
 ```
-make test
+hone test
 ```
 
 And integration tested using minikube in drone. You can run the tests locally using
@@ -382,8 +384,7 @@ minikube and the `integration-test.sh` script:
 minikube start
 eval $(minikube docker-env)
 export SSH_KEY="$(cat /path/to/ssh/deploy/key/for/repository)"
-make build
-./integration-test.sh
+hone integration-test
 ```
 
 Note: you will need to fork this repository and add your own deploy keys to the fork since
