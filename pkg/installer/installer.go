@@ -126,7 +126,7 @@ func NewFluxCRD(config FluxOperatorConfig) *extensions.CustomResourceDefinition 
 	}
 
 	spec := "github.com/justinbarrick/flux-operator/pkg/apis/flux/v1alpha1.Flux"
-	return crdutils.NewCustomResourceDefinition(crdutils.Config{
+	crd := crdutils.NewCustomResourceDefinition(crdutils.Config{
 		SpecDefinitionName:    spec,
 		EnableValidation:      true,
 		ResourceScope:         scope,
@@ -136,6 +136,11 @@ func NewFluxCRD(config FluxOperatorConfig) *extensions.CustomResourceDefinition 
 		Plural:                "fluxes",
 		GetOpenAPIDefinitions: v1alpha1.GetOpenAPIDefinitions,
 	})
+	crd.Status = extensions.CustomResourceDefinitionStatus{
+		Conditions:     []extensions.CustomResourceDefinitionCondition{},
+		StoredVersions: []string{},
+	}
+	return crd
 }
 
 // Create a FluxHelmRelease CRD
@@ -157,6 +162,10 @@ func NewFluxHelmReleaseCRD(FluxOperatorConfig) *extensions.CustomResourceDefinit
 			},
 			Scope:   "Namespaced",
 			Version: "v1alpha2",
+		},
+		Status: extensions.CustomResourceDefinitionStatus{
+			Conditions:     []extensions.CustomResourceDefinitionCondition{},
+			StoredVersions: []string{},
 		},
 	}
 }

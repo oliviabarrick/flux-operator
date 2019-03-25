@@ -6,14 +6,12 @@ secrets = [
     "S3_SECRET_KEY",
     "DOCKER_USER",
     "DOCKER_PASS",
-    "DOCKER_USER",
-    "DOCKER_PASS",
     "GITHUB_TOKEN",
     "SSH_KEY"
 ]
 
 env = [
-    "VAULT_ADDR=https://vault.codesink.net/",
+    "VAULT_ADDR=https://vault.codesink.io/",
     "VAULT_TOKEN",
 ]
 
@@ -131,7 +129,7 @@ job "openapi-gen" {
     outputs = ["bin/openapi-gen"]
 
     shell = <<EOF
-go get -u k8s.io/code-generator/cmd/openapi-gen@release-1.8
+go get -u k8s.io/code-generator/cmd/openapi-gen@release-1.10
 go install k8s.io/code-generator/cmd/openapi-gen
 EOF
 }

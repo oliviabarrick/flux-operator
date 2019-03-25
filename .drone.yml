@@ -1,0 +1,27 @@
+kind: pipeline
+name: default
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+  - name: integration-test
+    image: justinbarrick/hone
+    commands:
+      - hone integration-test
+    environment:
+      VAULT_TOKEN:
+        from_secret: VAULT_TOKEN
+    when:
+      event: push
+
+  - name: build
+    image: justinbarrick/hone
+    commands:
+      - hone
+    environment:
+      VAULT_TOKEN:
+        from_secret: VAULT_TOKEN
+    when:
+      event: push
