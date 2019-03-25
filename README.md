@@ -57,7 +57,7 @@ are centrally controlling Fluxes, then Cluster scope may be better.
 The easiest way to install flux-operator is with `fluxopctl`. Install it:
 
 ```
-go install github.com/justinbarrick/flux-operator/cmd/fluxopctl
+curl -LO https://github.com/justinbarrick/flux-operator/releases/download/v0.0.2/fluxopctl
 ```
 
 You can then setup your cluster:
