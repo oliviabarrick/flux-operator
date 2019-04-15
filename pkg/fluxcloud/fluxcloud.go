@@ -149,6 +149,10 @@ func NewFluxcloudDeployment(cr *v1alpha1.Flux) *extensions.Deployment {
 									Name:  "TITLE_TEMPLATE",
 									Value: cr.Spec.FluxCloud.TitleTemplate,
 								},
+								corev1.EnvVar{
+									Name:  "JAEGER_ENDPOINT",
+									Value: cr.Spec.JaegerEndpoint,
+								},
 							},
 							Resources: corev1.ResourceRequirements{
 								Limits: corev1.ResourceList{

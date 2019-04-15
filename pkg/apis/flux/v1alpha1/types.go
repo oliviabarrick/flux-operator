@@ -62,6 +62,8 @@ type FluxSpec struct {
 	HelmOperator HelmOperator `json:"helmOperator,omitempty"`
 	// The Fluxcloud settings
 	FluxCloud FluxCloud `json:"fluxCloud,omitempty"`
+	// Endpoint that the flux/fluxcloud instance should be configured to send traces to.
+	JaegerEndpoint string `json:"jaegerEndpoint,omitempty"`
 }
 
 type FluxCloud struct {
